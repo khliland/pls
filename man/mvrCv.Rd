@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{mvrCv}
 \alias{mvrCv}
 \title{Cross-validation}

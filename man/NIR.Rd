@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{NIR}
 \docType{data}
 \alias{NIR}

@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{oscorespls.fit}
 \alias{oscorespls.fit}
 \title{Orthogonal scores PLSR}

@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{predict.mvr}
 \alias{predict.mvr}
 \title{Predict Method for PLSR and PCR}

@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{coef.mvr}
 \alias{coef.mvr}
 \alias{model.matrix.mvr}

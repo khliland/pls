@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{svdpc.fit}
 \alias{svdpc.fit}
 \title{Principal Components Regression}

@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{sensory}
 \docType{data}
 \alias{sensory}

@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{scoreplot}
 \alias{scoreplot}
 \alias{plot.scores}

@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{validationplot}
 \alias{validationplot}
 \alias{plot.mvrVal}

@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{summary.mvr}
 \alias{summary.mvr}
 \alias{print.mvr}

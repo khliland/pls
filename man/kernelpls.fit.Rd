@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{kernelpls.fit}
 \alias{kernelpls.fit}
 \title{Kernel PLS (Dayal and MacGregor)}

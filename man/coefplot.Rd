@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{coefplot}
 \alias{coefplot}
 \title{Plot Regression Coefficients of PLSR and PCR models}

@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{cvsegments}
 \alias{cvsegments}
 \title{Generate segments for cross-validation}

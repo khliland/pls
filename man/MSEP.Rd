@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{MSEP}
 \alias{MSEP}
 \alias{RMSEP}

@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{scores}
 \alias{scores}
 \alias{scores.prcomp}

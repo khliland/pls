@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{biplot.mvr}
 \alias{biplot.mvr}
 \title{Biplots of PLSR and PCR Models.}

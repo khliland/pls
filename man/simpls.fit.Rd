@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{simpls.fit}
 \alias{simpls.fit}
 \title{Sijmen de Jong's SIMPLS}

@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{msc}
 \alias{msc}
 \alias{predict.msc}

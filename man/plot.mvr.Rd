@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{plot.mvr}
 \alias{plot.mvr}
 \title{Plot Method for MVR objects}

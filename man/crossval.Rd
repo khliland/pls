@@ -1,4 +1,5 @@
 %% $Id$
+\encoding{latin1}
 \name{crossval}
 \alias{crossval}
 \title{Cross-validation of PLSR and PCR models}
