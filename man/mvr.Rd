@@ -10,7 +10,6 @@
   Cross-validation can be used.  Prediction, model extraction, plot,
   print and summary methods exist.
 }
-%% FIXME: Maybe use a \synopsis section, and show typical uses in \usage:
 \usage{
 mvr(formula, ncomp, data, subset, na.action,
     method = c("kernelpls", "simpls", "oscorespls", "svdpc"),
@@ -84,7 +83,6 @@ pcr(\dots, method = "svdpc")
   Chichester: Wiley.
 }
 \author{Ron Wehrens and Bjørn-Helge Mevik}
-%% FIXME: Add more functions:
 \seealso{
   \code{\link{kernelpls.fit}},
   \code{\link{simpls.fit}},
