@@ -2,8 +2,8 @@
 \name{scores}
 \alias{scores}
 \alias{scores.prcomp}
-\alias{scores.default}%% FIXME: correct?
-\alias{loadings}%% FIXME: Should I document it here?
+\alias{scores.default}
+\alias{loadings}
 \alias{loading.weights}
 \alias{Yscores}
 \alias{Yloadings}
