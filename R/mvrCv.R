@@ -49,11 +49,11 @@ mvrCv <- function(X, Y, ncomp,
         if (trace) cat(n.seg, "")
         seg <- segments[[n.seg]]
         fit <- fitFunc(X[-seg,], Y[-seg,], ncomp, stripped = TRUE, ...)
-        for (a in 1:ncomp) {
-            Xtest <- sweep(X, 2, fit$Xmeans)
+        Xtest <- sweep(X, 2, fit$Xmeans)
+        for (a in 1:ncomp) 
             pred[,,a] <-
                 sweep(Xtest %*% fit$coefficients[,,a], 2, fit$Ymeans, "+")
-        }
+
         ## Save the cross-validated predictions:
         cvPred[seg,,] <- pred[seg,,, drop=FALSE]
         adj <- adj + length(seg) * colSums((pred - c(Y))^2)
