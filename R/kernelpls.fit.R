@@ -55,7 +55,8 @@ kernelpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
             for (j in 1:(a - 1))
                 rr <- rr - (PP[,j] %*% ww) * RR[,j]
     
-        tt <- scale(X %*% rr, scale = FALSE) # centered X scores
+        tt <- X %*% rr
+        tt <- tt - mean(tt)             # centered X scores
         tnorm <- sqrt(sum(tt * tt))
         tt <- tt / tnorm
         rr <- rr / tnorm

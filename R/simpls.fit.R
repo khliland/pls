@@ -40,7 +40,8 @@ simpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
     for (a in 1:ncomp) {
         qq <- svd(S)$v[,1]              # Y block factor weights
         rr <- S %*% qq                  # X block factor weights
-        tt <- scale(X %*% rr, scale = FALSE) # center scores
+        tt <- X %*% rr
+        tt <- tt - mean(tt)             # center scores
         tnorm <- sqrt(sum(tt*tt))
         tt <- tt / tnorm                # normalize scores
         rr <- rr / tnorm                # adapt weights accordingly
