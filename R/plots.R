@@ -29,7 +29,8 @@ plot.mvr <- function(x, plottype = c("prediction", "validation",
 
 ## Works on mvr and princomp objects
 
-scoreplot <- function(object, comps = 1:2, identify = FALSE, ...) {
+scoreplot <- function(object, comps = 1:2, labels, identify = FALSE,
+                      type = "p", ...) {
     nComps <- length(comps)
     if (nComps == 0) stop("At least one component must be selected.")
     if (is.matrix(object)) {
@@ -50,13 +51,33 @@ scoreplot <- function(object, comps = 1:2, identify = FALSE, ...) {
     if (!is.null(expl.var))             # Add explained variance
         varlab <- paste(varlab, " (", format(expl.var, digits = 2, trim = TRUE),
                         " %)", sep = "")
+    if (!missing(labels)) {
+        ## Set up point labels
+        if (length(labels) == 1) {
+            labels <- switch(match.arg(labels, c("names", "numbers")),
+                             names = rownames(S),
+                             numbers = 1:nrow(S)
+                             )
+        }
+        labels <- as.character(labels)
+        type <- "n"
+    }
     switch(as.character(nComps),        # as.character to get "otherwise"
            ## One component versus index
-           "1" = plot(S, xlab = "observation", ylab = varlab, ...),
+           "1" = { plot(S, xlab = "observation", ylab = varlab, type = type,
+                        ...)
+                   if (!missing(labels)) text(S, labels, ...)
+               },
            ## Second component versus first
-           "2" = plot(S, xlab = varlab[1], ylab = varlab[2], ...),
+           "2" = { plot(S, xlab = varlab[1], ylab = varlab[2], type = type, ...)
+                   if (!missing(labels)) text(S, labels, ...)
+               },
            ## Pairwise scatterplots of several components
-           pairs(S, labels = varlab, ...)
+           { panel <- if (missing(labels))
+                 function(x, y, ...) points(x, y, type = type, ...) else
+                 function(x, y, ...) text(x, y, labels = labels, ...)
+             pairs(S, labels = varlab, panel = panel, ...)
+           } 
            )
     if (identify && nComps <= 2) {
         if (!is.null(rownames(S))) {
@@ -77,8 +98,8 @@ plot.scores <- function(x, ...) scoreplot(x, ...)
 
 ## Works on mvr and princomp objects
 
-loadingplot <- function(object, comps = 1:2, identify = FALSE, scatter = FALSE,
-                        type, ...)
+loadingplot <- function(object, comps = 1:2, scatter = FALSE, labels,
+                        identify = FALSE, type, ...)
 {
     nComps <- length(comps)
     if (nComps == 0) stop("At least one component must be selected.")
@@ -103,16 +124,34 @@ loadingplot <- function(object, comps = 1:2, identify = FALSE, scatter = FALSE,
     if (scatter) {
         ## Scatter plots
         if (missing(type)) type <- "p"
+        if (!missing(labels)) {
+            ## Set up point labels
+            if (length(labels) == 1) {
+                labels <- switch(match.arg(labels, c("names", "numbers")),
+                                 names = rownames(L),
+                                 numbers = 1:nrow(L)
+                                 )
+            }
+            labels <- as.character(labels)
+            type <- "n"
+        }
         switch(as.character(nComps),    # as.character to get "otherwise"
                ## One component versus index
-               "1" = plot(L, xlab = "observation", ylab = varlab, type = type,
-               ...),
+               "1" = { plot(L, xlab = "observation", ylab = varlab, type = type,
+                            ...)
+                       if (!missing(labels)) text(L, labels, ...)
+                   },
                ## Second component versus first
-               "2" = plot(L, xlab = varlab[1], ylab = varlab[2], type = type,
-               ...),
+               "2" = { plot(L, xlab = varlab[1], ylab = varlab[2], type = type,
+                            ...)
+                       if (!missing(labels)) text(L, labels, ...)
+                   },
                ## Pairwise scatterplots of several components
-               { panel <- function(x, y, ...) points(x, y, type = type, ...)
-                 pairs(L, labels = varlab, panel = panel, ...) }
+               { panel <- if (missing(labels))
+                     function(x, y, ...) points(x, y, type = type, ...) else
+                     function(x, y, ...) text(x, y, labels = labels, ...)
+                 pairs(L, labels = varlab, panel = panel, ...)
+               }
                )
         if (identify && nComps <= 2)
             identify(L, labels = paste(1:nrow(L), rownames(L), sep = ": "))

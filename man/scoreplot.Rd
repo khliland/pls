@@ -10,20 +10,24 @@
   loadings.
 }
 \usage{
-scoreplot(object, comps = 1:2, identify = FALSE, \dots)
+scoreplot(object, comps = 1:2, labels, identify = FALSE, type = "p", \dots)
 \method{plot}{scores}(x, \dots)
 
-loadingplot(object, comps = 1:2, identify = FALSE, scatter = FALSE,
+loadingplot(object, comps = 1:2, scatter = FALSE, labels, identify = FALSE,
             type, \dots)
 \method{plot}{loadings}(x, \dots)
 }
 \arguments{
   \item{object}{an \code{mvr} object.  The fitted model.}
   \item{comps}{integer vector.  The components to plot.}
-  \item{identify}{logical.  Whether to use \code{identify} to
-    interactively identify points.  See below.}
   \item{scatter}{logical.  Whether the loadings should be plotted as a
     scatter instead of as lines.}
+  \item{labels}{optional.  Labels to use instead of plotting symbols.
+    Ignored in \code{loadingplot} unless \code{scatter = TRUE}.  Either
+    a vector (of length > 1) of labels, or one of \samp{"names"} and
+    \samp{"numbers"} for using row names and row numbers, respectively.}
+  \item{identify}{logical.  Whether to use \code{identify} to
+    interactively identify points.  See below.}
   \item{type}{character.  What type of plot to make.  Defaults to
     \samp{"p"} (points) for scatter plots and \samp{"l"} (lines) for
     line plots.}
