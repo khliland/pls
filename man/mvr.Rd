@@ -1,7 +1,6 @@
 %% $Id$
 \name{mvr}
 \alias{mvr}
-\alias{pls}
 \alias{pcr}
 \alias{plsr}
 \title{Partial Least Squares and Principal Components Regression}
@@ -18,7 +17,6 @@ mvr(formula, ncomp, data, subset, na.action,
     validation = c("none", "CV", "LOO"),
     model = TRUE, x = FALSE, y = FALSE, \dots)
 plsr(\dots, method = c("kernelpls", "simpls", "oscorespls"))
-pls(\dots, method = c("kernelpls", "simpls", "oscorespls"))
 pcr(\dots, method = "svdpc")
 }
 \arguments{
@@ -47,8 +45,8 @@ pcr(\dots, method = "svdpc")
   Three PLSR algorithms are available: the kernel algorithm, SIMPLS and
   the classical orthogonal scores algorithm.  One PCR algorithm is
   available: using the singular value decomposition.  The type of
-  regression is specified with the \code{method} argument.  \code{pcr},
-  \code{plsr} and \code{pls}
+  regression is specified with the \code{method} argument.  \code{pcr}
+  and \code{plsr}
   are wrappers for \code{mvr}, with different values for \code{method}.
 
   If \code{validation = "CV"}, cross-validation is performed.  The number and
@@ -117,7 +115,7 @@ data(sensory)
 Pn <- scale(sensory$Panel)
 Ql <- scale(sensory$Quality)
 sens.pcr <- pcr(Ql ~ Pn, ncomp = 4)
-sens.pls <- pls(Ql ~ Pn, ncomp = 4)
+sens.pls <- plsr(Ql ~ Pn, ncomp = 4)
 }
 \keyword{regression}
 \keyword{multivariate}

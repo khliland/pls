@@ -29,7 +29,7 @@
   \code{print.mvr} and \code{print.mvrVal} return the object invisibly.
 }
 \author{Ron Wehrens and Bjørn-Helge Mevik}
-\seealso{\code{\link{mvr}}, \code{\link{pcr}}, \code{\link{pls}},
+\seealso{\code{\link{mvr}}, \code{\link{pcr}},
   \code{\link{plsr}}, \code{\link{RMSEP}}, \code{\link{MSEP}}}
 \examples{
 data(NIR)

@@ -11,7 +11,5 @@ plsr <- function(..., method = c("kernelpls", "simpls", "oscorespls"))
     res
 }
 
-pls <- plsr
-
 pcr <- plsr
 formals(pcr)$method <- "svdpc"

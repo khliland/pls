@@ -20,7 +20,7 @@
   \item{\dots}{other arguments.  Currently ignored.}
 }
 \details{This function should not be called directly, but through
-  the generic functions \code{pls} or \code{mvr} with the argument
+  the generic functions \code{plsr} or \code{mvr} with the argument
   \code{method="oscorespls"}.  It implements the orthogonal scores
   algorithm, as described in \cite{Martens and Næs (1989)}.  This is one
   of the two \dQuote{classical}
@@ -58,7 +58,6 @@
 \author{Ron Wehrens and Bjørn-Helge Mevik}
 \seealso{
   \code{\link{mvr}}
-  \code{\link{pls}}
   \code{\link{plsr}}
   \code{\link{pcr}}
   \code{\link{kernelpls.fit}}

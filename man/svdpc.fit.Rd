@@ -51,7 +51,6 @@
 \seealso{
   \code{\link{mvr}}
   \code{\link{pcr}}
-  \code{\link{pls}}
   \code{\link{plsr}}
 }
 \keyword{regression}

@@ -43,7 +43,7 @@ Ztrain <- msc(NIR$X[NIR$train,])
 Ztest <- predict(Ztrain, NIR$X[!NIR$train,])
 
 ## Used in formula:
-mod <- pls(y ~ msc(X), ncomp = 6, data = NIR[NIR$train,])
+mod <- plsr(y ~ msc(X), ncomp = 6, data = NIR[NIR$train,])
 pred <- predict(mod, newdata = NIR[!NIR$train,]) # Automatically scatter correction
 }
 \keyword{regression}

@@ -18,7 +18,7 @@
   \item{\dots}{other arguments.  Currently ignored.}
 }
 \details{This function should not be called directly, but through
-  the generic functions \code{pls} or \code{mvr} with the argument
+  the generic functions \code{plsr} or \code{mvr} with the argument
   \code{method="kernelpls"} (default).  Kernel PLS is particularly efficient 
   when the number of objects is (much) larger than the number of
   variables.  The results are equal to the NIPALS algorithm.  Several
@@ -64,7 +64,6 @@
 \author{Ron Wehrens and Bjørn-Helge Mevik}
 \seealso{
   \code{\link{mvr}}
-  \code{\link{pls}}
   \code{\link{plsr}}
   \code{\link{pcr}}
   \code{\link{simpls.fit}}

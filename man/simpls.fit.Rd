@@ -18,7 +18,7 @@
   \item{\dots}{other arguments.  Currently ignored.}
 }
 \details{This function should not be called directly, but through
-  the generic functions \code{pls} or \code{mvr} with the argument
+  the generic functions \code{plsr} or \code{mvr} with the argument
   \code{method="simpls"}.  SIMPLS is much faster than the NIPALS algorithm,
   especially when the number of X variables increases, but gives
   slightly different results in the case of multivariate Y.  SIMPLS truly
@@ -60,7 +60,6 @@
 \author{Ron Wehrens and Bjørn-Helge Mevik}
 \seealso{
   \code{\link{mvr}}
-  \code{\link{pls}}
   \code{\link{plsr}}
   \code{\link{pcr}}
   \code{\link{kernelpls.fit}}
