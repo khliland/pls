@@ -10,8 +10,9 @@
 \usage{
 \method{summary}{mvr}(object, what = c("all", "validation", "training"),
         digits = 4, print.gap = 2, \dots)
-\method{print}{mvr}(x, \dots)}
-\method{print}{mvrVal}(x, digits = 4, print.gap = 2, \dots)}
+\method{print}{mvr}(x, \dots)
+\method{print}{mvrVal}(x, digits = 4, print.gap = 2, \dots)
+}
 \arguments{
   \item{x, object}{an \code{mvr} object}
   \item{what}{one of \samp{"all"}, \samp{"validation"} or \samp{"training"}}
