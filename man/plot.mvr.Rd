@@ -1,0 +1,46 @@
+%% $Id$
+\name{plot.mvr}
+\alias{plot.mvr}
+\title{Plot Method for MVR objects}
+\description{
+  \code{plot.mvr} plots predictions, coefficients, scores, loadings, biplots or
+  validation plots (RMSEP curves, etc.).
+}
+\usage{
+\method{plot}{mvr}(x, plottype = c("prediction", "validation", "coefficients",
+                     "scores", "loadings", "biplot"), \dots)
+}
+\arguments{
+  \item{x}{an object of class \code{mvr}.  The fitted model to plot.}
+  \item{plottype}{character.  What kind of plot to plot.}
+  \item{\dots}{further arguments, sent to the underlying plot functions.}
+}
+\details{
+  The function is simply a wrapper for the underlying plot functions
+  used to make the selected plots.  See \code{\link{predplot.mvr}},
+  \code{\link{validationplot}}, \code{\link{coefplot}},
+  \code{\link{scoreplot}}, \code{\link{loadingplot}} or
+  \code{\link{biplot.mvr}} for details.  Note that all arguments except
+  \code{x} and \code{plottype} must be named.
+}
+\value{
+  \code{plot.mvr} returns whatever the underlying plot function returns.
+}
+\author{Ron Wehrens and Bjørn-Helge Mevik}
+\seealso{\code{\link{mvr}},\code{\link{predplot.mvr}},
+  \code{\link{validationplot}}, \code{\link{coefplot}},
+  \code{\link{scoreplot}}, \code{\link{loadingplot}},
+  \code{\link{biplot.mvr}}}
+\examples{
+data(NIR)
+nir.pcr <- pcr(y ~ X, ncomp = 9, data = NIR, CV = TRUE)
+\dontrun{plot(nir.pcr, ncomp = 5) # Plot of cross-validated predictions}
+\dontrun{plot(nir.pcr, "scores") # Score plot}
+\dontrun{plot(nir.pcr, "loadings", comps = 1:3) # The three first loadings}
+\dontrun{plot(nir.pcr, "coef", ncomp = 5) # Coefficients}
+\dontrun{plot(nir.pcr, "val") # RMSEP curves}
+\dontrun{plot(nir.pcr, "val", val.type = "MSEP", estimate = "CV") # CV MSEP}
+}
+\keyword{regression}
+\keyword{multivariate}
+\keyword{hplot}
