@@ -54,13 +54,9 @@ summary.mvr <- function(object, what = c("all", "validation", "training"),
             tbl <- 100 * rbind(cumsum(xve), yve)
             dimnames(tbl) <- list(c("X", yvarnames),
                                   paste(1:object$ncomp, "comps"))
-            
-            ## FIXME: What's the `format = "f"' supposed to do?
-            print(tbl, format = "f", digits = digits,
-                  print.gap = print.gap, ...)
+            print(tbl, digits = digits, print.gap = print.gap, ...)
         } else {
             cat("\n\nVALIDATION: RMSEP")
-            ## FIXME: se(RMSEP) and cross-validated R2 not implemented yet!
             cat("\nCross-validated using", length(object$validation$segments),
                 attr(object$validation$segments, "type"), "segments.\n")
             print(RMSEP(object), digits = digits, print.gap = print.gap, ...)
@@ -75,9 +71,7 @@ print.mvrVal <- function(x, digits = 4, print.gap = 2, ...) {
     names(dimnames(x$val)) <- NULL
     for (i in 1:npred) {
         if (npred > 1) cat("\nResponse:", yvarnames[i], "\n")
-        ## FIXME: What's the `format = "f"' for?
-        print(x$val[,i,], format = "f", digits = digits,
-              print.gap = print.gap, ...)
+        print(x$val[,i,], digits = digits, print.gap = print.gap, ...)
     }
     invisible(x)
 }

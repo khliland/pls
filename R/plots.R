@@ -29,9 +29,6 @@ plot.mvr <- function(x, plottype = c("prediction", "validation",
 
 ## Works on mvr and princomp objects
 
-## FIXME: Ideas:
-## - Allow using rownames or numbers as symbols?
-
 scoreplot <- function(object, comps = 1:2, identify = FALSE, ...) {
     nComps <- length(comps)
     if (nComps == 0) stop("At least one component must be selected.")
@@ -79,9 +76,6 @@ plot.scores <- function(x, ...) scoreplot(x, ...)
 ###
 
 ## Works on mvr and princomp objects
-
-## FIXME: Ideas:
-## - Allow using rownames, numbers or given names as symbols?
 
 loadingplot <- function(object, comps = 1:2, identify = FALSE, scatter = FALSE,
                         type, ...)
@@ -145,7 +139,6 @@ predplot <- function(object, ...)
   UseMethod("predplot")
 
 ## Default method:
-## FIXME: Doesn't handle multiple responses
 predplot.default <- function(object, ...) {
     measured <- model.response(model.frame(object))
     predicted <- predict(object)
@@ -272,7 +265,6 @@ predplotXy <- function(x, y, line = FALSE, main = "Prediction plot",
 ### Coefficient plot
 ###
 
-## FIXME: Add support for labeling the x ticks with variable names
 coefplot <- function(object, ncomp = object$ncomp, separate = FALSE,
                      cumulative = TRUE, intercept = FALSE,
                      nCols, nRows, type = "l", ...)
