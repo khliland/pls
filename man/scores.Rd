@@ -3,7 +3,6 @@
 \alias{scores}
 \alias{scores.prcomp}
 \alias{scores.default}
-\alias{loadings}
 \alias{loading.weights}
 \alias{Yscores}
 \alias{Yloadings}
@@ -16,13 +15,12 @@
 scores(object, \dots)
 \method{scores}{prcomp}(object, \dots)
 \method{scores}{default}(object, \dots)
-loadings(x)
 loading.weights(object)
 Yscores(object)
 Yloadings(object)
 }
 \arguments{
-  \item{object,x}{a fitted \code{mvr} model to extract from.}
+  \item{object}{a fitted \code{mvr} model to extract from.}
   \item{\dots}{extra arguments, currently not used.}
 }
 \details{
@@ -30,8 +28,7 @@ Yloadings(object)
   will work with any object having a suitably named component.
   \code{scores} also has a method for \code{prcomp} objects (their
   score component is called \code{x}).
-  \code{loadings} is in package \code{stats}, and is documented here only
-  for completeness.
+  \code{loadings} is in package \code{stats}, and is documented there.
 }
 \value{
   A matrix with scores or loadings.
