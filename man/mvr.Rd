@@ -65,7 +65,7 @@ pcr(\dots, method = "svdpc")
   \code{mvr} returns an object of class \code{mvr}.
   The object contains all components returned by the underlying fit
   function.  In addition, it contains the following components:
-  \item{CV}{if \code{CV = TRUE}, the results of the cross-validation.
+  \item{validation}{if \code{CV = TRUE}, the results of the cross-validation.
     See \code{\link{mvrCv}} for details.}
   \item{ncomp}{the number of components of the model.}
   \item{method}{the method used to fit the model.  See the argument

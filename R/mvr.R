@@ -50,7 +50,7 @@ mvr <- function(formula, ncomp, data, subset, na.action,
     z <- fitFunc(X, Y, ncomp, ...)
     if (CV) {
         ## Add cross-validation results
-        z$CV <- mvrCv(X, Y, ncomp, method = method, ...)
+        z$validation <- mvrCv(X, Y, ncomp, method = method, ...)
     }
     ## Build and return the object:
     class(z) <- "mvr"

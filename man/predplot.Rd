@@ -22,7 +22,7 @@ predplotXy(x, y, line = FALSE, main = "Prediction plot",
   \item{ncomp}{integer vector.  The model sizes (numbers of components)
     to use for prediction.}
   \item{which}{character vector.  Which types of predictions to plot.
-    Should be a subset of \code{c("train", "CV", "test")}.  If not
+    Should be a subset of \code{c("train", "validation", "test")}.  If not
     specified, \code{plot.mvr} selects test set predictions if
     \code{newdata} is supplied, otherwise cross-validated predictions if
     the model has been cross-validated, otherwise fitted values from the
@@ -66,7 +66,7 @@ mod <- plsr(y ~ X, ncomp = 10, data = NIR[NIR$train,], CV = TRUE)
 predplot(mod, ncomp = 1:6)
 plot(mod, ncomp = 1:6) # Equivalent to the previous
 ## Both cross-validated and test set predictions:
-predplot(mod, ncomp = 4:6, which = c("CV", "test"),
+predplot(mod, ncomp = 4:6, which = c("validation", "test"),
          newdata = NIR[!NIR$train,])
 }
 

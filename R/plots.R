@@ -162,15 +162,15 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
         if (!missing(newdata)) {
             which <- "test"
         } else {
-            if (!is.null(object$CV)) {
-                which <- "CV"
+            if (!is.null(object$validation)) {
+                which <- "validation"
             } else {
                 which <- "train"
             }
         }
     } else {
         ## Check the supplied `which'
-        allTypes <- c("train", "CV", "test")
+        allTypes <- c("train", "validation", "test")
         which <- allTypes[pmatch(which, allTypes)]
         if (length(which) == 0 || any(is.na(which)))
             stop("`which' should be a subset of ",
@@ -207,11 +207,11 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
         train.measured <- as.matrix(model.response(model.frame(object)))
         train.predicted <- object$fitted.values[,,ncomp, drop = FALSE]
     }
-    if ("CV" %in% which) {
-        if (is.null(object$CV)) stop("`object' has no `CV' component.")
+    if ("validation" %in% which) {
+        if (is.null(object$validation)) stop("`object' has no `validation' component.")
         if(!exists("train.measured"))
             train.measured <- as.matrix(model.response(model.frame(object)))
-        CV.predicted <- object$CV$pred[,,ncomp, drop = FALSE]
+        validation.predicted <- object$validation$pred[,,ncomp, drop = FALSE]
     }
     if ("test" %in% which) {
         if (missing(newdata)) stop("Missing `newdata'.")
@@ -234,9 +234,9 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
                            measured <- train.measured[,resp]
                            predicted <- train.predicted[,resp,size]
                        },
-                       CV = {
+                       validation = {
                            measured <- train.measured[,resp]
-                           predicted <- CV.predicted[,resp,size]
+                           predicted <- validation.predicted[,resp,size]
                        },
                        test = {
                            measured <- test.measured[,resp]

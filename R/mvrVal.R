@@ -12,7 +12,7 @@ MSEP <- function(object, estimate, newdata, comps = 1:object$ncomp,
         if (!missing(newdata)) {
             estimate = "test"
         } else {
-            if (!is.null(object$CV)) { 
+            if (!is.null(object$validation)) { 
                 estimate = c("CV", "adjCV")
             } else {
                 estimate = "train"
@@ -25,7 +25,7 @@ MSEP <- function(object, estimate, newdata, comps = 1:object$ncomp,
         if (any(estimate == "all")) {
             estimate <- allEstimates[-1] # Try all estimates (except "all")
             if(missing(newdata)) estimate <- setdiff(estimate, "test")
-            if(is.null(object$CV) || !cumulative)
+            if(is.null(object$validation) || !cumulative)
                 estimate <- setdiff(estimate, c("CV", "adjCV"))
         }
     }
@@ -60,21 +60,21 @@ MSEP <- function(object, estimate, newdata, comps = 1:object$ncomp,
                              colMeans(sweep(pred, 1:2, resp)^2))
                    },
                    CV = {
-                       if (is.null(object$CV))
-                           stop("`object' has no `CV' component.")
+                       if (is.null(object$validation))
+                           stop("`object' has no `validation' component.")
                        if (!cumulative) stop("`cumulative = FALSE' not supported with cross-validation")
-                       cbind(object$CV$MSEP0,
-                             object$CV$MSEP[,comps, drop = FALSE])
+                       cbind(object$validation$MSEP0,
+                             object$validation$MSEP[,comps, drop = FALSE])
                    },
                    adjCV = {
-                       if (is.null(object$CV))
-                           stop("`object' has no `CV' component.")
+                       if (is.null(object$validation))
+                           stop("`object' has no `validation' component.")
                        if (!cumulative) stop("`cumulative = FALSE' not supported with cross-validation")
                        MSEPtrain <-
                            colMeans(residuals(object, ...)[,,comps, drop = FALSE]^2)
-                       cbind(object$CV$MSEP0,
-                             object$CV$MSEP[,comps, drop = FALSE] + MSEPtrain -
-                             object$CV$adj[,comps, drop = FALSE])
+                       cbind(object$validation$MSEP0,
+                             object$validation$MSEP[,comps, drop = FALSE] + MSEPtrain -
+                             object$validation$adj[,comps, drop = FALSE])
                    }
                    )
     }
@@ -112,7 +112,7 @@ R2 <- function(object, estimate, newdata, comps = 1:object$ncomp,
         if (!missing(newdata)) {
             estimate = "test"
         } else {
-            if (!is.null(object$CV)) { 
+            if (!is.null(object$validation)) { 
                 estimate = "CV"
             } else {
                 estimate = "train"
@@ -125,7 +125,7 @@ R2 <- function(object, estimate, newdata, comps = 1:object$ncomp,
         if (any(estimate == "all")) {
             estimate <- allEstimates[-1] # Try all estimates (except "all")
             if(missing(newdata)) estimate <- setdiff(estimate, "test")
-            if(is.null(object$CV) || !cumulative)
+            if(is.null(object$validation) || !cumulative)
                 estimate <- setdiff(estimate, "CV")
         }
     }
@@ -156,10 +156,10 @@ R2 <- function(object, estimate, newdata, comps = 1:object$ncomp,
                        z[i,j,-1] <- cor(pred[,j,], resp[,j])^2
                },
                CV = {
-                   if (is.null(object$CV))
-                       stop("`object' has no `CV' component.")
+                   if (is.null(object$validation))
+                       stop("`object' has no `validation' component.")
                    if (!cumulative) stop("`cumulative = FALSE' not supported with cross-validation")
-                   z[i,,-1] <- object$CV$R2[,comps, drop = FALSE]
+                   z[i,,-1] <- object$validation$R2[,comps, drop = FALSE]
                }
                )
     }

@@ -88,9 +88,9 @@ crossval <- function(object, segments = 10,
     dimnames(cvPred) <- c(list(objnames), dimnames(fitted(object))[-1])
     dimnames(MSEP) <- dimnames(R2) <- dimnames(adj)
 
-    ## Return the original object, with a component `CV' added
-    object$CV <- list(pred = cvPred,
-                      MSEP0 = MSEP0, MSEP = MSEP, adj = adj / n^2,
-                      R2 = R2, segments = segments)
+    ## Return the original object, with a component `validation' added
+    object$validation <- list(method = "CV", pred = cvPred,
+                              MSEP0 = MSEP0, MSEP = MSEP, adj = adj / n^2,
+                              R2 = R2, segments = segments)
     return(object)
 }

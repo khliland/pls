@@ -77,7 +77,7 @@ mvrCv <- function(X, Y, ncomp,
         list(yvarnames, nCompnames)
     dimnames(cvPred) <- list(objnames, yvarnames, nCompnames)
 
-    list(pred = cvPred,
+    list(method = "CV", pred = cvPred,
          MSEP0 = MSEP0, MSEP = MSEP, adj = adj / dx[1]^2,
          R2 = R2, segments = segments)
 }

@@ -23,9 +23,9 @@ print.mvr <- function(x, ...) {
            stop("Unknown fit method.")
            )
     cat(regr, "regression, fitted with the", alg, "algorithm.")
-    if (!is.null(x$CV))
-        cat("\nCross-validated using", length(x$CV$segments),
-            attr(x$CV$segments, "type"), "segments.")
+    if (!is.null(x$validation))
+        cat("\nCross-validated using", length(x$validation$segments),
+            attr(x$validation$segments, "type"), "segments.")
     cat("\nCall:\n", deparse(x$call), "\n", sep = "")
     invisible(x)
 }
@@ -36,7 +36,7 @@ summary.mvr <- function(object, what = c("all", "validation", "training"),
 {
     what <- match.arg(what)
     if (what == "all") what <- c("validation", "training")
-    if (is.null(object$CV)) what <- "training"
+    if (is.null(object$validation)) what <- "training"
   
     nobj <- nrow(object$scores)
     npred <- length(object$Ymeans)
@@ -50,7 +50,7 @@ summary.mvr <- function(object, what = c("all", "validation", "training"),
         if (wh == "training") {
             cat("\nTRAINING: % variance explained\n")
             xve <- object$Xvar / object$Xtotvar
-            yve <- object$R2
+            yve <- drop(R2(object, estimate = "train", intercept = FALSE)$val)
             tbl <- 100 * rbind(cumsum(xve), yve)
             dimnames(tbl) <- list(c("X", yvarnames),
                                   paste(1:object$ncomp, "comps"))
@@ -61,8 +61,8 @@ summary.mvr <- function(object, what = c("all", "validation", "training"),
         } else {
             cat("\n\nVALIDATION: RMSEP")
             ## FIXME: se(RMSEP) and cross-validated R2 not implemented yet!
-            cat("\nCross-validated using", length(object$CV$segments),
-                attr(object$CV$segments, "type"), "segments.\n")
+            cat("\nCross-validated using", length(object$validation$segments),
+                attr(object$validation$segments, "type"), "segments.\n")
             print(RMSEP(object), digits = digits, print.gap = print.gap, ...)
         }
     }
