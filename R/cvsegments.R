@@ -37,6 +37,6 @@ cvsegments <- function(N, k, length.seg = ceiling(N / k),
            )
     res <- lapply(as.data.frame(inds), function(x) c(na.omit(x)))
     attr(res, "incomplete") <- incomplete
-    attr(res, "type") <- type
+    attr(res, "type") <- if (length.seg == 1) "leave-one-out" else type
     res
 }

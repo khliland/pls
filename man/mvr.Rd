@@ -15,7 +15,8 @@
 \usage{
 mvr(formula, ncomp, data, subset, na.action,
     method = c("kernelpls", "simpls", "oscorespls", "svdpc"),
-    CV = FALSE, model = TRUE, x = FALSE, y = FALSE, \dots)
+    validation = c("none", "CV", "LOO"),
+    model = TRUE, x = FALSE, y = FALSE, \dots)
 plsr(\dots, method = c("kernelpls", "simpls", "oscorespls"))
 pls(\dots, method = c("kernelpls", "simpls", "oscorespls"))
 pcr(\dots, method = "svdpc")
@@ -30,7 +31,8 @@ pcr(\dots, method = "svdpc")
   \item{na.action}{a function which indicates what should happen when
     the data contain missing values.}
   \item{method}{the multivariate regression method to be used.}
-  \item{CV}{a logical.  Wether to cross-validate the model.  See below.}
+  \item{validation}{character.  What kind of (internal) validation to
+    use.  See below.}
   \item{model}{a logical.  If \code{TRUE}, the model frame is returned.}
   \item{x}{a logical.  If \code{TRUE}, the model matrix is returned.}
   \item{y}{a logical.  If \code{TRUE}, the response is returned.}
@@ -45,13 +47,16 @@ pcr(\dots, method = "svdpc")
   Three PLSR algorithms are available: the kernel algorithm, SIMPLS and
   the classical orthogonal scores algorithm.  One PCR algorithm is
   available: using the singular value decomposition.  The type of
-  regression is specified with the \code{method} argument.  \code{pcr}
+  regression is specified with the \code{method} argument.  \code{pcr},
+  \code{plsr} and \code{pls}
   are wrappers for \code{mvr}, with different values for \code{method}.
 
-  If \code{CV = TRUE}, cross-validation is performed.  The number and
+  If \code{validation = "CV"}, cross-validation is performed.  The number and
   type of cross-validation segments are specified with the arguments
   \code{segments} and \code{segment.type}.  See \code{\link{mvrCv}} for
-  details.
+  details.  If \code{validation = "LOO"}, leave-one-out cross-validation
+  is performed.  It is an error to specify the segments when
+  \code{validation = "LOO"} is specified.
 
   Note that the cross-validation is optimised for speed, and some
   generality has been sacrificed.  Especially, the model matrix is
@@ -65,8 +70,8 @@ pcr(\dots, method = "svdpc")
   \code{mvr} returns an object of class \code{mvr}.
   The object contains all components returned by the underlying fit
   function.  In addition, it contains the following components:
-  \item{validation}{if \code{CV = TRUE}, the results of the cross-validation.
-    See \code{\link{mvrCv}} for details.}
+  \item{validation}{if validation was requested, the results of the
+    cross-validation.  See \code{\link{mvrCv}} for details.}
   \item{ncomp}{the number of components of the model.}
   \item{method}{the method used to fit the model.  See the argument
     \code{method} for possible values.}
@@ -83,19 +88,19 @@ pcr(\dots, method = "svdpc")
 \author{Ron Wehrens and Bjørn-Helge Mevik}
 %% FIXME: Add more functions:
 \seealso{
-  \code{\link{kernelpls.fit}}
-  \code{\link{simpls.fit}}
-  \code{\link{oscorespls.fit}}
-  \code{\link{svdpc.fit}}
-  \code{\link{mvrCv}}
+  \code{\link{kernelpls.fit}},
+  \code{\link{simpls.fit}},
+  \code{\link{oscorespls.fit}},
+  \code{\link{svdpc.fit}},
+  \code{\link{mvrCv}},
   \code{\link[stats]{loadings}},
   \code{\link{scores}},
   \code{\link{loading.weights}},
   \code{\link{coef.mvr}},
   \code{\link{predict.mvr}},
-  \code{\link{MSEP}}}
+  \code{\link{R2}},
+  \code{\link{MSEP}},
   \code{\link{RMSEP}}}
-%% FIXME: Add plots (with \dontrun):
 \examples{
 data(NIR)
 ## Default methods:

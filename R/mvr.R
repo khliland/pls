@@ -7,7 +7,8 @@
 ## The function borrows heavily from lm().
 mvr <- function(formula, ncomp, data, subset, na.action,
                 method = c("kernelpls", "simpls", "oscorespls", "svdpc"),
-                CV = FALSE, model = TRUE, x = FALSE, y = FALSE, ...)
+                validation = c("none", "CV", "LOO"),
+                model = TRUE, x = FALSE, y = FALSE, ...)
 {
     ret.x <- x                          # More useful names
     ret.y <- y
@@ -48,10 +49,18 @@ mvr <- function(formula, ncomp, data, subset, na.action,
                       svdpc = svdpc.fit)
     ## Fit the model:
     z <- fitFunc(X, Y, ncomp, ...)
-    if (CV) {
-        ## Add cross-validation results
-        z$validation <- mvrCv(X, Y, ncomp, method = method, ...)
-    }
+    ## Optionally, perform validation:
+    switch(match.arg(validation),
+           CV = {
+               z$validation <- mvrCv(X, Y, ncomp, method = method, ...)
+           },
+           LOO = {
+               segments <- as.list(1:nrow(X))
+               attr(segments, "type") <- "leave-one-out"
+               z$validation <- mvrCv(X, Y, ncomp, method = method,
+                                     segments = segments, ...)
+           }
+           )
     ## Build and return the object:
     class(z) <- "mvr"
     z$ncomp <- ncomp

@@ -21,7 +21,8 @@ mvrCv <- function(X, Y, ncomp,
 
     ## Set up segments:
     if (is.list(segments)) {
-        attr(segments, "type") <- "user supplied"
+        if (is.null(attr(segments, "type")))
+            attr(segments, "type") <- "user supplied"
     } else {
         if (missing(length.seg)) {
             segments <- cvsegments(dx[1], k = segments, type = segment.type)
