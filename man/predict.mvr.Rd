@@ -42,7 +42,7 @@
 
   When \code{type} is \samp{"scores"}, a score matrix is returned.
 }
-\author{Ron Wehnrens and Bjørn-Helge Mevik}
+\author{Ron Wehrens and Bjørn-Helge Mevik}
 \seealso{\code{\link{mvr}}, \code{\link{summary.mvr}},
   \code{\link{coef.mvr}}, \code{\link{plot.mvr}}}
 \examples{
