@@ -123,8 +123,8 @@ oscorespls.fit <- function(X, Y, ncomp, stripped = FALSE, tol = 1e-6, ...)
         dimnames(B) <- list(xvarnames, yvarnames, nCompnames)
         dimnames(fitted) <- dimnames(residuals) <-
             list(objnames, yvarnames, nCompnames)
-        class(TEE) <- "scores"
-        class(P) <- class(W) <- "loadings"
+        class(TEE) <- class(U) <- "scores"
+        class(P) <- class(W) <- class(Q) <- "loadings"
     
         list(coefficients = B,
              scores = TEE, loadings = P,
