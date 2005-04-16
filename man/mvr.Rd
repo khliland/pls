@@ -2,6 +2,8 @@
 \encoding{latin1}
 \name{mvr}
 \alias{mvr}
+\alias{mvr.default}
+\alias{mvr.formula}
 \alias{pcr}
 \alias{plsr}
 \title{Partial Least Squares and Principal Components Regression}
@@ -13,10 +15,12 @@
 }
 %% FIXME: Maybe use a \synopsis section, and show typical uses in \usage:
 \usage{
-mvr(formula, ncomp, data, subset, na.action,
+mvr(formula, \dots)
+\method{mvr}{formula}(formula, ncomp, data, subset, na.action,
     method = c("kernelpls", "simpls", "oscorespls", "svdpc"),
     validation = c("none", "CV", "LOO"),
     model = TRUE, x = FALSE, y = FALSE, \dots)
+\method{mvr}{default}(X, Y, \dots)
 plsr(\dots, method = c("kernelpls", "simpls", "oscorespls"))
 pcr(\dots, method = "svdpc")
 }
@@ -35,6 +39,8 @@ pcr(\dots, method = "svdpc")
   \item{model}{a logical.  If \code{TRUE}, the model frame is returned.}
   \item{x}{a logical.  If \code{TRUE}, the model matrix is returned.}
   \item{y}{a logical.  If \code{TRUE}, the response is returned.}
+  \item{X}{a numeric matrix.  The \eqn{X} data.}
+  \item{Y}{a numeric vector or matrix.  The \eqn{Y} data.}
   \item{\dots}{additional arguments, passed to the underlying fit
     functions, and \code{mvrCv}.}
 }
@@ -64,9 +70,18 @@ pcr(\dots, method = "svdpc")
   cross-validation of models where the model matrix must be
   updated/regenerated for each segment, use the separate function
   \code{\link{crossval}}.
+
+  The functions \code{plsr} and \code{pcr} are wrappers for \code{mvr}
+  that provide other defaults for \code{method}.
+
+  The functions can be called with \code{X} and \code{Y} instead of a
+  formula.  This is a simple wrapper meant for people not used to the
+  formula interface.  Note that \code{X} and \code{Y} must be simple
+  variables, i.e. not expressions like \code{mydata$X}, or else the
+  \code{predict} method will not work properly.
 }
 \value{
-  \code{mvr} returns an object of class \code{mvr}.
+  The functions return an object of class \code{mvr}.
   The object contains all components returned by the underlying fit
   function.  In addition, it contains the following components:
   \item{validation}{if validation was requested, the results of the

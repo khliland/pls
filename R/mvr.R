@@ -2,13 +2,27 @@
 ###
 ### $Id$
 
-## The top level user function.  Implements a formula interface and calls the
+mvr <- function(formula, ...)           # FIXME: Maybe more arguments
+    UseMethod("mvr")
+
+## The default method: a simple wrapper for mvr.formula.  This is an
+## ugly hack; the primary argument has a different name.  (The same
+## hack is used in MASS' lda.)
+mvr.default <- function(X, Y, ...) {
+    formula. <- as.formula(deparse(substitute(Y ~ X)))
+    res <- do.call("mvr.formula", list(formula., ...))
+    res$call <- match.call()            # Fix call component
+    res$call[[1]] <- as.name("mvr")     # Otherwise it will be "mvr.formula"
+    res
+}
+
+## The formula method: Implements a formula interface and calls the
 ## correct fit function to do the work.
 ## The function borrows heavily from lm().
-mvr <- function(formula, ncomp, data, subset, na.action,
-                method = c("kernelpls", "simpls", "oscorespls", "svdpc"),
-                validation = c("none", "CV", "LOO"),
-                model = TRUE, x = FALSE, y = FALSE, ...)
+mvr.formula <- function(formula, ncomp, data, subset, na.action,
+                        method = c("kernelpls", "simpls", "oscorespls", "svdpc"),
+                        validation = c("none", "CV", "LOO"),
+                        model = TRUE, x = FALSE, y = FALSE, ...)
 {
     ret.x <- x                          # More useful names
     ret.y <- y
@@ -66,6 +80,7 @@ mvr <- function(formula, ncomp, data, subset, na.action,
     z$ncomp <- ncomp
     z$method <- method
     z$call <- match.call()
+    z$call[[1]] <- as.name("mvr")       # Otherwise it will be "mvr.formula"
     z$terms <- mt
     if (model) z$model <- mf
     if (ret.x) z$x <- X
