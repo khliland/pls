@@ -1,3 +1,5 @@
+TODO:
+================
 .) bootstrap .632 estimator: Ron: April 2005: pls_1.1-0
    Alternative for CV
 
@@ -8,3 +10,36 @@
 
 .) mvr(X, Y, ncomp): ? : ? : ?
    For people not used to formula interfaces...
+
+.) coefplot: ? : ? : ?
+   Add support for labeling the x ticks with variable names
+
+.) validatoinplot: ? : ? : ?
+   Adde legends (must be done so it doesn't break with R < 2.1.0
+
+.) summary.mvr: ? : ? : ?
+   include validated R2, and/or allow to select which statistics.
+
+
+Wishlist/ideas/thoughts:
+================
+.) biplot.default:
+   Check scaling of biplot.default (maybe: suggest changes to xlabs/ylabs).
+   Also check FIXMEs in code.
+
+.) mvr/mvrCv: check for ncomp <= n - max seg.len - 1.  mvr(..., CV=TRUE)
+  doesn't work (pcr) or gives nonsense results (plsr) without specifying
+  ncomp.  Should we fix that (and how)?
+
+.) When MSEP/RMSEP calculates se: add +/- se to plot.mvrVal
+
+.) Properly crossvalidate MSEP0?  (Now it is always LOOCV.)
+
+.) Properly crossvalidate R2 for 0 comps?
+
+.) Check the handling of NAs in the different functions
+
+.) Make loadings generic
+
+.) a package-options mechanism for choosing default methods, scalings and
+   estimates?
