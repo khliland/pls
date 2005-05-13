@@ -66,7 +66,7 @@ mvrCv <- function(X, Y, ncomp,
 
     ## Calculate R2:
     R2 <- matrix(nrow = dy[2], ncol = ncomp)
-    for (i in 1:dy[2]) R2[i,] <- cor(cvPred[,i,], Y[,i])
+    for (i in 1:dy[2]) R2[i,] <- cor(cvPred[,i,], Y[,i])^2
     
     ## Add dimnames:
     objnames <- dnX[[1]]
