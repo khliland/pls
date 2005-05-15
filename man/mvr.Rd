@@ -22,7 +22,7 @@ pcr(\dots, method = "svdpc")
 }
 \arguments{
   \item{formula}{a model formula.  Most of the \code{lm} formula
-    constructs are supported.}
+    constructs are supported.  See below.}
   \item{ncomp}{the number of components to include in the model (see below).}
   \item{data}{an optional data frame with the data to fit the model from.}
   \item{subset}{an optional vector specifying a subset of observations
@@ -42,6 +42,20 @@ pcr(\dots, method = "svdpc")
   The functions fit PLSR or PCR models with 1, \eqn{\ldots},
   \code{ncomp} number of components.  Multi-response models are fully
   supported.
+
+  The \code{formula} argument should be a symbolic formula of the form
+  \code{response ~ terms}, where \code{response} is the name of the
+  response vector or matrix (for multi-response models) and \code{terms}
+  is the name of one or more predictor matrices, usually separated by
+  \code{+}, e.g., \code{water ~ FTIR} or \code{y ~ X + Z}.  See
+  \code{\link{lm}} for a detailed description.  The named
+  variables should exist in the supplied \code{data} data frame or in
+  the global environment.  Note: Do not use \code{mvr(mydata$y ~
+    mydata$X, \ldots)}, instead use \code{mvr(y ~ X, data = mydata,
+    \ldots)}.  Otherwise, \code{\link{predict.mvr}} will not work properly.
+  The chapter \samp{Statistical models in R} of the manual \samp{An
+    Introduction to R} distributed with \R is a good reference on
+  formulas in \R.
 
   Three PLSR algorithms are available: the kernel algorithm, SIMPLS and
   the classical orthogonal scores algorithm.  One PCR algorithm is

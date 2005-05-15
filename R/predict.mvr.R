@@ -6,8 +6,15 @@ predict.mvr <- function(object, newdata, comps = 1:object$ncomp,
                         ...) {
     if (missing(newdata) || is.null(newdata))
         newX <- model.matrix(object)
-    else
-        newX <- model.matrix(delete.response(terms(object)), newdata)
+    else if (is.matrix(newdata))
+        newX <- newdata
+    else {
+        Terms <- delete.response(terms(object))
+        m <- model.frame(Terms, newdata)
+        if (!is.null(cl <- attr(Terms, "dataClasses"))) 
+            .checkMFClasses(cl, m)
+        newX <- model.matrix(Terms, m)
+    }
     type <- match.arg(type)
     if (type == "response") {
         if (cumulative) {
@@ -18,7 +25,7 @@ predict.mvr <- function(object, newdata, comps = 1:object$ncomp,
             dPred <- dim(B)
             dPred[1] <- dim(newX)[1]
             dnPred <- dimnames(B)
-            dnPred[[1]] <- dimnames(newX)[[1]]
+            dnPred[1] <- dimnames(newX)[1]
             pred <- array(dim = dPred, dimnames = dnPred)
             for (i in seq(along = comps))
                 pred[,,i] <- sweep(newX %*% B[-1,,i], 2, B[1,,i], "+")
