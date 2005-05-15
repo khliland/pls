@@ -12,7 +12,7 @@ crossval(object, segments = 10,
          length.seg, trace = 15, \dots)
 }
 \arguments{
-  \item{object}{a \code{mvr} object; the regression to cross-validate.}
+  \item{object}{an \code{mvr} object; the regression to cross-validate.}
   \item{segments}{the number of segments to use, or a list with segments
     (see below).  Ignored if \code{loo = TRUE}.}
   \item{segment.type}{the type of segments to use.  Ignored if

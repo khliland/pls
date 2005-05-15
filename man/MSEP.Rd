@@ -19,7 +19,7 @@ R2(object, estimate, newdata, comps = 1:object$ncomp,
    cumulative = TRUE, intercept = cumulative, se = FALSE, \dots)
 }
 \arguments{
-  \item{object}{a \code{mvr} object}
+  \item{object}{an \code{mvr} object}
   \item{estimate}{a character vector.  Which estimators to use.
     Should be a subset of \code{c("all", "train", "CV", "adjCV",
       "test")}.  \code{"adjCV"} is only available for (R)MSEP.  See
