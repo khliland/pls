@@ -35,7 +35,7 @@
   \code{\link{plsr}}, \code{\link{RMSEP}}, \code{\link{MSEP}}}
 \examples{
 data(NIR)
-nir.mvr <- mvr(y ~ X, ncomp = 8, CV = TRUE, length.seg = 1, data = NIR)
+nir.mvr <- mvr(y ~ X, ncomp = 8, validation = "LOO", data = NIR)
 nir.mvr
 summary(nir.mvr)
 RMSEP(nir.mvr)

@@ -117,13 +117,13 @@ pcr(\dots, method = "svdpc")
 \examples{
 data(NIR)
 ## Default methods:
-NIR.pcr <- pcr(y ~ X, 6, data = NIR, CV = TRUE)
-NIR.pls <- plsr(y ~ X, 6, data = NIR, CV = TRUE)
+NIR.pcr <- pcr(y ~ X, 6, data = NIR, validation = "CV")
+NIR.pls <- plsr(y ~ X, 6, data = NIR, validation = "CV")
 
 ## Alternative methods:
-NIR.oscorespls <- mvr(y ~ X, 6, data = NIR, CV = TRUE,
+NIR.oscorespls <- mvr(y ~ X, 6, data = NIR, validation = "CV",
                       method = "oscorespls")
-NIR.simpls <- mvr(y ~ X, 6, data = NIR, CV = TRUE,
+NIR.simpls <- mvr(y ~ X, 6, data = NIR, validation = "CV",
                   method = "simpls")
 
 data(sensory)

@@ -62,7 +62,7 @@ predplotXy(x, y, line = FALSE, main = "Prediction plot",
 \seealso{\code{\link{mvr}}, \code{\link{plot.mvr}}}
 \examples{
 data(NIR)
-mod <- plsr(y ~ X, ncomp = 10, data = NIR[NIR$train,], CV = TRUE)
+mod <- plsr(y ~ X, ncomp = 10, data = NIR[NIR$train,], validation = "CV")
 \dontrun{
 predplot(mod, ncomp = 1:6)
 plot(mod, ncomp = 1:6) # Equivalent to the previous

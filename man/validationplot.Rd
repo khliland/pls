@@ -53,7 +53,7 @@ validationplot(object, val.type = c("RMSEP", "MSEP", "R2"), estimate,
   \code{\link{MSEP}}, \code{\link{R2}}}
 \examples{
 data(sensory)
-mod <- plsr(Panel ~ Quality, data = sensory, CV = TRUE, length.seg = 1)
+mod <- plsr(Panel ~ Quality, data = sensory, validation = "LOO")
 \dontrun{
 ## These three are equivalent:
 validationplot(mod, estimate = "all")

@@ -29,8 +29,8 @@ crossval(object, segments = 10,
   It can handle models such as \code{plsr(y ~ msc(X), \dots)} or other
   models where the predictor variables need to be recalculated for each
   segment.  When recalculation is not needed, the result of
-  \code{crossval(mvr(\dots))} is identical to \code{mvr(\dots, CV = TRUE)},
-  but slower.
+  \code{crossval(mvr(\dots))} is identical to \code{mvr(\dots,
+    validation = "CV")}, but slower.
 
   If \code{length.seg} is specified, segments of the requested length
   are used.  Otherwise:
@@ -81,7 +81,7 @@ crossval(object, segments = 10,
 \examples{
 data(NIR)
 NIR.pcr <- pcr(y ~ msc(X), 6, data = NIR)
-NIR.cv <- crossval(NIR.pcr, CV = TRUE, segments = 10)
+NIR.cv <- crossval(NIR.pcr, segments = 10)
 plot(MSEP(NIR.cv))
 }
 \keyword{regression}

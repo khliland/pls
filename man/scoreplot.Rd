@@ -70,12 +70,14 @@ loadingplot(object, comps = 1:2, scatter = FALSE, labels, identify = FALSE,
 data(NIR)
 mod <- plsr(y ~ X, ncomp = 10, data = NIR)
 ## These three are equivalent:
-\dontrun{scoreplot(mod, comps = 1:5)}
-\dontrun{plot(scores(mod), comps = 1:5)}
-\dontrun{plot(mvr, plottype = "scores", comps = 1:5)}
+\dontrun{
+scoreplot(mod, comps = 1:5)
+plot(scores(mod), comps = 1:5)
+plot(mod, plottype = "scores", comps = 1:5)
 
-\dontrun{loadingplot(mod, comps = 1:5)}
-\dontrun{loadingplot(mod, comps = 1:5, scatter = TRUE) # Plot as scatterplots}
+loadingplot(mod, comps = 1:5)
+loadingplot(mod, comps = 1:5, scatter = TRUE) # Plot as scatterplots
+}
 }
 \keyword{regression}
 \keyword{multivariate}

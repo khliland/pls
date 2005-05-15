@@ -51,7 +51,7 @@ plot(mod.nir, plottype = "coefficients", ncomp = 1:6) # Equivalent to the previo
 
 data(sensory)
 mod.sens <- plsr(Quality ~ Panel, ncomp = 4, data = sensory)
-\dontrun{plot(mod.sens, ncomp = 2:4, separate = TRUE)}
+\dontrun{coefplot(mod.sens, ncomp = 2:4, separate = TRUE)}
 }
 \keyword{regression}
 \keyword{multivariate}

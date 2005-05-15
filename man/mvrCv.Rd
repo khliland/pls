@@ -33,8 +33,8 @@ mvrCv(X, Y, ncomp,
 \details{
   This function is not meant to be called directly, but through
   the generic functions \code{pcr}, \code{plsr} or \code{mvr} with the
-  argument \code{CV = TRUE}.  All arguments to \code{mvrCv} can be
-  specified in the generic function call.
+  argument \code{validation} set to \samp{"CV"} or \code{"LOO"}.  All
+  arguments to \code{mvrCv} can be specified in the generic function call.
 
   If \code{length.seg} is specified, segments of the requested length
   are used.  Otherwise:
@@ -88,7 +88,7 @@ mvrCv(X, Y, ncomp,
 }
 \examples{
 data(NIR)
-NIR.pcr <- pcr(y ~ X, 6, data = NIR, CV = TRUE, segments = 10)
+NIR.pcr <- pcr(y ~ X, 6, data = NIR, validation = "CV", segments = 10)
 \dontrun{plot(MSEP(NIR.pcr))}
 }
 \keyword{regression}

@@ -90,8 +90,7 @@ R2(object, estimate, newdata, comps = 1:object$ncomp,
   \code{\link{validationplot}}, \code{\link{plot.mvrVal}}}
 \examples{
 data(sensory)
-mod <- plsr(Panel ~ Quality, ncomp = 4, data = sensory, CV = TRUE,
-            length.seg = 1)
+mod <- plsr(Panel ~ Quality, ncomp = 4, data = sensory, validation = "LOO")
 RMSEP(mod)
 \dontrun{plot(R2(mod))}
 }
