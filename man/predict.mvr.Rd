@@ -19,11 +19,11 @@
     the prediction.  See below.}
   \item{type}{character.  Whether to predict scores or response values}
   \item{cumulative}{logical.  How the elements of \code{comps} are
-    interpreted.  Ignored if \code{type} is \samp{"scores"}.  See below}
+    interpreted.  Ignored if \code{type} is \code{"scores"}.  See below}
   \item{\dots}{further arguments.  Currently not used}
 }
 \details{
-  When \code{type} is \samp{"response"} (default), predicted response
+  When \code{type} is \code{"response"} (default), predicted response
   values are returned.  If \code{cumulative} is \code{TRUE}, the
   elements of \code{comps} are interpreted cumulatively,
   i.e. predictions for models with \code{comps[1]} components,
@@ -31,7 +31,7 @@
   response values for a single model with the exact components in
   \code{comps} are returned.
 
-  When \code{type} is \samp{"scores"}, predicted score values are
+  When \code{type} is \code{"scores"}, predicted score values are
   returned for the components given in \code{comps}.
 
   It is also possible to supply a matrix instead of a data frame as
@@ -44,12 +44,12 @@
   data.
 }
 \value{
-  When \code{type} is \samp{"response"}, a three dimensional array of
+  When \code{type} is \code{"response"}, a three dimensional array of
   predicted response values is returned.  The dimensions correspond to
   the observations, the response variables and the model sizes,
   respectively.
 
-  When \code{type} is \samp{"scores"}, a score matrix is returned.
+  When \code{type} is \code{"scores"}, a score matrix is returned.
 }
 \note{
   A warning message like \samp{'newdata' had 10 rows but variable(s)

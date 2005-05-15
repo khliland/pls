@@ -25,12 +25,12 @@ loadingplot(object, comps = 1:2, scatter = FALSE, labels, identify = FALSE,
     scatter instead of as lines.}
   \item{labels}{optional.  Labels to use instead of plotting symbols.
     Ignored in \code{loadingplot} unless \code{scatter = TRUE}.  Either
-    a vector (of length > 1) of labels, or one of \samp{"names"} and
-    \samp{"numbers"} for using row names and row numbers, respectively.}
+    a vector (of length > 1) of labels, or one of \code{"names"} and
+    \code{"numbers"} for using row names and row numbers, respectively.}
   \item{identify}{logical.  Whether to use \code{identify} to
     interactively identify points.  See below.}
   \item{type}{character.  What type of plot to make.  Defaults to
-    \samp{"p"} (points) for scatter plots and \samp{"l"} (lines) for
+    \code{"p"} (points) for scatter plots and \code{"l"} (lines) for
     line plots.}
   \item{x}{a \code{scores} or \code{loadings} object.  The scores or
     loadings to plot.}
@@ -53,7 +53,7 @@ loadingplot(object, comps = 1:2, scatter = FALSE, labels, identify = FALSE,
 
   \code{scoreplot} and \code{loadingplot} can also be called through the
   plot method for \code{mvr} objects, by specifying \code{plottype} as
-  \samp{"scores"} or \samp{"loadings"}.  See \code{\link{plot.mvr}}.
+  \code{"scores"} or \code{"loadings"}.  See \code{\link{plot.mvr}}.
   
   \code{scoreplot} and \code{loadingplot} also work with
   \code{princomp} objects.  (However, \code{plot(scores(\dots))} and

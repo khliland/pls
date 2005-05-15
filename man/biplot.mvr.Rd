@@ -13,9 +13,9 @@
 \arguments{
   \item{x}{an \code{mvr} object.}
   \item{comps}{integer vector of length two.  The components to plot.}
-  \item{which}{character.  Which matrices to plot.  One of \samp{"x"} (X
-    scores and loadings), \samp{"y"} (Y scores and loadings),
-    \samp{"scores"} (X and Y scores) and \samp{"loadings"} (X and Y loadings).}
+  \item{which}{character.  Which matrices to plot.  One of \code{"x"} (X
+    scores and loadings), \code{"y"} (Y scores and loadings),
+    \code{"scores"} (X and Y scores) and \code{"loadings"} (X and Y loadings).}
   \item{var.axes}{logical.  If \code{TRUE}, the second set of points
     have arrows representing them.}
   \item{xlabs}{either a character vector of labels for the first set of

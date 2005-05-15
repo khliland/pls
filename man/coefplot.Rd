@@ -21,12 +21,12 @@ coefplot(object, ncomp = object$ncomp, separate = FALSE, cumulative = TRUE,
     \code{\link{coef.mvr}} for details.}
   \item{intercept}{logical.  Whether coefficients for the intercept should
     be plotted.  Ignored if \code{cumulative = FALSE}.  Defaults to
-    \samp{FALSE}.  See \code{\link{coef.mvr}} for details.}
+    \code{FALSE}.  See \code{\link{coef.mvr}} for details.}
   \item{nCols, nRows}{integer.  The number of coloumns and rows the
     plots will be laid out in.  If not specified, \code{coefplot} tries
     to be intelligent.}
   \item{type}{character.  What type of plot to make.  Defaults to
-    \samp{"l"} (lines).  See \code{\link{plot}} for details.}
+    \code{"l"} (lines).  See \code{\link{plot}} for details.}
   \item{\dots}{Further arguments sent to the underlying plot functions.}
 }
 \details{

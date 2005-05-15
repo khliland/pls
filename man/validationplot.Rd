@@ -30,7 +30,7 @@ validationplot(object, val.type = c("RMSEP", "MSEP", "R2"), estimate,
     plots will be laid out in.  If not specified, \code{plot.mvrVal} tries
     to be intelligent.}
   \item{type}{character.  What type of plots to create.  Defaults to
-    \samp{"l"} (lines).}
+    \code{"l"} (lines).}
   \item{\dots}{Further arguments sent to underlying plot functions.}
 }
 \details{

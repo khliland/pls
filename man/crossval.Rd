@@ -48,7 +48,7 @@ crossval(object, segments = 10,
 \value{
   The supplied \code{object} is returned, with an additional component
   \code{validation}, which is a list with components
-  \item{method}{euqals \samp{"CV"} for cross-validation.}
+  \item{method}{euqals \code{"CV"} for cross-validation.}
   \item{pred}{an array with the cross-validated predictions.}
   \item{MSEP0}{a vector of MSEP values (one for each response variable)
     for a model with zero components, i.e., only the intercept.}

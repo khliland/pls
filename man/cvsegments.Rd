@@ -16,9 +16,9 @@ cvsegments(N, k, length.seg = ceiling(N/k),
   \item{k}{Integer.  The number of segments to return.}
   \item{length.seg}{Integer.  The length of the segments.  If
     given, it overrides \code{k}.}
-  \item{type}{One of \samp{"random"}, \samp{"consecutive"} and
-    \samp{"interleaved"}.  The type of segments to generate.  Default is
-    \samp{"random"}.}
+  \item{type}{One of \code{"random"}, \code{"consecutive"} and
+    \code{"interleaved"}.  The type of segments to generate.  Default is
+    \code{"random"}.}
 }
 \details{
   If \code{length.seg} is specified, it is used to calculate the number of
@@ -27,10 +27,10 @@ cvsegments(N, k, length.seg = ceiling(N/k),
   \eqn{k*length.seg - N} last segments will contain only
   \eqn{length.seg - 1} indices.
 
-  If \code{type} is \samp{"random"}, the indices are allocated to
-  segments in random order.  If it is \samp{"consecutive"}, the first
+  If \code{type} is \code{"random"}, the indices are allocated to
+  segments in random order.  If it is \code{"consecutive"}, the first
   segment will contain the first \eqn{length.seg} indices, and so on.
-  If \code{type} is \samp{"interleaved"}, the first segment will contain
+  If \code{type} is \code{"interleaved"}, the first segment will contain
   the indices \eqn{1, length.seg+1, 2*lenght.seg+1, \ldots,
     (k-1)*length.seg+1}, and so on.
 }
