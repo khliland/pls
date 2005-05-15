@@ -3,7 +3,7 @@
 \name{scores}
 \alias{scores}
 \alias{scores.prcomp}
-\alias{scores.default}%% FIXME: correct?
+\alias{scores.default}
 \alias{loading.weights}
 \alias{Yscores}
 \alias{Yloadings}

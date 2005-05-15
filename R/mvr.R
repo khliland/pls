@@ -19,7 +19,6 @@ mvr <- function(formula, ncomp, data, subset, na.action,
     mf[[1]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
     method <- match.arg(method)
-    if (method == "model.frame") return(mf) # FIXME: Remove?
     ## Get the terms
     mt <- attr(mf, "terms")        # This is to include the `predvars'
                                    # attribute of the terms

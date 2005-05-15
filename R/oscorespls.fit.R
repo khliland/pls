@@ -4,9 +4,6 @@
 ### By Bjørn-Helge Mevik
 ### $Id$
 
-## FIXME: Should perhaps be called something else, as there are several
-## algorithms that give orthogonal scores pls fits.
-
 oscorespls.fit <- function(X, Y, ncomp, stripped = FALSE, tol = 1e-6, ...)
 {
     ## Initialise
@@ -83,13 +80,7 @@ oscorespls.fit <- function(X, Y, ncomp, stripped = FALSE, tol = 1e-6, ...)
     PW <- crossprod(P, W)
     ## It is known that P^tW is right bi-diagonal (one response) or upper
     ## triangular (multiple responses), with all diagonal elements equal to 1.
-    ## Old: On MSWin, this doesn't make much difference:
-    ## R1.9.1/Linux: up to numeric accuracy (2.2e-16) this is a noop:
     diag(PW) <- 1
-    ## Old: On MSWin, this destroys the coefficients for the last component (when
-    ## ncomp = dx[1]):
-    ## R1.9.1/Linux: When p > n, PW[-((n-1):n),n] can be far from 0, especially
-    ## for the first components.  This has an effect on the n'th component.
     if (dy[2] == 1) {
         ## Single response; make shure all elements above the bidiagonal are 0:
         PW[row(PW) < col(PW)-1] <- 0

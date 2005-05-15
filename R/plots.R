@@ -426,11 +426,6 @@ plot.mvrVal <- function(x, nCols, nRows, type = "l", ...)
 ### biplot
 ###
 
-## FIXME: Check scaling.
-## FIXME: The xlabs/ylabs fix is ugly (especially: I want circles!)
-## FIXME: Maybe treat xlabs=T as missing xlabs?
-## FIXME: The handling of defaults is fishy.  Also, wouldn't it be better to
-## call biplot.default instead of biplot?  And is eval() the best choice?
 biplot.mvr <- function(x, comps = 1:2,
                        which = c("x", "y", "scores", "loadings"),
                        var.axes = FALSE, xlabs, ylabs, main, ...) {
