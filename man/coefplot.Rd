@@ -8,8 +8,8 @@
 }
 \usage{
 coefplot(object, ncomp = object$ncomp, separate = FALSE, cumulative = TRUE,
-         intercept = FALSE, nCols, nRows, type = "l", lty = 1:nLines, lwd = 1,
-         pch = 1:nLines, cex = 1, col = 1:nLines, legendpos,
+         intercept = FALSE, nCols, nRows, type = "l", lty = 1:nLines,
+         lwd = NULL, pch = 1:nLines, cex = NULL, col = 1:nLines, legendpos,
          xlab = "variable", ylab = "regression coefficient", \dots)
 }
 \arguments{

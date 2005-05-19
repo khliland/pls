@@ -11,8 +11,8 @@
 \usage{
 validationplot(object, val.type = c("RMSEP", "MSEP", "R2"), estimate,
                newdata, comps, intercept, \dots)
-\method{plot}{mvrVal}(x, nCols, nRows, type = "l", lty = 1:nEst, lwd = 1,
-           pch = 1:nEst, cex = 1, col = 1:nEst, legendpos,
+\method{plot}{mvrVal}(x, nCols, nRows, type = "l", lty = 1:nEst, lwd = NULL,
+           pch = 1:nEst, cex = NULL, col = 1:nEst, legendpos,
            xlab = "number of components", ylab = x$type, \dots)
 }
 \arguments{

@@ -3,6 +3,8 @@ TODO:
 .) bootstrap .632 estimator: Ron: April 2005: pls_1.1-0
    Alternative for CV
 
+.) Put up a web page: B-H: May 2005: pls_1.1-0
+
 .) mvr(X, Y, ncomp): ? : ? : ?
    For people not used to formula interfaces...
 
@@ -35,3 +37,5 @@ Wishlist/ideas/thoughts:
 
 .) a package-options mechanism for choosing default methods, scalings and
    estimates?
+
+.) A correlation loadings plot would be nice.

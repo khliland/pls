@@ -97,8 +97,8 @@ plot.scores <- function(x, ...) scoreplot(x, ...)
 ###
 
 loadingplot <- function(object, comps = 1:2, scatter = FALSE, labels,
-                        identify = FALSE, type, lty, lwd = 1, pch, cex = 1,
-                        col, legendpos, xlab, ylab, ...)
+                        identify = FALSE, type, lty, lwd = NULL, pch,
+                        cex = NULL, col, legendpos, xlab, ylab, ...)
 {
     nComps <- length(comps)
     if (nComps == 0) stop("At least one component must be selected.")
@@ -124,9 +124,9 @@ loadingplot <- function(object, comps = 1:2, scatter = FALSE, labels,
     if (scatter) {
         ## Scatter plots
         if (missing(type)) type <- "p"
-        if (missing(lty)) lty <- 1
-        if (missing(pch)) pch <- 1
-        if (missing(col)) col <- 1
+        if (missing(lty)) lty <- NULL
+        if (missing(pch)) pch <- NULL
+        if (missing(col)) col <- par("col") # `NULL' means `no colour'
         if (!missing(labels)) {
             ## Set up point labels
             if (length(labels) == 1) {
@@ -214,7 +214,7 @@ predplot.default <- function(object, ...) {
 ## Method for mvr objects:
 predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
                          nCols, nRows, xlab = "measured", ylab = "predicted",
-                         ...)
+                         font.main = 1, cex.main = 1.1, ...)
 {
     ## Select type(s) of prediction
     if (missing(which)) {
@@ -310,8 +310,8 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
                     mtext(mXlab, side = 1, outer = TRUE)
                     mtext(mYlab, side = 2, outer = TRUE)
                 }
-                predplotXy(measured, predicted,
-                           main = main, font.main = 1, cex.main = 1.1, 
+                predplotXy(measured, predicted, main = main,
+                           font.main = font.main, cex.main = cex.main, 
                            xlab = xlab, ylab = ylab, ...)
             }
         }
@@ -335,8 +335,8 @@ predplotXy <- function(x, y, line = FALSE, main = "Prediction plot",
 
 coefplot <- function(object, ncomp = object$ncomp, separate = FALSE,
                      cumulative = TRUE, intercept = FALSE,
-                     nCols, nRows, type = "l", lty = 1:nLines, lwd = 1,
-                     pch = 1:nLines, cex = 1, col = 1:nLines, legendpos,
+                     nCols, nRows, type = "l", lty = 1:nLines, lwd = NULL,
+                     pch = 1:nLines, cex = NULL, col = 1:nLines, legendpos,
                      xlab = "variable", ylab = "regression coefficient", ...)
 {
     ## Help variables
@@ -426,8 +426,8 @@ validationplot <- function(object, val.type = c("RMSEP", "MSEP", "R2"),
 }
 
 ## A plot method for mvrVal objects:
-plot.mvrVal <- function(x, nCols, nRows, type = "l", lty = 1:nEst, lwd = 1,
-                        pch = 1:nEst, cex = 1, col = 1:nEst, legendpos,
+plot.mvrVal <- function(x, nCols, nRows, type = "l", lty = 1:nEst, lwd = NULL,
+                        pch = 1:nEst, cex = NULL, col = 1:nEst, legendpos,
                         xlab = "number of components", ylab = x$type, ...)
 {
     if (!is.null(x$call$cumulative) && eval(x$call$cumulative) == FALSE)

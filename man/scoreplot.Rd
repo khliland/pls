@@ -16,7 +16,8 @@ scoreplot(object, comps = 1:2, labels, identify = FALSE, type = "p",
 \method{plot}{scores}(x, \dots)
 
 loadingplot(object, comps = 1:2, scatter = FALSE, labels, identify = FALSE,
-            type, lty, lwd = 1, pch, cex = 1, col, legendpos, xlab, ylab, \dots)
+            type, lty, lwd = NULL, pch, cex = NULL, col, legendpos,
+            xlab, ylab, \dots)
 \method{plot}{loadings}(x, \dots)
 }
 \arguments{
