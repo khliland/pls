@@ -8,7 +8,9 @@
 }
 \usage{
 coefplot(object, ncomp = object$ncomp, separate = FALSE, cumulative = TRUE,
-         intercept = FALSE, nCols, nRows, type = "l", \dots)
+         intercept = FALSE, nCols, nRows, type = "l", lty = 1:nLines, lwd = 1,
+         pch = 1:nLines, cex = 1, col = 1:nLines, legendpos,
+         xlab = "variable", ylab = "regression coefficient", \dots)
 }
 \arguments{
   \item{object}{an \code{mvr} object.  The fitted model.}
@@ -26,7 +28,31 @@ coefplot(object, ncomp = object$ncomp, separate = FALSE, cumulative = TRUE,
     plots will be laid out in.  If not specified, \code{coefplot} tries
     to be intelligent.}
   \item{type}{character.  What type of plot to make.  Defaults to
-    \code{"l"} (lines).  See \code{\link{plot}} for details.}
+    \code{"l"} (lines).  Alternative types include \code{"p"} (points)
+    and \code{"b"} (both).  See \code{\link{plot}} for a complete list
+    of types.}
+  \item{lty}{vector of line types (recycled as neccessary).  Line types can be
+    specified as integers or character strings (see \code{\link{par}}
+    for the details).}
+  \item{lwd}{vector of positive numbers (recycled as neccessary), giving
+    the width of the lines.}
+  \item{pch}{plot character.  A character string or a vector of
+    single characters or integers (recycled as neccessary).  See
+    \code{\link{points}} for all alternatives.}
+  \item{cex}{numeric vector of character expansion sizes (recycled as
+    neccessary) for the plotted symbols.}
+  \item{col}{character or integer vector of colors for plotted lines and
+    symbols (recycled as neccessary).  See \code{\link{par}} for the details.}
+  \item{legendpos}{Legend position.  Optional.  Ignored if \code{separate} is
+    \code{TRUE}.  If present, a legend is drawn at the given position.
+    The position can be specified symbolically (e.g., \code{legendpos =
+      "topright"}).  This requires \R >= 2.1.0.  Alternatively, the
+    position can be specified explicitly (\code{legendpos = t(c(x,y))})
+    or interactively (\code{legendpos = \link{locator}()}).  This only
+    works well for plots of single-response models.}
+  \item{xlab,ylab}{titles for \eqn{x} and \eqn{y} axes.  Typically
+    character strings, but can be expressions (e.g.,
+    \code{expression(R^2)} or lists.  See \code{\link{title}} for details.}
   \item{\dots}{Further arguments sent to the underlying plot functions.}
 }
 \details{
@@ -35,18 +61,27 @@ coefplot(object, ncomp = object$ncomp, separate = FALSE, cumulative = TRUE,
   for each combination of model size and response.  The plots are laid
   out in a rectangular fashion.
 
+  If \code{legendpos} is given, a legend is drawn at the given position
+  (unless \code{separate} is \code{TRUE}).
+
   The function can also be called through the \code{mvr} plot method by
   specifying \code{plottype = "coefficients"}.
 }
 \author{Ron Wehrens and Bjørn-Helge Mevik}
-\seealso{\code{\link{mvr}}, \code{\link{plot.mvr}},
-  \code{\link{coef.mvr}}, \code{\link{plot}}}
+\note{\code{\link{legend}} has many options.  If you want greater
+  control over the appearance of the legend, omit the \code{legendpos}
+  argument and call \code{legend} manually.
+}
+\seealso{\code{\link{mvr}}, \code{\link{plot.mvr}}, \code{\link{coef.mvr}},
+  \code{\link{plot}}, \code{\link{legend}}}
 \examples{
 data(NIR)
 mod.nir <- plsr(y ~ X, ncomp = 8, data = NIR)
 \dontrun{
 coefplot(mod.nir, ncomp = 1:6)
 plot(mod.nir, plottype = "coefficients", ncomp = 1:6) # Equivalent to the previous
+## Plot with legend:
+coefplot(mod.nir, ncom = 1:6, legendpos = "bottomright")
 }
 
 data(sensory)

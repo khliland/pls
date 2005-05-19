@@ -3,19 +3,11 @@ TODO:
 .) bootstrap .632 estimator: Ron: April 2005: pls_1.1-0
    Alternative for CV
 
-.) ncomp should not always start at 1: ? : ? : ?
-   In validation, I sometimes know that I need at least 4-5
-   components; I am not interested in checking the performance of
-   PLS/PCR with only 1 or 2 components. This only costs time...
-
 .) mvr(X, Y, ncomp): ? : ? : ?
    For people not used to formula interfaces...
 
 .) coefplot: ? : ? : ?
    Add support for labeling the x ticks with variable names
-
-.) validatoinplot: ? : ? : ?
-   Adde legends (must be done so it doesn't break with R < 2.1.0
 
 .) summary.mvr: ? : ? : ?
    include validated R2, and/or allow to select which statistics.

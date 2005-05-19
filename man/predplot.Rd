@@ -14,7 +14,7 @@
 predplot(object, \dots)
 \method{predplot}{default}(object, \dots)
 \method{predplot}{mvr}(object, ncomp = object$ncomp, which, newdata, nCols, 
-         nRows, \dots)
+         nRows, xlab = "measured", ylab = "predicted", \dots)
 predplotXy(x, y, line = FALSE, main = "Prediction plot",
            xlab = "measured response", ylab = "predicted response", \dots)
 }
@@ -36,8 +36,9 @@ predplotXy(x, y, line = FALSE, main = "Prediction plot",
   \item{y}{numeric vector.  The predicted response values.}
   \item{line}{logical.  Whether a target line should be shown.}
   \item{main}{character.  Main title of plot.}
-  \item{xlab}{character.  X axis label.}
-  \item{ylab}{character.  Y axis label.}
+  \item{xlab,ylab}{titles for \eqn{x} and \eqn{y} axes.  Typically
+    character strings, but can be expressions or lists.  See
+    \code{\link{title}} for details.}
   \item{\dots}{further arguments sent to underlying plot functions.}
 }
 \details{
