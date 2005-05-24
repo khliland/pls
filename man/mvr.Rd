@@ -4,10 +4,10 @@
 \alias{mvr}
 \alias{pcr}
 \alias{plsr}
-\title{Partial Least Squares and Principal Components Regression}
+\title{Partial Least Squares and Principal Component Regression}
 \description{
   Functions to perform partial least squares regression (PLSR) or
-  principal components regression (PCR), with a formula interface.
+  principal component regression (PCR), with a formula interface.
   Cross-validation can be used.  Prediction, model extraction, plot,
   print and summary methods exist.
 }

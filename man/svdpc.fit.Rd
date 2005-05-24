@@ -2,7 +2,7 @@
 \encoding{latin1}
 \name{svdpc.fit}
 \alias{svdpc.fit}
-\title{Principal Components Regression}
+\title{Principal Component Regression}
 \description{Fits a PCR model using the singular value decomposition.}
 \usage{svdpc.fit(X, Y, ncomp, stripped = FALSE, \dots)}
 \arguments{

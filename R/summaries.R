@@ -17,7 +17,7 @@ print.mvr <- function(x, ...) {
                alg = "orthogonal scores"
            },
            svdpc = {
-               regr = "Principal components"
+               regr = "Principal component"
                alg = "singular value decomposition"
            },
            stop("Unknown fit method.")
