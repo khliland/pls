@@ -38,4 +38,4 @@ Wishlist/ideas/thoughts:
 .) a package-options mechanism for choosing default methods, scalings and
    estimates?
 
-.) A correlation loadings plot would be nice.
+.) A fit algorithm that handles missing values.

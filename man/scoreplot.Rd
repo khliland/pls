@@ -5,10 +5,11 @@
 \alias{plot.scores}
 \alias{loadingplot}
 \alias{plot.loadings}
-\title{Plots of Scores and Loadings}
+\alias{corrplot}
+\title{Plots of Scores, Loadings and Correlation Loadings}
 \description{
-  Functions to make scatter plots of scores and scatter or line plots of
-  loadings.
+  Functions to make scatter plots of scores or correlation loadings, and
+  scatter or line plots of loadings.
 }
 \usage{
 scoreplot(object, comps = 1:2, labels, identify = FALSE, type = "p",
@@ -19,6 +20,9 @@ loadingplot(object, comps = 1:2, scatter = FALSE, labels, identify = FALSE,
             type, lty, lwd = NULL, pch, cex = NULL, col, legendpos,
             xlab, ylab, \dots)
 \method{plot}{loadings}(x, \dots)
+
+corrplot(object, comps = 1:2, labels, identify = FALSE, type = "p",
+          xlab, ylab, \dots)
 }
 \arguments{
   \item{object}{an \code{mvr} object.  The fitted model.}
@@ -77,9 +81,16 @@ loadingplot(object, comps = 1:2, scatter = FALSE, labels, identify = FALSE,
   if \code{legendpos} is given, a legend is drawn at the position
   indicated.
 
-  \code{scoreplot} and \code{loadingplot} can also be called through the
-  plot method for \code{mvr} objects, by specifying \code{plottype} as
-  \code{"scores"} or \code{"loadings"}.  See \code{\link{plot.mvr}}.
+  \code{corrplot} works exactly like \code{scoreplot}, except that at
+  least two components must be selected.  The \dQuote{correlation
+    loadings}, i.e. the correlations between each variable and the
+  selected components, are plotted as pairwise scatter plots, with
+  two concentric circles of radius 0.5 and 1.
+
+  \code{scoreplot}, \code{loadingplot} and \code{corrplot} can also be
+  called through the plot method for \code{mvr} objects, by specifying
+  \code{plottype} as \code{"scores"}, \code{"loadings"} or
+  \code{"correlation"}, respectively.  See \code{\link{plot.mvr}}.
   
   \code{scoreplot} and \code{loadingplot} also work with
   \code{princomp} objects.  (However, \code{plot(scores(\dots))} and
@@ -95,10 +106,10 @@ loadingplot(object, comps = 1:2, scatter = FALSE, labels, identify = FALSE,
   argument and call \code{legend} manually.
 
   Graphical parametres (such as \code{pch} and \code{cex}) can also
-  be used with \code{scoreplot}.  They are not listed in the argument
-  list simply because they are not handled specifically in the function
-  (unlike in \code{loadingplot}), but passed directly to the underlying
-  plot functions by \code{\dots}.
+  be used with \code{scoreplot} and \code{corrplot}.  They are not
+  listed in the argument list simply because they are not handled
+  specifically in the function (unlike in \code{loadingplot}), but
+  passed directly to the underlying plot functions by \code{\dots}.
 }
 \seealso{\code{\link{mvr}}, \code{\link{plot.mvr}},
   \code{\link{scores}}, \code{\link{loadings}}, \code{\link{identify}},
@@ -115,6 +126,9 @@ plot(mod, plottype = "scores", comps = 1:5)
 loadingplot(mod, comps = 1:5)
 loadingplot(mod, comps = 1:5, legendpos = "topright") # With legend
 loadingplot(mod, comps = 1:5, scatter = TRUE) # Plot as scatterplots
+
+corrplot(mod, comps = 1:2)
+corrplot(mod, comps = 1:3)
 }
 }
 \keyword{regression}

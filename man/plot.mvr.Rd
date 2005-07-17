@@ -4,12 +4,12 @@
 \alias{plot.mvr}
 \title{Plot Method for MVR objects}
 \description{
-  \code{plot.mvr} plots predictions, coefficients, scores, loadings, biplots or
-  validation plots (RMSEP curves, etc.).
+  \code{plot.mvr} plots predictions, coefficients, scores, loadings,
+  biplots, correlation loadings or validation plots (RMSEP curves, etc.).
 }
 \usage{
 \method{plot}{mvr}(x, plottype = c("prediction", "validation", "coefficients",
-                     "scores", "loadings", "biplot"), \dots)
+                     "scores", "loadings", "biplot", "correlation"), \dots)
 }
 \arguments{
   \item{x}{an object of class \code{mvr}.  The fitted model to plot.}
@@ -20,9 +20,9 @@
   The function is simply a wrapper for the underlying plot functions
   used to make the selected plots.  See \code{\link{predplot.mvr}},
   \code{\link{validationplot}}, \code{\link{coefplot}},
-  \code{\link{scoreplot}}, \code{\link{loadingplot}} or
-  \code{\link{biplot.mvr}} for details.  Note that all arguments except
-  \code{x} and \code{plottype} must be named.
+  \code{\link{scoreplot}}, \code{\link{loadingplot}},
+  \code{\link{biplot.mvr}} or \code{\link{corrplot}} for details.  Note
+  that all arguments except \code{x} and \code{plottype} must be named.
 }
 \value{
   \code{plot.mvr} returns whatever the underlying plot function returns.
@@ -31,7 +31,7 @@
 \seealso{\code{\link{mvr}},\code{\link{predplot.mvr}},
   \code{\link{validationplot}}, \code{\link{coefplot}},
   \code{\link{scoreplot}}, \code{\link{loadingplot}},
-  \code{\link{biplot.mvr}}}
+  \code{\link{biplot.mvr}}, \code{\link{corrplot}}}
 \examples{
 data(NIR)
 nir.pcr <- pcr(y ~ X, ncomp = 9, data = NIR, validation = "CV")

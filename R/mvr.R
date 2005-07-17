@@ -6,7 +6,7 @@
 ## correct fit function to do the work.
 ## The function borrows heavily from lm().
 mvr <- function(formula, ncomp, data, subset, na.action,
-                method = c("kernelpls", "simpls", "oscorespls", "svdpc"),
+                method = c("kernelpls", "simpls", "oscorespls", "svdpc", "model.frame"),
                 validation = c("none", "CV", "LOO"),
                 model = TRUE, x = FALSE, y = FALSE, ...)
 {
@@ -19,7 +19,7 @@ mvr <- function(formula, ncomp, data, subset, na.action,
     mf[[1]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
     method <- match.arg(method)
-    if (method == "model.frame") return(mf) # FIXME: Remove?
+    if (method == "model.frame") return(mf)
     ## Get the terms
     mt <- attr(mf, "terms")        # This is to include the `predvars'
                                    # attribute of the terms

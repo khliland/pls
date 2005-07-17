@@ -14,11 +14,11 @@
 %% FIXME: Maybe use a \synopsis section, and show typical uses in \usage:
 \usage{
 mvr(formula, ncomp, data, subset, na.action,
-    method = c("kernelpls", "simpls", "oscorespls", "svdpc"),
+    method = c("kernelpls", "simpls", "oscorespls", "svdpc", "model.frame"),
     validation = c("none", "CV", "LOO"),
     model = TRUE, x = FALSE, y = FALSE, \dots)
-plsr(\dots, method = c("kernelpls", "simpls", "oscorespls"))
-pcr(\dots, method = "svdpc")
+plsr(\dots, method = c("kernelpls", "simpls", "oscorespls", "model.frame"))
+pcr(\dots, method = c("svdpc", "model.frame"))
 }
 \arguments{
   \item{formula}{a model formula.  Most of the \code{lm} formula
@@ -29,7 +29,8 @@ pcr(\dots, method = "svdpc")
     to be used in the fitting process.}
   \item{na.action}{a function which indicates what should happen when
     the data contain missing values.}
-  \item{method}{the multivariate regression method to be used.}
+  \item{method}{the multivariate regression method to be used.  If
+    \code{"model.frame"}, the model frame is returned.}
   \item{validation}{character.  What kind of (internal) validation to
     use.  See below.}
   \item{model}{a logical.  If \code{TRUE}, the model frame is returned.}
@@ -80,7 +81,8 @@ pcr(\dots, method = "svdpc")
   \code{\link{crossval}}.
 }
 \value{
-  \code{mvr} returns an object of class \code{mvr}.
+  If \code{method = "model.frame"}, the model frame is returned.
+  Otherwise, an object of class \code{mvr} is returned.
   The object contains all components returned by the underlying fit
   function.  In addition, it contains the following components:
   \item{validation}{if validation was requested, the results of the
@@ -99,13 +101,13 @@ pcr(\dots, method = "svdpc")
   Chichester: Wiley.
 }
 \author{Ron Wehrens and Bjørn-Helge Mevik}
-%% FIXME: Add more functions:
 \seealso{
   \code{\link{kernelpls.fit}},
   \code{\link{simpls.fit}},
   \code{\link{oscorespls.fit}},
   \code{\link{svdpc.fit}},
   \code{\link{mvrCv}},
+  \code{\link{crossval}},
   \code{\link[stats]{loadings}},
   \code{\link{scores}},
   \code{\link{loading.weights}},
@@ -113,7 +115,8 @@ pcr(\dots, method = "svdpc")
   \code{\link{predict.mvr}},
   \code{\link{R2}},
   \code{\link{MSEP}},
-  \code{\link{RMSEP}}}
+  \code{\link{RMSEP}},
+  \code{\link{plot.mvr}}}
 \examples{
 data(NIR)
 ## Default methods:

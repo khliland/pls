@@ -8,7 +8,8 @@
 ###
 
 plot.mvr <- function(x, plottype = c("prediction", "validation",
-                        "coefficients", "scores", "loadings", "biplot"),
+                        "coefficients", "scores", "loadings", "biplot",
+                        "correlation"),
                      ...)
 {
     plottype <- match.arg(plottype)
@@ -18,7 +19,8 @@ plot.mvr <- function(x, plottype = c("prediction", "validation",
                        coefficients = coefplot,
                        scores = scoreplot,
                        loadings = loadingplot,
-                       biplot = biplot.mvr)
+                       biplot = biplot.mvr,
+                       correlation = corrplot)
     plotFunc(x, ...)
 }
 
@@ -194,6 +196,84 @@ loadingplot <- function(object, comps = 1:2, scatter = FALSE, labels,
 
 ## A plot method for loadings (loadings, loading.weights or Yloadings):
 plot.loadings <- function(x, ...) loadingplot(x, ...)
+
+
+###
+### Correlation loadings plot
+###
+
+corrplot <- function(object, comps = 1:2, labels, identify = FALSE,
+                     type = "p", xlab, ylab, ...) {
+    nComps <- length(comps)
+    if (nComps < 2) stop("At least two components must be selected.")
+    if (is.matrix(object)) {
+        ## Assume this is already a correlation matrix
+        cl <- object[,comps, drop = FALSE]
+        expl.var <- NULL
+    } else {
+        S <- scores(object)[,comps, drop = FALSE]
+        if (is.null(S))
+            stop("`", deparse(substitute(object)), "' has no scores")
+        cl <- cor(model.matrix(object), S)
+        expl.var <- switch(class(object),
+                           mvr = 100 * object$Xvar[comps] / object$Xtotvar,
+                           princomp =, 
+                           prcomp = 100*object$sdev[comps]^2/sum(object$sdev^2)
+                           )
+    }
+    varlab <- colnames(cl)              # Default variable labels
+    if (!is.null(expl.var))             # Add explained variance
+        varlab <- paste(varlab, " (",
+                        format(expl.var, digits = 2, trim = TRUE),
+                        " %)", sep = "")
+    if (!missing(labels)) {
+        ## Set up point labels
+        if (length(labels) == 1) {
+            labels <- switch(match.arg(labels, c("names", "numbers")),
+                             names = rownames(cl),
+                             numbers = 1:nrow(cl)
+                             )
+        }
+        labels <- as.character(labels)
+        type <- "n"
+    }
+    if (nComps == 2) {
+        ## Second component versus first
+        if (missing(xlab)) xlab <- varlab[1]
+        if (missing(ylab)) ylab <- varlab[2]
+        plot(cl, xlim = c(-1,1), ylim = c(-1,1), asp = 1,
+             xlab = xlab, ylab = ylab, type = type, ...)
+        symbols(c(0, 0), c(0, 0), circles = c(0.5, 1), inches = FALSE,
+                add = TRUE)
+        segments(x0 = c(-1, 0), y0 = c(0, -1), x1 = c(1, 0), y1 = c(0, 1))
+        if (!missing(labels)) text(cl, labels, ...)
+        if (identify) {
+            if (!is.null(rownames(cl))) {
+                identify(cl, labels = rownames(cl))
+            } else {
+                identify(cl)
+            }
+        }
+    } else {
+        ## Pairwise scatterplots of several components
+        pointsOrText <- if (missing(labels)) {
+            function(x, y, ...) points(x, y, type = type, ...)
+        } else {
+            function(x, y, ...) text(x, y, labels = labels, ...)
+        }
+        panel <- function(x, y, ...) {
+            ## Ignore the leading `ghost points':
+            pointsOrText(x[-(1:2)], y[-(1:2)], ...)
+            symbols(c(0, 0), c(0, 0), circles = c(0.5, 1),
+                    inches = FALSE, add = TRUE)
+            segments(x0 = c(-1, 0), y0 = c(0, -1), x1 = c(1, 0),
+                     y1 = c(0, 1))
+        }
+        ## Call `pairs' with two leading `ghost points', to get
+        ## correct xlab and ylab:
+        pairs(rbind(-1, 1, cl), labels = varlab, panel = panel, asp = 1, ...)
+    } 
+}
 
 
 ###

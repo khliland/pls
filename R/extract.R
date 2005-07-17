@@ -54,8 +54,26 @@ loading.weights <- function(object) object$loading.weights
 ## Yloadings: Return the Yloadings
 Yloadings <- function(object) object$Yloadings
 
+## model.frame.mvr: Extract or generate the model frame from a `mvr' object.
+## It is simply a slightly modified `model.frame.lm'.
+model.frame.mvr <- function(formula, ...)
+{
+    dots <- list(...)
+    nargs <- dots[match(c("data", "na.action", "subset"), names(dots), 0)]
+    if (length(nargs) || is.null(formula$model)) {
+        fcall <- formula$call
+        fcall$method <- "model.frame"
+        fcall[[1]] <- as.name("mvr")
+        fcall[names(nargs)] <- nargs
+        env <- environment(formula$terms)
+        if (is.null(env)) env <- parent.frame()
+        eval(fcall, env, parent.frame())
+    }
+    else formula$model
+}
+
 ## model.matrix.mvr: Extract the model matrix from an `mvr' object.
-## Modelled after model.matrix.lm.
+## It is simply a slightly modified version of model.matrix.lm.
 model.matrix.mvr <- function(object, ...) 
 {
     if (n_match <- match("x", names(object), 0)) 

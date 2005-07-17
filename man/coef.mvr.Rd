@@ -2,19 +2,21 @@
 \encoding{latin1}
 \name{coef.mvr}
 \alias{coef.mvr}
+\alias{model.frame.mvr}
 \alias{model.matrix.mvr}
 \title{Extract Information From a Fitted PLSR or PCR Model}
 \description{
-  Functions to extract the regression coefficients or the model matrix
-  from \code{mvr} objects. 
+  Functions to extract the regression coefficients, the model frame or
+  the model matrix from \code{mvr} objects. 
 }
 \usage{
 \method{coef}{mvr}(object, comps = object$ncomp, intercept = FALSE,
      cumulative = TRUE, \dots)
 \method{model.matrix}{mvr}(object, \dots)
+\method{model.matrix}{mvr}(formula, \dots)
 }
 \arguments{
-  \item{object}{an \code{mvr} object.  The fitted model.}
+  \item{object, formula}{an \code{mvr} object.  The fitted model.}
   \item{comps}{vector of positive integers.  The components to include in
     the coefficients.  Defaults to the number of components used for
     fitting the model.}
@@ -24,7 +26,7 @@
   \item{cumulative}{logical.  Whether cumulative (the default) or
     individual coefficients for each component should be returned.  See below.}
   \item{\dots}{other arguments sent to underlying functions.  Currently
-    only used for \code{model.matrix.mvr}.}
+    only used for \code{model.frame.mvr} and \code{model.matrix.mvr}.}
 }
 \details{
   \code{coef.mvr} is used to extract the regression coefficients of a
@@ -42,16 +44,23 @@
   i.e. the contribution of the component \code{comps[i]} on the
   regression coefficients.
 
+  \code{model.frame.mvr} returns the model frame; i.e. a data frame with
+  all variables neccessary to generate the model matrix.  See
+  \code{\link[stats]{model.frame}} for details.
+  
   \code{model.matrix.mvr} returns the (possibly coded) matrix used as
-  \eqn{X} in the fitting.
+  \eqn{X} in the fitting.  See \code{\link[stats]{model.matrix}} for
+  details.
 }
 \value{
   \code{coef.mvr} returns an array of regression coefficients.
   
+  \code{model.frame.mvr} returns a data frame.
+  
   \code{model.matrix.mvr} returns the \eqn{X} matrix.
 }
 \author{Ron Wehrens and Bjørn-Helge Mevik}
-\seealso{\code{\link{mvr}}, \code{\link{predict.mvr}}, \code{\link{scores}}}
+\seealso{\code{\link{mvr}}}
 \examples{
 data(NIR)
 mod <- pcr(y ~ X, data = NIR[NIR$train,], ncomp = 5)
