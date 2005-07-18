@@ -30,9 +30,10 @@ corrplot(object, comps = 1:2, labels, identify = FALSE, type = "p",
   \item{scatter}{logical.  Whether the loadings should be plotted as a
     scatter instead of as lines.}
   \item{labels}{optional.  Labels to use instead of plotting symbols.
-    Ignored in \code{loadingplot} unless \code{scatter = TRUE}.  Either
-    a vector (of length > 1) of labels, or one of \code{"names"} and
-    \code{"numbers"} for using row names and row numbers, respectively.}
+    If \code{scatter = FALSE} in \code{loadingplot}, they are used to
+    label the \eqn{x} axis tick marks.  Either a vector (of length > 1)
+    of labels, or one of \code{"names"} and \code{"numbers"} for using
+    row names and row numbers, respectively.}
   \item{identify}{logical.  Whether to use \code{identify} to
     interactively identify points.  See below.}
   \item{type}{character.  What type of plot to make.  Defaults to

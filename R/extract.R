@@ -73,13 +73,21 @@ model.frame.mvr <- function(formula, ...)
 }
 
 ## model.matrix.mvr: Extract the model matrix from an `mvr' object.
-## It is simply a slightly modified version of model.matrix.lm.
+## It is a modified version of model.matrix.lm.
 model.matrix.mvr <- function(object, ...) 
 {
     if (n_match <- match("x", names(object), 0)) 
         object[[n_match]]
     else {
         data <- model.frame(object, ...)
-        NextMethod("model.matrix", data = data)
+        mm <- NextMethod("model.matrix", data = data)
+        ## model.matrix.default prepends the term name to the colnames of
+        ## matrices.  If there is only one predictor term, and the
+        ## corresponding matrix has colnames, remove the prepended term name:
+        mt <- terms(object)
+        if (length(attr(mt, "term.labels")) == 1 &&
+            !is.null(colnames(data[[attr(mt, "term.labels")]])))
+            colnames(mm) <- sub(attr(mt, "term.labels"), "", colnames(mm))
+        return(mm)
     }
 }

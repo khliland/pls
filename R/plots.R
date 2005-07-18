@@ -123,23 +123,23 @@ loadingplot <- function(object, comps = 1:2, scatter = FALSE, labels,
     if (!is.null(expl.var))             # Add explained variance
         varlab <- paste(varlab, " (", format(expl.var, digits = 2, trim = TRUE),
                         " %)", sep = "")
+    if (!missing(labels)) {
+        ## Set up point/tick mark labels
+        if (length(labels) == 1) {
+            labels <- switch(match.arg(labels, c("names", "numbers")),
+                             names = rownames(L),
+                             numbers = 1:nrow(L)
+                             )
+        }
+        labels <- as.character(labels)
+    }
     if (scatter) {
         ## Scatter plots
         if (missing(type)) type <- "p"
+        if (!missing(labels)) type <- "n"
         if (missing(lty)) lty <- NULL
         if (missing(pch)) pch <- NULL
         if (missing(col)) col <- par("col") # `NULL' means `no colour'
-        if (!missing(labels)) {
-            ## Set up point labels
-            if (length(labels) == 1) {
-                labels <- switch(match.arg(labels, c("names", "numbers")),
-                                 names = rownames(L),
-                                 numbers = 1:nrow(L)
-                                 )
-            }
-            labels <- as.character(labels)
-            type <- "n"
-        }
         if (nComps <= 2) {
             if (nComps == 1) {
                 ## One component versus index
@@ -175,8 +175,12 @@ loadingplot <- function(object, comps = 1:2, scatter = FALSE, labels,
         if (missing(col)) col <- 1:nComps
         if (missing(xlab)) xlab <- "variable"
         if (missing(ylab)) ylab <- "loading value"
+        xaxt <- if (missing(labels)) "s" else "n"
         matplot(L, xlab = xlab, ylab = ylab, type = type,
-                lty = lty, lwd = lwd, pch = pch, cex = cex, col = col,...)
+                lty = lty, lwd = lwd, pch = pch, cex = cex, col = col,
+                xaxt = xaxt, ...)
+        if (!missing(labels))
+            axis(1, at = seq(along = labels), labels = labels, ...)
         if (!missing(legendpos)) {
             ## Are we plotting lines?
             dolines <- type %in% c("l", "b", "c", "o", "s", "S", "h")
@@ -415,7 +419,8 @@ predplotXy <- function(x, y, line = FALSE, main = "Prediction plot",
 
 coefplot <- function(object, ncomp = object$ncomp, separate = FALSE,
                      cumulative = TRUE, intercept = FALSE,
-                     nCols, nRows, type = "l", lty = 1:nLines, lwd = NULL,
+                     nCols, nRows, varnames = FALSE, type = "l",
+                     lty = 1:nLines, lwd = NULL,
                      pch = 1:nLines, cex = NULL, col = 1:nLines, legendpos,
                      xlab = "variable", ylab = "regression coefficient", ...)
 {
@@ -452,7 +457,13 @@ coefplot <- function(object, ncomp = object$ncomp, separate = FALSE,
   
     coefs <- coef(object, comps = ncomp, intercept = intercept,
                   cumulative = cumulative)
-    linenames <- dimnames(coefs)[[3]]
+    compnames <- dimnames(coefs)[[3]]
+    if (varnames) {
+        varlabs <- dimnames(coefs)[[1]]
+        xaxt <- "n"
+    } else {
+        xaxt <- "s"
+    }
   
     ## Do the plots
     plotNo <- 0
@@ -470,20 +481,23 @@ coefplot <- function(object, ncomp = object$ncomp, separate = FALSE,
 
             if (separate) {
                 plot(coefs[,resp,size],
-                     main = paste(respname, linenames[size]), xlab = xlab,
+                     main = paste(respname, compnames[size]), xlab = xlab,
                      ylab = ylab, type = type, lty = lty, lwd = lwd,
-                     pch = pch, cex = cex, col = col, ...)
+                     pch = pch, cex = cex, col = col, xaxt = xaxt, ...)
             } else {
                 matplot(coefs[,resp,], main = respname, xlab = xlab,
                         ylab = ylab, type = type, lty = lty, lwd = lwd,
-                        pch = pch, cex = cex, col = col, ...)
+                        pch = pch, cex = cex, col = col, xaxt = xaxt, ...)
                 if (!missing(legendpos)) {
-                    do.call("legend", c(list(legendpos, linenames, col = col),
+                    do.call("legend", c(list(legendpos, compnames, col = col),
                                         if(dolines) list(lty = lty, lwd = lwd),
                                         if(dopoints) list(pch = pch,
                                                           pt.cex = cex,
                                                           pt.lwd = lwd)))
                 }
+            }
+            if (varnames) {
+                axis(1, at = seq(along = varlabs), labels = varlabs, ...)
             }
             abline(h = 0, col = "gray")
         }

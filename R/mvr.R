@@ -34,6 +34,12 @@ mvr <- function(formula, ncomp, data, subset, na.action,
         colnames(Y) <- deparse(formula[[2]])
     }
     X <- model.matrix(mt, mf)
+    ## model.matrix prepends the term name to the colnames of matrices.
+    ## If there is only one predictor term, and the corresponding matrix
+    ## has colnames, remove the prepended term name:
+    if (length(attr(mt, "term.labels")) == 1 &&
+        !is.null(colnames(mf[[attr(mt, "term.labels")]])))
+        colnames(X) <- sub(attr(mt, "term.labels"), "", colnames(X))
     ## Set or check the number of components:
     if (missing(ncomp)) {
         ncomp <- min(nrow(X) - 1, ncol(X))

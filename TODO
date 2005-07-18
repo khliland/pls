@@ -8,9 +8,6 @@ TODO:
 .) mvr(X, Y, ncomp): ? : ? : ?
    For people not used to formula interfaces...
 
-.) coefplot: ? : ? : ?
-   Add support for labeling the x ticks with variable names
-
 .) summary.mvr: ? : ? : ?
    include validated R2, and/or allow to select which statistics.
 

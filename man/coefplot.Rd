@@ -8,9 +8,10 @@
 }
 \usage{
 coefplot(object, ncomp = object$ncomp, separate = FALSE, cumulative = TRUE,
-         intercept = FALSE, nCols, nRows, type = "l", lty = 1:nLines,
-         lwd = NULL, pch = 1:nLines, cex = NULL, col = 1:nLines, legendpos,
-         xlab = "variable", ylab = "regression coefficient", \dots)
+         intercept = FALSE, nCols, nRows, varnames = FALSE, type = "l",
+         lty = 1:nLines, lwd = NULL, pch = 1:nLines, cex = NULL,
+         col = 1:nLines, legendpos, xlab = "variable",
+         ylab = "regression coefficient", \dots)
 }
 \arguments{
   \item{object}{an \code{mvr} object.  The fitted model.}
@@ -27,6 +28,8 @@ coefplot(object, ncomp = object$ncomp, separate = FALSE, cumulative = TRUE,
   \item{nCols, nRows}{integer.  The number of coloumns and rows the
     plots will be laid out in.  If not specified, \code{coefplot} tries
     to be intelligent.}
+  \item{varnames}{logical.  If \code{TRUE}, the \eqn{x} axis tick marks
+    are labelled with the variable names.}
   \item{type}{character.  What type of plot to make.  Defaults to
     \code{"l"} (lines).  Alternative types include \code{"p"} (points)
     and \code{"b"} (both).  See \code{\link{plot}} for a complete list
@@ -63,6 +66,12 @@ coefplot(object, ncomp = object$ncomp, separate = FALSE, cumulative = TRUE,
 
   If \code{legendpos} is given, a legend is drawn at the given position
   (unless \code{separate} is \code{TRUE}).
+
+  If \code{varnames} is \code{TRUE}, the \eqn{x} axis tick marks are
+  labelled with the regressor variable names.  Hint: If there is not
+  enough room for all names to be displayed, try reducing the text size
+  by giving the argument \code{cex.axis} with a value less than 1, or
+  try printing the names vertically by giving the argument \code{las = 3}.
 
   The function can also be called through the \code{mvr} plot method by
   specifying \code{plottype = "coefficients"}.

@@ -13,7 +13,7 @@
 \method{coef}{mvr}(object, comps = object$ncomp, intercept = FALSE,
      cumulative = TRUE, \dots)
 \method{model.matrix}{mvr}(object, \dots)
-\method{model.matrix}{mvr}(formula, \dots)
+\method{model.frame}{mvr}(formula, \dots)
 }
 \arguments{
   \item{object, formula}{an \code{mvr} object.  The fitted model.}
