@@ -6,7 +6,7 @@
 mvrCv <- function(X, Y, ncomp,
                   ## Maybe use FUN directly?
                   method = c("kernelpls", "simpls", "oscorespls", "svdpc"),
-                  segments = 10,
+                  scale = FALSE, segments = 10,
                   segment.type = c("random", "consecutive", "interleaved"),
                   length.seg, trace = FALSE, ...)
 {
@@ -18,6 +18,10 @@ mvrCv <- function(X, Y, ncomp,
     dnX <- dimnames(X)
     dnY <- dimnames(Y)
     dimnames(X) <- dimnames(Y) <- NULL
+
+    ## Check the `scale' parameter:
+    if (!is.logical(scale) || length(scale) != 1)
+        stop("'scale' must be 'TRUE' or 'FALSE'")
 
     ## Set up segments:
     if (is.list(segments)) {
@@ -48,8 +52,17 @@ mvrCv <- function(X, Y, ncomp,
     for (n.seg in 1:length(segments)) {
         if (trace) cat(n.seg, "")
         seg <- segments[[n.seg]]
-        fit <- fitFunc(X[-seg,], Y[-seg,], ncomp, stripped = TRUE, ...)
-        Xtest <- sweep(X, 2, fit$Xmeans)
+        Xtrain <- X[-seg,]
+        if (scale) {
+            ## This is faster than sd(X), but cannot handle missing values:
+            sdtrain <- sqrt(colSums(sweep(Xtrain, 2, colMeans(Xtrain))^2) /
+                            (nrow(Xtrain) - 1))
+            Xtrain <- sweep(Xtrain, 2, sdtrain, "/")
+        }
+        fit <- fitFunc(Xtrain, Y[-seg,], ncomp, stripped = TRUE, ...)
+        Xtest <- X
+        if (scale) Xtest <- sweep(Xtest, 2, sdtrain, "/")
+        Xtest <- sweep(Xtest, 2, fit$Xmeans)
         for (a in 1:ncomp) 
             pred[,,a] <-
                 sweep(Xtest %*% fit$coefficients[,,a], 2, fit$Ymeans, "+")

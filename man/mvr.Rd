@@ -15,7 +15,7 @@
 \usage{
 mvr(formula, ncomp, data, subset, na.action,
     method = c("kernelpls", "simpls", "oscorespls", "svdpc", "model.frame"),
-    validation = c("none", "CV", "LOO"),
+    scale = FALSE, validation = c("none", "CV", "LOO"),
     model = TRUE, x = FALSE, y = FALSE, \dots)
 plsr(\dots, method = c("kernelpls", "simpls", "oscorespls", "model.frame"))
 pcr(\dots, method = c("svdpc", "model.frame"))
@@ -31,6 +31,12 @@ pcr(\dots, method = c("svdpc", "model.frame"))
     the data contain missing values.}
   \item{method}{the multivariate regression method to be used.  If
     \code{"model.frame"}, the model frame is returned.}
+  \item{scale}{numeric vector, or logical.  If numeric vector, \eqn{X}
+    is scaled by dividing each variable with the corresponding element
+    of \code{scale}.  If \code{scale} is \code{TRUE}, \eqn{X} is scaled
+    by dividing each variable by its sample standard deviation.  If
+    cross-validation is selected, scaling by the standard deviation is
+    done for every segment.}
   \item{validation}{character.  What kind of (internal) validation to
     use.  See below.}
   \item{model}{a logical.  If \code{TRUE}, the model frame is returned.}
@@ -75,8 +81,9 @@ pcr(\dots, method = c("svdpc", "model.frame"))
   Note that the cross-validation is optimised for speed, and some
   generality has been sacrificed.  Especially, the model matrix is
   calculated only once for the complete cross-validation, so models like
-  \code{y ~ msc(X)} will not be properly cross-validated.  For proper
-  cross-validation of models where the model matrix must be
+  \code{y ~ msc(X)} will not be properly cross-validated.  However,
+  scaling requested by \code{scale = TRUE} is properly cross-validated.
+  For proper cross-validation of models where the model matrix must be
   updated/regenerated for each segment, use the separate function
   \code{\link{crossval}}.
 }
@@ -90,6 +97,8 @@ pcr(\dots, method = c("svdpc", "model.frame"))
   \item{ncomp}{the number of components of the model.}
   \item{method}{the method used to fit the model.  See the argument
     \code{method} for possible values.}
+  \item{scale}{if scaling was requested (with \code{scale}), the
+    scaling used.}
   \item{call}{the function call.}
   \item{terms}{the model terms.}
   \item{model}{if \code{model = TRUE}, the model frame.}

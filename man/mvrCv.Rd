@@ -8,7 +8,7 @@
 }
 \usage{
 mvrCv(X, Y, ncomp,
-      method = c("kernelpls", "simpls", "oscorespls", "svdpc"),
+      method = c("kernelpls", "simpls", "oscorespls", "svdpc"), scale = FALSE,
       segments = 10, segment.type = c("random", "consecutive", "interleaved"),
       length.seg, trace = FALSE, \dots)
 }
@@ -20,6 +20,9 @@ mvrCv(X, Y, ncomp,
   \item{ncomp}{the number of components to be used in the
     modelling.}
   \item{method}{the multivariate regression method to be used.}
+  \item{scale}{logical.  If \code{TRUE}, the learning \eqn{X} data for each
+    segment is scaled by dividing each variable by its sample standard
+    deviation.  The prediction data is scaled by the same amount.}
   \item{segments}{the number of segments to use, or a list with segments
     (see below).}
   \item{segment.type}{the type of segments to use.  Ignored if
@@ -50,7 +53,8 @@ mvrCv(X, Y, ncomp,
   between the cross-validated predictions and the responses.
   
   Note that this function cannot be used in situations where \eqn{X}
-  needs to be recalculated for each segment, for instance with
+  needs to be recalculated for each segment (except for scaling by the
+  standard deviation), for instance with
   \code{msc} or other preprocessing.  For such models, use the more
   general (but slower) function \code{\link{crossval}}.
 }
