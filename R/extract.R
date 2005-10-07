@@ -37,8 +37,6 @@ coef.mvr <- function(object, comps = object$ncomp, intercept = FALSE,
 ## fitted.default is in stats.
 
 ## loadings is in stats, but unfortunately doesn't work for prcomp objects).
-## FIXME: See email from Ripley about "taking over" a function and make it
-## generic.  There was also one 2005-03-2(22?) about loadings()
 
 ## scores: Return the scores (also works for prcomp/princomp objects):
 scores <- function(object, ...) UseMethod("scores")

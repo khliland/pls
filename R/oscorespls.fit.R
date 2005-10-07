@@ -4,9 +4,6 @@
 ### By Bjørn-Helge Mevik
 ### $Id$
 
-## FIXME: Should perhaps be called something else, as there are several
-## algorithms that give orthogonal scores pls fits.
-
 oscorespls.fit <- function(X, Y, ncomp, stripped = FALSE, tol = 1e-6, ...)
 {
     ## Initialise

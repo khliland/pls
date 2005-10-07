@@ -1,0 +1,73 @@
+$Id:$
+
+Changes in 1.1-0
+================
+
+New features:
+-------------
+- mvr, mvrCv and predict.mvr now has support for scaling of X.
+
+- A new function stdize (with predict and makepredictcall methods) for
+  explicit centering and/or scaling.
+
+- Correlation loadings plot (corrplot).
+
+- New argument `varnames' in coefplot, to label the x tick marks with the
+  variable names. 
+
+- loadingplot now uses the `labels' argument to label x tick marks when
+  'scatter = FALSE'.
+
+- loadingplot, coefplot and plot.mvrVal can now display legends, with the
+  argument 'legendpos'.
+
+User-visible changes:
+---------------------
+- mvr and model.matrix.mvr now removes the prepended term name from colnames
+  of X when there is only one term and it has colnames.
+
+- The plot functions now avoid setting defaults for graphical parametres
+  explicitly, wherever possible (e.g. lwd = NULL instead of lwd = 1).  That
+  way, par() settings are respected.
+
+- Most "handled" graphical parametres have been added to the formal argument
+  list (for most functions: xlab and ylab).
+
+Internal changes:
+-----------------
+- New functions compnames, prednames and respnames, used in plot and summary 
+  functions. 
+
+- Some minor internal changes in the plot and summary functions.
+
+- Allows `method = "model.frame"' in mvr, plsr and pcr.
+
+- New method model.frame.mvr.
+
+Documentation:
+--------------
+- Added missing output component `Yloadings' to oscorepls.fit.Rd
+
+- Added/fixed a couple of references.
+
+
+Changes in 1.0-3
+================
+- mvrCv.R: Bugfix; added ^2 to R2 calculation
+
+- predict.mvr.R: Fix handling of `newdata' such that checks of the dimensions
+  of the variables found, are performed.  Also allow a matrix (without any
+  checks).  In addition, a small fix for matrices without row names.
+
+- loop revision in mvrCv.R
+
+- Store data sets in binary form
+
+- mvr.Rd: Added more explicit information about the formula argument.
+
+- Numerous small clean-ups in the .Rd files
+
+
+Changes in 1.0-2
+================
+- Added encoding information to DESCRIPTION and *.Rd
