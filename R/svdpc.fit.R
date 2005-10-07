@@ -21,7 +21,7 @@ svdpc.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
     B <- array(0, c(dim(X)[2], dim(Y)[2], ncomp))
 
     if (!stripped) Ypred <- array(0, c(dim(X)[1], dim(Y)[2], ncomp))
-  
+
     huhn <- La.svd(X)
     U <- huhn$u[,1:ncomp, drop=FALSE]
     D <- huhn$d[1:ncomp]
@@ -48,7 +48,7 @@ svdpc.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
         if (is.null(objnames)) objnames <- dnY[[1]]
         xvarnames <- dnX[[2]]
         yvarnames <- dnY[[2]]
-        compnames <- paste("comp", 1:ncomp)
+        compnames <- paste("Comp", 1:ncomp)
         nCompnames <- paste(1:ncomp, "comps")
         dimnames(U) <- list(objnames, compnames)
         dimnames(loadings) <- dimnames(projection) <- list(xvarnames, compnames)

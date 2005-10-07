@@ -14,7 +14,7 @@ coef.mvr <- function(object, comps = object$ncomp, intercept = FALSE,
             dB <- dim(B)
             dB[1] <- dB[1] + 1
             dnB <- dimnames(B)
-            dnB[[1]] <- c("(Intercept)", dnB[[1]]) 
+            dnB[[1]] <- c("(Intercept)", dnB[[1]])
             BInt <- array(dim = dB, dimnames = dnB)
             BInt[-1,,] <- B
             for (i in seq(along = comps))
@@ -34,7 +34,7 @@ coef.mvr <- function(object, comps = object$ncomp, intercept = FALSE,
     return(B)
 }
 
-## fitted.default is in stats.  FIXME: Check if the napredict will work with NAs!
+## fitted.default is in stats.
 
 ## loadings is in stats, but unfortunately doesn't work for prcomp objects).
 ## FIXME: See email from Ripley about "taking over" a function and make it
@@ -74,9 +74,9 @@ model.frame.mvr <- function(formula, ...)
 
 ## model.matrix.mvr: Extract the model matrix from an `mvr' object.
 ## It is a modified version of model.matrix.lm.
-model.matrix.mvr <- function(object, ...) 
+model.matrix.mvr <- function(object, ...)
 {
-    if (n_match <- match("x", names(object), 0)) 
+    if (n_match <- match("x", names(object), 0))
         object[[n_match]]
     else {
         data <- model.frame(object, ...)
@@ -91,3 +91,37 @@ model.matrix.mvr <- function(object, ...)
         return(mm)
     }
 }
+
+## The following "extraction" functions are mostly used in plot and summary
+## functions.
+
+## The names of the response variables:
+respnames <- function(object)
+    dimnames(fitted(object))[[2]]
+
+## The names of the prediction variables:
+prednames <- function(object, intercept = FALSE) {
+    if (identical(TRUE, intercept))
+        c("(Intercept)", rownames(loadings(object)))
+    else
+        rownames(loadings(object))
+}
+
+## The names of the components:
+## Note: The components must be selected prior to the format statement
+compnames <- function(object, comps = 1:object$ncomp, explvar = FALSE) {
+    labs <- colnames(scores(object))[comps]
+    if (identical(TRUE, explvar) && !is.null(evar <- explvar(object)[comps]))
+        labs <- paste(labs, " (", format(evar, digits = 2, trim = TRUE),
+                      " %)", sep = "")
+    return(labs)
+}
+
+## The explained X variance:
+explvar <- function(object)
+    switch(class(object)[1],
+           mvr = 100 * object$Xvar / object$Xtotvar,
+           princomp =,
+           prcomp = 100 * object$sdev^2 / sum(object$sdev^2)
+           )
+

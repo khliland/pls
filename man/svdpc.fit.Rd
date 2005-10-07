@@ -43,16 +43,19 @@
   \item{Xvar}{a vector with the amount of X-variance explained by each
     number of components.}
   \item{Xtotvar}{Total variance in \code{X}.}
-  
+
   If \code{stripped} is \code{TRUE}, only the components
   \code{coefficients}, \code{Xmeans} and \code{Ymeans} are returned.
 }
-%\references{}
+\references{
+  Martens, H., Næs, T. (1989) \emph{Multivariate calibration.}
+  Chichester: Wiley.
+}
 \author{Ron Wehrens and Bjørn-Helge Mevik}
 \seealso{
   \code{\link{mvr}}
-  \code{\link{pcr}}
   \code{\link{plsr}}
+  \code{\link{pcr}}
 }
 \keyword{regression}
 \keyword{multivariate}

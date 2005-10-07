@@ -35,6 +35,7 @@
   \item{scores}{a matrix of scores.}
   \item{loadings}{a matrix of loadings.}
   \item{loading.weights}{a matrix of loading weights.}
+  \item{Yscores}{a matrix of Y-scores.}
   \item{Yloadings}{a matrix of Y-loadings.}
   \item{projection}{the projection matrix used to convert X to scores.}
   \item{Xmeans}{a vector of means of the X variables.}
@@ -48,7 +49,7 @@
   \item{Xvar}{a vector with the amount of X-variance explained by each
     number of components.}
   \item{Xtotvar}{Total variance in \code{X}.}
-  
+
   If \code{stripped} is \code{TRUE}, only the components
   \code{coefficients}, \code{Xmeans} and \code{Ymeans} are returned.
 }

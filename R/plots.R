@@ -36,21 +36,13 @@ scoreplot <- function(object, comps = 1:2, labels, identify = FALSE,
     if (is.matrix(object)) {
         ## Assume this is already a score matrix
         S <- object[,comps, drop = FALSE]
-        expl.var <- NULL
+        varlab <- colnames(S)
     } else {
         S <- scores(object)[,comps, drop = FALSE]
         if (is.null(S))
             stop("`", deparse(substitute(object)), "' has no scores")
-        expl.var <- switch(class(object),
-                           mvr = 100 * object$Xvar[comps] / object$Xtotvar,
-                           princomp =, 
-                           prcomp = 100*object$sdev[comps]^2/sum(object$sdev^2)
-                           )
+        varlab <- compnames(object, comps, explvar = TRUE)
     }
-    varlab <- colnames(S)               # Default variable labels
-    if (!is.null(expl.var))             # Add explained variance
-        varlab <- paste(varlab, " (", format(expl.var, digits = 2, trim = TRUE),
-                        " %)", sep = "")
     if (!missing(labels)) {
         ## Set up point labels
         if (length(labels) == 1) {
@@ -87,7 +79,7 @@ scoreplot <- function(object, comps = 1:2, labels, identify = FALSE,
             function(x, y, ...) points(x, y, type = type, ...) else
             function(x, y, ...) text(x, y, labels = labels, ...)
         pairs(S, labels = varlab, panel = panel, ...)
-    } 
+    }
 }
 
 ## A plot method for scores:
@@ -108,21 +100,13 @@ loadingplot <- function(object, comps = 1:2, scatter = FALSE, labels,
     if (is.matrix(object)) {
         ## Assume this is already a loading matrix
         L <- object[,comps, drop = FALSE]
-        expl.var <- NULL
+        varlab <- colnames(L)
     } else {
         L <- loadings(object)[,comps, drop = FALSE]
         if (is.null(L))
             stop("`", deparse(substitute(object)), "' has no loadings")
-        expl.var <- switch(class(object),
-                           mvr = 100 * object$Xvar[comps] / object$Xtotvar,
-                           princomp =, 
-                           prcomp = 100*object$sdev[comps]^2/sum(object$sdev^2)
-                           )
+        varlab <- compnames(object, comps, explvar = TRUE)
     }
-    varlab <- colnames(L)               # Default variable labels
-    if (!is.null(expl.var))             # Add explained variance
-        varlab <- paste(varlab, " (", format(expl.var, digits = 2, trim = TRUE),
-                        " %)", sep = "")
     if (!missing(labels)) {
         ## Set up point/tick mark labels
         if (length(labels) == 1) {
@@ -213,23 +197,14 @@ corrplot <- function(object, comps = 1:2, labels, identify = FALSE,
     if (is.matrix(object)) {
         ## Assume this is already a correlation matrix
         cl <- object[,comps, drop = FALSE]
-        expl.var <- NULL
+        varlab <- colnames(cl)
     } else {
         S <- scores(object)[,comps, drop = FALSE]
         if (is.null(S))
             stop("`", deparse(substitute(object)), "' has no scores")
         cl <- cor(model.matrix(object), S)
-        expl.var <- switch(class(object),
-                           mvr = 100 * object$Xvar[comps] / object$Xtotvar,
-                           princomp =, 
-                           prcomp = 100*object$sdev[comps]^2/sum(object$sdev^2)
-                           )
+        varlab <- compnames(object, comps, explvar = TRUE)
     }
-    varlab <- colnames(cl)              # Default variable labels
-    if (!is.null(expl.var))             # Add explained variance
-        varlab <- paste(varlab, " (",
-                        format(expl.var, digits = 2, trim = TRUE),
-                        " %)", sep = "")
     if (!missing(labels)) {
         ## Set up point labels
         if (length(labels) == 1) {
@@ -276,7 +251,7 @@ corrplot <- function(object, comps = 1:2, labels, identify = FALSE,
         ## Call `pairs' with two leading `ghost points', to get
         ## correct xlab and ylab:
         pairs(rbind(-1, 1, cl), labels = varlab, panel = panel, asp = 1, ...)
-    } 
+    }
 }
 
 
@@ -320,7 +295,7 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
             stop("`which' should be a subset of ",
                  paste(allTypes, collapse = ", "))
     }
-    
+
     ## Help variables
     nEst <- length(which)
     nSize <- length(ncomp)
@@ -364,15 +339,15 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
                                                               data = newdata)))
         test.predicted <- predict(object, comps = ncomp, newdata = newdata)
     }
-  
+
     ## Do the plots
     plotNo <- 0
     for (resp in 1:nResp) {
         for (size in 1:nSize) {
             for (est in 1:nEst) {
                 plotNo <- plotNo + 1
-                main <- paste(colnames(object$fitted)[resp], ncomp[size],
-                              "comps,", which[est])
+                main <- sprintf("%s, %d comps, %s", respnames(object)[resp],
+                                ncomp[size], which[est])
                 sub <- which[est]
                 switch(which[est],
                        train = {
@@ -395,7 +370,7 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
                     mtext(mYlab, side = 2, outer = TRUE)
                 }
                 predplotXy(measured, predicted, main = main,
-                           font.main = font.main, cex.main = cex.main, 
+                           font.main = font.main, cex.main = cex.main,
                            xlab = xlab, ylab = ylab, ...)
             }
         }
@@ -454,21 +429,21 @@ coefplot <- function(object, ncomp = object$ncomp, separate = FALSE,
     dolines <- type %in% c("l", "b", "c", "o", "s", "S", "h")
     ## Are we plotting points?
     dopoints <- type %in% c("p", "b", "o")
-  
+
     coefs <- coef(object, comps = ncomp, intercept = intercept,
                   cumulative = cumulative)
-    compnames <- dimnames(coefs)[[3]]
+    complabs <- dimnames(coefs)[[3]]
     if (varnames) {
-        varlabs <- dimnames(coefs)[[1]]
+        varlabs <- prednames(object, intercept = intercept)
         xaxt <- "n"
     } else {
         xaxt <- "s"
     }
-  
+
     ## Do the plots
     plotNo <- 0
     for (resp in 1:nResp) {
-        respname <- dimnames(coefs)[[2]][resp]
+        respname <- respnames(object)[resp]
         for (size in 1:nSize) {
             plotNo <- plotNo + 1
 
@@ -481,15 +456,16 @@ coefplot <- function(object, ncomp = object$ncomp, separate = FALSE,
 
             if (separate) {
                 plot(coefs[,resp,size],
-                     main = paste(respname, compnames[size]), xlab = xlab,
-                     ylab = ylab, type = type, lty = lty, lwd = lwd,
-                     pch = pch, cex = cex, col = col, xaxt = xaxt, ...)
+                     main = paste(respname, complabs[size], sep = ", "),
+                     xlab = xlab, ylab = ylab, type = type,
+                     lty = lty, lwd = lwd, pch = pch, cex = cex,
+                     col = col, xaxt = xaxt, ...)
             } else {
                 matplot(coefs[,resp,], main = respname, xlab = xlab,
                         ylab = ylab, type = type, lty = lty, lwd = lwd,
                         pch = pch, cex = cex, col = col, xaxt = xaxt, ...)
                 if (!missing(legendpos)) {
-                    do.call("legend", c(list(legendpos, compnames, col = col),
+                    do.call("legend", c(list(legendpos, complabs, col = col),
                                         if(dolines) list(lty = lty, lwd = lwd),
                                         if(dopoints) list(pch = pch,
                                                           pt.cex = cex,
@@ -559,7 +535,7 @@ plot.mvrVal <- function(x, nCols, nRows, type = "l", lty = 1:nEst, lwd = NULL,
             mtext(mXlab, side = 1, outer = TRUE)
             mtext(mYlab, side = 2, outer = TRUE)
         }
-        
+
         y <- x$val[,resp,]
         if (is.matrix(y)) y <- t(y)
         if (identical(all.equal(x$comps, min(x$comps):max(x$comps)),
@@ -588,11 +564,6 @@ plot.mvrVal <- function(x, nCols, nRows, type = "l", lty = 1:nEst, lwd = NULL,
 ### biplot
 ###
 
-## FIXME: Check scaling.
-## FIXME: The xlabs/ylabs fix is ugly (especially: I want circles!)
-## FIXME: Maybe treat xlabs=T as missing xlabs?
-## FIXME: The handling of defaults is fishy.  Also, wouldn't it be better to
-## call biplot.default instead of biplot?  And is eval() the best choice?
 biplot.mvr <- function(x, comps = 1:2,
                        which = c("x", "y", "scores", "loadings"),
                        var.axes = FALSE, xlabs, ylabs, main, ...) {
