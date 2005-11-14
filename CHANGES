@@ -1,4 +1,17 @@
-$Id:$
+$Id$
+
+Changes since 1.1-0:
+
+- predict.mvr now handles missing data like predict.lm does (the default is to
+  predict 'NA').
+
+- mvr now returns a na.action component.
+
+- fitted and residuals now return NA for observations with missing values,
+  if na.action is na.exclude.
+
+- new internal functions fitted.mvr, residuals.mvr and naExcludeMvr to
+  handle observations with missing values.
 
 Changes in 1.1-0
 ================

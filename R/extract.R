@@ -34,7 +34,49 @@ coef.mvr <- function(object, comps = object$ncomp, intercept = FALSE,
     return(B)
 }
 
-## fitted.default is in stats.
+## fitted.mvr: Extract the fitted values.  It is needed because the case
+## na.action == "na.exclude" must be treated differently from what is done
+## in fitted.default.
+fitted.mvr <- function(object, ...) {
+    if (inherits(object$na.action, "exclude")) {
+        naExcludeMvr(object$na.action, object$fitted.values)
+    } else {
+        object$fitted.values
+    }
+}
+
+## residuals.mvr: Extract the residuals.  It is needed because the case
+## na.action == "na.exclude" must be treated differently from what is done
+## in residuals.default.
+residuals.mvr <- function(object, ...) {
+    if (inherits(object$na.action, "exclude")) {
+        naExcludeMvr(object$na.action, object$residuals)
+    } else {
+        object$residuals
+    }
+}
+
+## naExcludeMvr: Perform the equivalent of naresid.exclude and
+## napredict.exclude on three-dimensional arrays where the first dimension
+## corresponds to the observations.
+## Almost everything here is lifted verbatim from naresid.exclude (R 2.2.0)
+naExcludeMvr <- function(omit, x, ...) {
+    if (length(omit) == 0 || !is.numeric(omit))
+        stop("invalid argument 'omit'")
+    if (length(x) == 0)
+        return(x)
+    n <- nrow(x)
+    keep <- rep.int(NA, n + length(omit))
+    keep[-omit] <- 1:n
+    x <- x[keep,,, drop = FALSE]        # This is where the real difference is!
+    temp <- rownames(x)
+    if (length(temp)) {
+        temp[omit] <- names(omit)
+        rownames(x) <- temp
+    }
+    return(x)
+}
+
 
 ## loadings is in stats, but unfortunately doesn't work for prcomp objects).
 

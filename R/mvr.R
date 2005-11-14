@@ -91,6 +91,7 @@ mvr <- function(formula, ncomp, data, subset, na.action,
 
     ## Build and return the object:
     class(z) <- "mvr"
+    z$na.action <- attr(mf, "na.action")
     z$ncomp <- ncomp
     z$method <- method
     if (is.numeric(scale)) z$scale <- scale

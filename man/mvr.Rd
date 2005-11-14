@@ -94,6 +94,10 @@ pcr(\dots, method = c("svdpc", "model.frame"))
   function.  In addition, it contains the following components:
   \item{validation}{if validation was requested, the results of the
     cross-validation.  See \code{\link{mvrCv}} for details.}
+  \item{na.action}{if observations with missing values were removed,
+    \code{na.action} contains a vector with their indices.  The
+    class of this vector is used by functions like \code{fitted} to
+    decide how to treat the observations.}
   \item{ncomp}{the number of components of the model.}
   \item{method}{the method used to fit the model.  See the argument
     \code{method} for possible values.}

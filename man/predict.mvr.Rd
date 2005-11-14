@@ -9,7 +9,8 @@
 }
 \usage{
 \method{predict}{mvr}(object, newdata, comps = 1:object$ncomp,
-        type = c("response", "scores"), cumulative = TRUE, \dots)
+        type = c("response", "scores"), cumulative = TRUE,
+        na.action = na.pass, \dots)
 }
 \arguments{
   \item{object}{an \code{mvr} object.  The fitted model}
@@ -20,6 +21,9 @@
   \item{type}{character.  Whether to predict scores or response values}
   \item{cumulative}{logical.  How the elements of \code{comps} are
     interpreted.  Ignored if \code{type} is \code{"scores"}.  See below}
+  \item{na.action}{function determining what should be done with missing
+    values in \code{newdata}.  The default is to predict \code{NA}.  See
+    \code{\link{na.omit}} for alternatives.}
   \item{\dots}{further arguments.  Currently not used}
 }
 \details{

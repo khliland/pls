@@ -3,15 +3,15 @@
 
 predict.mvr <- function(object, newdata, comps = 1:object$ncomp,
                         type = c("response", "scores"), cumulative = TRUE,
-                        ...) {
+                        na.action = na.pass, ...) {
     if (missing(newdata) || is.null(newdata))
         newX <- model.matrix(object)
     else if (is.matrix(newdata))
         newX <- newdata
     else {
         Terms <- delete.response(terms(object))
-        m <- model.frame(Terms, newdata)
-        if (!is.null(cl <- attr(Terms, "dataClasses"))) 
+        m <- model.frame(Terms, newdata, na.action = na.action)
+        if (!is.null(cl <- attr(Terms, "dataClasses")))
             .checkMFClasses(cl, m)
         newX <- model.matrix(Terms, m)
     }
