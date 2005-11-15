@@ -2,6 +2,8 @@
 \encoding{latin1}
 \name{coef.mvr}
 \alias{coef.mvr}
+\alias{fitted.mvr}
+\alias{residuals.mvr}
 \alias{model.frame.mvr}
 \alias{model.matrix.mvr}
 \alias{prednames}
@@ -11,13 +13,15 @@
 \title{Extract Information From a Fitted PLSR or PCR Model}
 \description{
   Functions to extract information from \code{mvr} objects:  Regression
-  coefficients, the model frame, the the model matrix, names of the
-  variables and components, and the \eqn{X} variance explained by the
-  components.
+  coefficients, fitted values, residuals, the model frame, the model
+  matrix, names of the variables and components, and the \eqn{X}
+  variance explained by the components.
 }
 \usage{
 \method{coef}{mvr}(object, comps = object$ncomp, intercept = FALSE,
      cumulative = TRUE, \dots)
+\method{fitted}{mvr}(object, \dots)
+\method{residuals}{mvr}(object, \dots)
 \method{model.matrix}{mvr}(object, \dots)
 \method{model.frame}{mvr}(formula, \dots)
 prednames(object, intercept = FALSE)
@@ -40,8 +44,10 @@ explvar(object)
     only used for \code{model.frame.mvr} and \code{model.matrix.mvr}.}
 }
 \details{
-  Except for \code{coef.mvr}, these functions are mostly used inside
-  other functions.
+  These functions are mostly used inside other functions.
+  (\code{coef.mvr}, \code{fitted.mvr} and \code{residuals.mvr} are
+  usually called through their generic functions \code{\link{coef}},
+  \code{\link{fitted}} and \code{\link{residuals}}, respectively.)
   
   \code{coef.mvr} is used to extract the regression coefficients of a
   model, i.e. the \eqn{B} in \eqn{y = XB}.  An array of dimension
@@ -57,6 +63,13 @@ explvar(object)
   the coefficients for a model with only the component \code{comps[i]},
   i.e. the contribution of the component \code{comps[i]} on the
   regression coefficients.
+
+  \code{fitted.mvr} and \code{residuals.mvr} return the fitted values
+  and residuals, respectively.  If the model was fitted with
+  \code{na.action = na.exclude} (or after setting the default
+  \code{na.action} to \code{"na.exclude"} with \code{\link{options}}),
+  the fitted values (or residuals) corresponding to excluded 
+  observations are returned as \code{NA}; otherwise, they are omitted.
 
   \code{model.frame.mvr} returns the model frame; i.e. a data frame with
   all variables neccessary to generate the model matrix.  See
@@ -81,7 +94,11 @@ explvar(object)
 }
 \value{
   \code{coef.mvr} returns an array of regression coefficients.
+
+  \code{fitted.mvr} returns an array with fitted values.
   
+  \code{residuals.mvr} returns an array with residuals.
+
   \code{model.frame.mvr} returns a data frame.
   
   \code{model.matrix.mvr} returns the \eqn{X} matrix.
@@ -92,7 +109,10 @@ explvar(object)
   \code{explvar} returns a numeric vector with the explained variances.
 }
 \author{Ron Wehrens and Bjørn-Helge Mevik}
-\seealso{\code{\link{mvr}}}
+\seealso{\code{\link{mvr}}, \code{\link{coef}}, \code{\link{fitted}},
+  \code{\link{residuals}}, \code{\link{model.frame}},
+  \code{\link{model.matrix}}, \code{\link{na.omit}}
+}
 \examples{
 data(NIR)
 mod <- pcr(y ~ X, data = NIR[NIR$train,], ncomp = 5)
