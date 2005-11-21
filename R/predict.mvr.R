@@ -6,9 +6,12 @@ predict.mvr <- function(object, newdata, comps = 1:object$ncomp,
                         na.action = na.pass, ...) {
     if (missing(newdata) || is.null(newdata))
         newX <- model.matrix(object)
-    else if (is.matrix(newdata))
+    else if (is.matrix(newdata)) {
+        ## For matrices, simply check dimension:
+        if (ncol(newdata) != length(object$Xmeans))
+            stop("'newdata' does not have the correct number of columns")
         newX <- newdata
-    else {
+    } else {
         Terms <- delete.response(terms(object))
         m <- model.frame(Terms, newdata, na.action = na.action)
         if (!is.null(cl <- attr(Terms, "dataClasses")))

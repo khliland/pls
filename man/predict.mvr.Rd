@@ -40,7 +40,7 @@
 
   It is also possible to supply a matrix instead of a data frame as
   \code{newdata}, which is then assumed to be the \eqn{X} data matrix.
-  Note that the usual checks for the size and type of the data are then
+  Note that the usual checks for the type of the data are then
   omitted.  Also note that this is
   \emph{only} possible with \code{predict}; it will not work in
   functions like \code{\link{predplot}}, \code{\link{RMSEP}} or
