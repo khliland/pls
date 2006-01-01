@@ -18,7 +18,8 @@ crossval(object, segments = 10,
   \item{segment.type}{the type of segments to use.  Ignored if
     \code{segments} is a list.}
   \item{length.seg}{Positive integer.  The length of the segments to
-    use.  If specified, it overrides \code{segments}.}
+    use.  If specified, it overrides \code{segments} unless
+    \code{segments} is a list.}
   \item{trace}{if \code{TRUE}, tracing is turned on.  If numeric, it
     denotes a time limit (in seconds).  If the estimated total time of
     the cross-validation exceeds this limit, tracing is turned on.}
@@ -32,13 +33,16 @@ crossval(object, segments = 10,
   \code{crossval(mvr(\dots))} is identical to \code{mvr(\dots,
     validation = "CV")}, but slower.
 
-  If \code{length.seg} is specified, segments of the requested length
-  are used.  Otherwise:
-  If \code{segments} is a number, it specifies the number of segments to
-  use, and \code{segment.type} is used to select the type of segments.
-  If \code{segments} is a list, the elements of the list should be
+  If \code{segments} is a list, the arguments \code{segment.type} and
+  \code{length.seg} are ignored.  The elements of the list should be
   integer vectors specifying the indices of the segments.  See
   \code{\link{cvsegments}} for details.
+
+  Otherwise, segments of type \code{segment.type} are generated.  How
+  many segments to generate is selected by specifying the number of
+  segments in \code{segments}, or giving the segment length in
+  \code{length.seg}.  If both are specified, \code{segments} is
+  ignored.
 
   The R2 component returned is calculated as the squared correlation
   between the cross-validated predictions and the responses.
