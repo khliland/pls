@@ -26,7 +26,7 @@
 \method{model.frame}{mvr}(formula, \dots)
 prednames(object, intercept = FALSE)
 respnames(object)
-compnames(object, comps = 1:object$ncomp, explvar = FALSE)
+compnames(object, comps, explvar = FALSE, \dots)
 explvar(object)
 }
 \arguments{
@@ -83,14 +83,16 @@ explvar(object)
   names of the \eqn{X} variables, responses and components,
   respectively.  With \code{intercept = TRUE} in \code{prednames},
   the name of the intercept variable (i.e. \code{"(Intercept)"}) is
-  returned as well.  If \code{explvar = TRUE} in \code{compnames}, the
-  explained variance for each component is appended to the component
+  returned as well.  \code{compnames} can also extract component names
+  from score matrices.  If \code{explvar = TRUE} in \code{compnames}, the
+  explained variance for each component (if available) is appended to the component
   names.  For optimal formatting of the explained variances when not all
   components are to be used, one should specify the desired components
   with the argument \code{comps}.
 
   \code{explvar} extracts the amount of \eqn{X} variance (in per cent)
-  explained by for each component in the model.
+  explained by for each component in the model.  It can also handle
+  score matrices returned by \code{\link{scores}}.
 }
 \value{
   \code{coef.mvr} returns an array of regression coefficients.
@@ -106,7 +108,8 @@ explvar(object)
   \code{prednames}, \code{respnames} and \code{compnames} return a
   character vector with the corresponding names.
 
-  \code{explvar} returns a numeric vector with the explained variances.
+  \code{explvar} returns a numeric vector with the explained variances,
+  or \code{NULL} if not available.
 }
 \author{Ron Wehrens and Bjørn-Helge Mevik}
 \seealso{\code{\link{mvr}}, \code{\link{coef}}, \code{\link{fitted}},

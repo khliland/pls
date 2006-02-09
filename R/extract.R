@@ -82,8 +82,12 @@ naExcludeMvr <- function(omit, x, ...) {
 
 ## scores: Return the scores (also works for prcomp/princomp objects):
 scores <- function(object, ...) UseMethod("scores")
-scores.default <- function(object, ...) object$scores
-scores.prcomp <- function(object, ...) object$x
+scores.default <- function(object, ...) {
+    S <- if (inherits(object, "prcomp")) object$x else object$scores
+    if (!inherits(S, "scores")) class(S) <- "scores"
+    attr(S, "explvar") <- explvar(object)
+    S
+}
 
 ## Yscores: Return the Yscores
 Yscores <- function(object) object$Yscores
@@ -142,26 +146,32 @@ respnames <- function(object)
 ## The names of the prediction variables:
 prednames <- function(object, intercept = FALSE) {
     if (identical(TRUE, intercept))
-        c("(Intercept)", rownames(loadings(object)))
+        c("(Intercept)", rownames(object$loadings))
     else
-        rownames(loadings(object))
+        rownames(object$loadings)
 }
 
 ## The names of the components:
 ## Note: The components must be selected prior to the format statement
-compnames <- function(object, comps = 1:object$ncomp, explvar = FALSE) {
-    labs <- colnames(scores(object))[comps]
-    if (identical(TRUE, explvar) && !is.null(evar <- explvar(object)[comps]))
+compnames <- function(object, comps, explvar = FALSE, ...) {
+    S <- if(is.matrix(object)) object else scores(object)
+    labs <- colnames(S)
+    if (missing(comps))
+        comps <- seq(along = labs)
+    else
+        labs <- labs[comps]
+    if (identical(TRUE, explvar) && !is.null(evar <- explvar(S)[comps]))
         labs <- paste(labs, " (", format(evar, digits = 2, trim = TRUE),
                       " %)", sep = "")
     return(labs)
 }
+
 
 ## The explained X variance:
 explvar <- function(object)
     switch(class(object)[1],
            mvr = 100 * object$Xvar / object$Xtotvar,
            princomp =,
-           prcomp = 100 * object$sdev^2 / sum(object$sdev^2)
+           prcomp = 100 * object$sdev^2 / sum(object$sdev^2),
+           scores = attr(object, "explvar")
            )
-

@@ -29,19 +29,22 @@ plot.mvr <- function(x, plottype = c("prediction", "validation",
 ### Scoreplot
 ###
 
-scoreplot <- function(object, comps = 1:2, labels, identify = FALSE,
-                      type = "p", xlab, ylab, ...) {
+scoreplot <- function(object, ...) UseMethod("scoreplot")
+
+scoreplot.default <- function(object, comps = 1:2, labels, identify = FALSE,
+                              type = "p", xlab, ylab, ...) {
+    ## Check arguments
     nComps <- length(comps)
     if (nComps == 0) stop("At least one component must be selected.")
+    ## Get the scores
     if (is.matrix(object)) {
         ## Assume this is already a score matrix
         S <- object[,comps, drop = FALSE]
-        varlab <- colnames(S)
     } else {
+        ## Try to get the scores
         S <- scores(object)[,comps, drop = FALSE]
         if (is.null(S))
-            stop("`", deparse(substitute(object)), "' has no scores")
-        varlab <- compnames(object, comps, explvar = TRUE)
+            stop("`", deparse(substitute(object)), "' has no scores.")
     }
     if (!missing(labels)) {
         ## Set up point labels
@@ -54,6 +57,7 @@ scoreplot <- function(object, comps = 1:2, labels, identify = FALSE,
         labels <- as.character(labels)
         type <- "n"
     }
+    varlab <- compnames(object, comps, explvar = TRUE)
     if (nComps <= 2) {
         if (nComps == 1) {
             ## One component versus index
