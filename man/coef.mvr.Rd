@@ -84,7 +84,7 @@ explvar(object)
   respectively.  With \code{intercept = TRUE} in \code{prednames},
   the name of the intercept variable (i.e. \code{"(Intercept)"}) is
   returned as well.  \code{compnames} can also extract component names
-  from score matrices.  If \code{explvar = TRUE} in \code{compnames}, the
+  from score and loading matrices.  If \code{explvar = TRUE} in \code{compnames}, the
   explained variance for each component (if available) is appended to the component
   names.  For optimal formatting of the explained variances when not all
   components are to be used, one should specify the desired components
@@ -92,7 +92,7 @@ explvar(object)
 
   \code{explvar} extracts the amount of \eqn{X} variance (in per cent)
   explained by for each component in the model.  It can also handle
-  score matrices returned by \code{\link{scores}}.
+  score and loading matrices returned by \code{\link{scores}} and \code{\link{loadings}}.
 }
 \value{
   \code{coef.mvr} returns an array of regression coefficients.

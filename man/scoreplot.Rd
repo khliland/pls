@@ -5,6 +5,7 @@
 \alias{scoreplot.default}
 \alias{plot.scores}
 \alias{loadingplot}
+\alias{loadingplot.default}
 \alias{plot.loadings}
 \alias{corrplot}
 \title{Plots of Scores, Loadings and Correlation Loadings}
@@ -18,7 +19,8 @@ scoreplot(object, \dots)
           xlab, ylab, \dots)
 \method{plot}{scores}(x, \dots)
 
-loadingplot(object, comps = 1:2, scatter = FALSE, labels,
+loadingplot(object, \dots)
+\method{loadingplot}{default}(object, comps = 1:2, scatter = FALSE, labels,
             identify = FALSE, type, lty, lwd = NULL, pch, cex = NULL,
             col, legendpos, xlab, ylab, \dots)
 \method{plot}{loadings}(x, \dots)
@@ -80,16 +82,15 @@ corrplot(object, comps = 1:2, labels, identify = FALSE, type = "p",
   function \code{\link{identify}} is used to interactively identify
   points.
 
-  If \code{scatter} is \code{TRUE}, \code{loadingplot} works exactly
+  Also \code{loadingplot} is generic, with a default method that works
+  for matrices and any object where \code{\link{loadings}} returns a
+  matrix.  If \code{scatter} is \code{TRUE}, the default method works exactly
   like the default \code{scoreplot} method.  Otherwise, it makes a lineplot of the selected
   loading vectors, and if \code{identify} is \code{TRUE},
   uses \code{\link{identify}} to interactively identify points.  Also,
   if \code{legendpos} is given, a legend is drawn at the position
   indicated.
 
-  \code{loadingplot} also works with \code{princomp} objects.  (However,
-  \code{plot(loadings(\dots))} will not work.)
-  
   \code{corrplot} works exactly like the default \code{scoreplot} method, except that at
   least two components must be selected.  The \dQuote{correlation
     loadings}, i.e. the correlations between each variable and the

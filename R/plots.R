@@ -94,22 +94,25 @@ plot.scores <- function(x, ...) scoreplot(x, ...)
 ### Loadingplot
 ###
 
-loadingplot <- function(object, comps = 1:2, scatter = FALSE, labels,
-                        identify = FALSE, type, lty, lwd = NULL, pch,
-                        cex = NULL, col, legendpos, xlab, ylab, ...)
+loadingplot <- function(object, ...) UseMethod("loadingplot")
+
+loadingplot.default <- function(object, comps = 1:2, scatter = FALSE, labels,
+                                identify = FALSE, type, lty, lwd = NULL, pch,
+                                cex = NULL, col, legendpos, xlab, ylab, ...)
 {
+    ## Check arguments
     nComps <- length(comps)
     if (nComps == 0) stop("At least one component must be selected.")
-    if (!missing(type) && sum(nchar(type)) != 1) stop("invalid plot type")
+    if (!missing(type) && sum(nchar(type)) != 1) stop("Invalid plot type.")
+    ## Get the loadings
     if (is.matrix(object)) {
         ## Assume this is already a loading matrix
         L <- object[,comps, drop = FALSE]
-        varlab <- colnames(L)
     } else {
+        ## Try to get the loadings:
         L <- loadings(object)[,comps, drop = FALSE]
         if (is.null(L))
-            stop("`", deparse(substitute(object)), "' has no loadings")
-        varlab <- compnames(object, comps, explvar = TRUE)
+            stop("`", deparse(substitute(object)), "' has no loadings.")
     }
     if (!missing(labels)) {
         ## Set up point/tick mark labels
@@ -121,6 +124,7 @@ loadingplot <- function(object, comps = 1:2, scatter = FALSE, labels,
         }
         labels <- as.character(labels)
     }
+    varlab <- compnames(object, comps, explvar = TRUE)
     if (scatter) {
         ## Scatter plots
         if (missing(type)) type <- "p"

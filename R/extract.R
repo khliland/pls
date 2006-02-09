@@ -77,8 +77,15 @@ naExcludeMvr <- function(omit, x, ...) {
     return(x)
 }
 
-
-## loadings is in stats, but unfortunately doesn't work for prcomp objects).
+## loadings is in stats, but doesn't work for prcomp objects, and is not
+## generic, so we build our own:
+loadings <- function(object, ...) UseMethod("loadings")
+loadings.default <- function(object, ...) {
+    L <- if (inherits(object, "prcomp")) object$rotation else object$loadings
+    if (!inherits(L, "loadings")) class(L) <- "loadings"
+    attr(L, "explvar") <- explvar(object)
+    L
+}
 
 ## scores: Return the scores (also works for prcomp/princomp objects):
 scores <- function(object, ...) UseMethod("scores")
@@ -154,13 +161,13 @@ prednames <- function(object, intercept = FALSE) {
 ## The names of the components:
 ## Note: The components must be selected prior to the format statement
 compnames <- function(object, comps, explvar = FALSE, ...) {
-    S <- if(is.matrix(object)) object else scores(object)
-    labs <- colnames(S)
+    M <- if(is.matrix(object)) object else scores(object)
+    labs <- colnames(M)
     if (missing(comps))
         comps <- seq(along = labs)
     else
         labs <- labs[comps]
-    if (identical(TRUE, explvar) && !is.null(evar <- explvar(S)[comps]))
+    if (identical(TRUE, explvar) && !is.null(evar <- explvar(M)[comps]))
         labs <- paste(labs, " (", format(evar, digits = 2, trim = TRUE),
                       " %)", sep = "")
     return(labs)
@@ -173,5 +180,6 @@ explvar <- function(object)
            mvr = 100 * object$Xvar / object$Xtotvar,
            princomp =,
            prcomp = 100 * object$sdev^2 / sum(object$sdev^2),
-           scores = attr(object, "explvar")
+           scores =,
+           loadings = attr(object, "explvar")
            )
