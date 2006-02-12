@@ -281,7 +281,7 @@ predplot.default <- function(object, ...) {
 ## Method for mvr objects:
 predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
                          nCols, nRows, xlab = "measured", ylab = "predicted",
-                         font.main = 1, cex.main = 1.1, ...)
+                         ..., font.main = 1, cex.main = 1.1)
 {
     ## Select type(s) of prediction
     if (missing(which)) {

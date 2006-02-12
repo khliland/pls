@@ -15,7 +15,7 @@ predplot(object, \dots)
 \method{predplot}{default}(object, \dots)
 \method{predplot}{mvr}(object, ncomp = object$ncomp, which, newdata, nCols, 
          nRows, xlab = "measured", ylab = "predicted",
-         font.main = 1, cex.main = 1.1, \dots)
+         \dots, font.main = 1, cex.main = 1.1)
 predplotXy(x, y, line = FALSE, main = "Prediction plot",
            xlab = "measured response", ylab = "predicted response",
            line.col = par("col"), line.lty = NULL, line.lwd = NULL, \dots)
@@ -70,6 +70,11 @@ predplotXy(x, y, line = FALSE, main = "Prediction plot",
   The functions invisibly returns a matrix with the (last) plotted data.
 }
 \author{Ron Wehrens and Bjørn-Helge Mevik}
+\note{
+  The \code{font.main} and \code{cex.main} must be (completely) named.
+  This is to avoid that any argument \code{cex} or \code{font} matches
+  them.
+}
 \seealso{\code{\link{mvr}}, \code{\link{plot.mvr}}}
 \examples{
 data(NIR)
