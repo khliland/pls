@@ -388,10 +388,11 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
 ## The workhorse function:
 predplotXy <- function(x, y, line = FALSE, main = "Prediction plot",
                        xlab = "measured response",
-                       ylab = "predicted response", ...)
+                       ylab = "predicted response", line.col = par("col"),
+                       line.lty = NULL, line.lwd = NULL, ...)
 {
     plot(y ~ x, main = main, xlab = xlab, ylab = ylab, ...)
-    if (line) abline(0,1)
+    if (line) abline(0, 1, col = line.col, lty = line.lty, lwd = line.lwd)
     invisible(cbind(measured = x, predicted = as.vector(y)))
 }
 
