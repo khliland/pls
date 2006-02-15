@@ -50,6 +50,13 @@ pcr(\dots, method = c("svdpc", "model.frame"))
   \code{ncomp} number of components.  Multi-response models are fully
   supported.
 
+  Three PLSR algorithms are available: the kernel algorithm, SIMPLS and
+  the classical orthogonal scores algorithm.  One PCR algorithm is
+  available: using the singular value decomposition.  The type of
+  regression is specified with the \code{method} argument.  \code{pcr}
+  and \code{plsr}
+  are wrappers for \code{mvr}, with different values for \code{method}.
+
   The \code{formula} argument should be a symbolic formula of the form
   \code{response ~ terms}, where \code{response} is the name of the
   response vector or matrix (for multi-response models) and \code{terms}
@@ -64,12 +71,9 @@ pcr(\dots, method = c("svdpc", "model.frame"))
     Introduction to R} distributed with \R is a good reference on
   formulas in \R.
 
-  Three PLSR algorithms are available: the kernel algorithm, SIMPLS and
-  the classical orthogonal scores algorithm.  One PCR algorithm is
-  available: using the singular value decomposition.  The type of
-  regression is specified with the \code{method} argument.  \code{pcr}
-  and \code{plsr}
-  are wrappers for \code{mvr}, with different values for \code{method}.
+  The number of components to fit is specified with the argument
+  \code{ncomp}.  It this is not supplied, the maximal number of
+  components is used (taking account of any cross-validation).
 
   If \code{validation = "CV"}, cross-validation is performed.  The number and
   type of cross-validation segments are specified with the arguments

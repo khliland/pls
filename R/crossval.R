@@ -51,6 +51,10 @@ crossval <- function(object, segments = 10,
     }
 
     ncomp <- object$ncomp
+    if (ncomp > n - max(sapply(segments, length)) - 1)
+        stop("`ncomp' too large for cross-validation.",
+             "\nPlease refit with `ncomp' less than ",
+             n - max(sapply(segments, length)))
     cvPred <- array(dim = c(n, npred, ncomp))
     adj <- numeric(ncomp)
 
@@ -92,6 +96,6 @@ crossval <- function(object, segments = 10,
     ## Return the original object, with a component `validation' added
     object$validation <- list(method = "CV", pred = cvPred,
                               MSEP0 = MSEP0, MSEP = MSEP, adj = adj / n^2,
-                              R2 = R2, segments = segments)
+                              R2 = R2, segments = segments, ncomp = ncomp)
     return(object)
 }

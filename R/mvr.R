@@ -44,9 +44,11 @@ mvr <- function(formula, ncomp, data, subset, na.action,
     ## Set or check the number of components:
     if (missing(ncomp)) {
         ncomp <- min(nrow(X) - 1, ncol(X))
+        ncompWarn <- FALSE              # Don't warn about changed `ncomp'
     } else {
         if (ncomp < 1 || ncomp > min(nrow(X) - 1, ncol(X)))
             stop("Invalid number of components, ncomp")
+        ncompWarn <- TRUE
     }
 
     ## Handle any fixed scaling before the the validation
@@ -71,6 +73,12 @@ mvr <- function(formula, ncomp, data, subset, na.action,
                val <- NULL
            }
            )
+    ## Check and possibly adjust ncomp:
+    if (isTRUE(ncomp > val$ncomp)) {
+        ncomp <- val$ncomp
+        if (ncompWarn) warning("`ncomp' reduced to ", ncomp,
+                               " due to cross-validation")
+    }
 
     ## Select fit function:
     fitFunc <- switch(method,

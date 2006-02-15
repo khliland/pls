@@ -61,6 +61,13 @@ mvrCv(X, Y, ncomp,
   standard deviation), for instance with
   \code{msc} or other preprocessing.  For such models, use the more
   general (but slower) function \code{\link{crossval}}.
+
+  Also note that if needed, the function will silently(!) reduce
+  \code{ncomp} to the maximal number of components that can be
+  cross-validated, which is \eqn{n - l -  1}, where \eqn{n} is the
+  number of observations and \eqn{l} is the length of the longest
+  segment.  The (possibly reduced) number of components is returned as
+  the component \code{ncomp}.
 }
 \value{
   A list with the following components:
@@ -75,6 +82,7 @@ mvrCv(X, Y, ncomp,
   \item{R2}{a matrix of R2 values for models with 1, \ldots,
     \code{ncomp} components.  Each row corresponds to one response variable.}
   \item{segments}{the list of segments used in the cross-validation.}
+  \item{ncomp}{the actual number of components used.}
 }
 \references{
   Mevik, B.-H., Cederkvist, H. R. (2004) Mean Squared Error of

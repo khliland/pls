@@ -63,6 +63,7 @@ crossval(object, segments = 10,
   \item{R2}{a matrix of R2 values for models with 1, \ldots,
     \code{ncomp} components.  Each row corresponds to one response variable.}
   \item{segments}{the list of segments used in the cross-validation.}
+  \item{ncomp}{the number of components.}
 }
 \references{
   Mevik, B.-H., Cederkvist, H. R. (2004) Mean Squared Error of

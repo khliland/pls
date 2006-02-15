@@ -36,6 +36,9 @@ mvrCv <- function(X, Y, ncomp,
         }
     }
 
+    ## Reduce ncomp, if neccessary:
+    ncomp <- min(ncomp, dx[1] - max(sapply(segments, length)) - 1)
+
     ## Select fit function:
     method <- match.arg(method)
     fitFunc <- switch(method,
@@ -63,7 +66,7 @@ mvrCv <- function(X, Y, ncomp,
         Xtest <- X
         if (scale) Xtest <- sweep(Xtest, 2, sdtrain, "/")
         Xtest <- sweep(Xtest, 2, fit$Xmeans)
-        for (a in 1:ncomp) 
+        for (a in 1:ncomp)
             pred[,,a] <-
                 sweep(Xtest %*% fit$coefficients[,,a], 2, fit$Ymeans, "+")
 
@@ -80,7 +83,7 @@ mvrCv <- function(X, Y, ncomp,
     ## Calculate R2:
     R2 <- matrix(nrow = dy[2], ncol = ncomp)
     for (i in 1:dy[2]) R2[i,] <- cor(cvPred[,i,], Y[,i])^2
-    
+
     ## Add dimnames:
     objnames <- dnX[[1]]
     if (is.null(objnames)) objnames <- dnY[[1]]
@@ -93,5 +96,5 @@ mvrCv <- function(X, Y, ncomp,
 
     list(method = "CV", pred = cvPred,
          MSEP0 = MSEP0, MSEP = MSEP, adj = adj / dx[1]^2,
-         R2 = R2, segments = segments)
+         R2 = R2, segments = segments, ncomp = ncomp)
 }
