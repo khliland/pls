@@ -16,10 +16,6 @@ Wishlist/ideas/thoughts:
    Check scaling of biplot.default (maybe: suggest changes to xlabs/ylabs).
    Also check FIXMEs in code.
 
-.) mvr/mvrCv: check for ncomp <= n - max seg.len - 1.  mvr(..., CV=TRUE)
-  doesn't work (pcr) or gives nonsense results (plsr) without specifying
-  ncomp.  Should we fix that (and how)?
-
 .) Calculate se of MSEP/RMSEP
 
 .) When MSEP/RMSEP calculates se: add +/- se to plot.mvrVal
