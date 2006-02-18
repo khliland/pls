@@ -3,8 +3,9 @@
 ###
 ### $Id$
 
-MSEP <- function(object, estimate, newdata, comps = 1:object$ncomp,
-                 cumulative = TRUE, intercept = cumulative, se = FALSE, ...)
+MSEP <- function(object, ...) UseMethod("MSEP")
+MSEP.mvr <- function(object, estimate, newdata, comps = 1:object$ncomp,
+                     cumulative = TRUE, intercept = cumulative, se = FALSE, ...)
 {
     allEstimates <- c("all", "train", "CV", "adjCV", "test")
     if (missing(estimate)) {
@@ -12,7 +13,7 @@ MSEP <- function(object, estimate, newdata, comps = 1:object$ncomp,
         if (!missing(newdata)) {
             estimate = "test"
         } else {
-            if (!is.null(object$validation)) { 
+            if (!is.null(object$validation)) {
                 estimate = c("CV", "adjCV")
             } else {
                 estimate = "train"
@@ -84,7 +85,7 @@ MSEP <- function(object, estimate, newdata, comps = 1:object$ncomp,
         comps <- c(0, comps)
     else
         z <- z[,,-1, drop = FALSE]
-  
+
     return(structure(list(val = z, type = "MSEP", comps = comps,
                           call = match.call()),
                      class = "mvrVal"))
@@ -92,7 +93,8 @@ MSEP <- function(object, estimate, newdata, comps = 1:object$ncomp,
 
 
 # RMSEP: A wrapper around MSEP to calculate RMSEPs
-RMSEP <- function(...) {
+RMSEP <- function(object, ...) UseMethod("RMSEP")
+RMSEP.mvr <- function(object, ...) {
     cl <- match.call()
     cl[[1]] <- as.name("MSEP")
     z <- eval(cl, parent.frame())
@@ -112,7 +114,7 @@ R2 <- function(object, estimate, newdata, comps = 1:object$ncomp,
         if (!missing(newdata)) {
             estimate = "test"
         } else {
-            if (!is.null(object$validation)) { 
+            if (!is.null(object$validation)) {
                 estimate = "CV"
             } else {
                 estimate = "train"
@@ -163,13 +165,13 @@ R2 <- function(object, estimate, newdata, comps = 1:object$ncomp,
                }
                )
     }
-    
+
     ## Either remove the intercept R2 or add a "zeroth" component:
     if (intercept)
         comps <- c(0, comps)
     else
         z <- z[,,-1, drop = FALSE]
-  
+
     return(structure(list(val = z, type = "R2", comps = comps,
                           call = match.call()),
                      class = "mvrVal"))
@@ -187,7 +189,7 @@ R2 <- function(object, estimate, newdata, comps = 1:object$ncomp,
 #   ## Multiple responses is not supported sofar:
 #   if (is.matrix (obj$Y.mean))
 #     stop ("Multiresponse regression is not supported.")
-  
+
 #   ## I'm using the terminology of section 6.5 in Davison & Hinkley.
 #   data <- model.frame (obj)
 #                                         # Because of R's scoping, I skip
@@ -200,7 +202,7 @@ R2 <- function(object, estimate, newdata, comps = 1:object$ncomp,
 #     resp <- model.response (model.frame (formula (obj), data = data))
 #     D.hatF.hatFstar <- apply (sweep (pred, 1, resp)^2, 2, mean)
 #     vekk <- unique (ind)
-#     D.hatFm.hatFstar <- if (length (vekk) < nrow (data)) 
+#     D.hatFm.hatFstar <- if (length (vekk) < nrow (data))
 #       apply (sweep (pred[-vekk,], 1, resp[-vekk])^2, 2, mean)
 #     else rep (0, length (D.hatF.hatFstar))
 #     return (c (D.hatFstar.hatFstar, D.hatF.hatFstar, D.hatFm.hatFstar, pred))
@@ -241,14 +243,14 @@ R2 <- function(object, estimate, newdata, comps = 1:object$ncomp,
 
 #   ## The original 0.632 estimate:
 #   D.632o <- 0.632 * D.BCV2 + 0.368 * D.hatF.hatF
-  
+
 #   ## The 0.632 estimate:
 #   D.632 <- 0.632 * D.BCV + 0.368 * D.hatF.hatF#(6.55)
-  
+
 #   ## The 2/3 estimates:
 #   D.667 <- 2/3 * D.BCV + 1/3 * D.hatF.hatF
 #   D.667o <- 2/3 * D.BCV2 + 1/3 * D.hatF.hatF
-  
+
 #   ## The 0.632+ estimate (Efron & Tibshirani, 1995)
 #   pred <- as.matrix (drop (fitted (obj)[,A,]))
 #   gamma <- apply (pred^2 - 2*obj$Y.mean*pred, 2, mean) + mean (resp^2)

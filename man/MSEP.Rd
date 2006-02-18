@@ -2,7 +2,9 @@
 \encoding{latin1}
 \name{MSEP}
 \alias{MSEP}
+\alias{MSEP.mvr}
 \alias{RMSEP}
+\alias{RMSEP.mvr}
 \alias{R2}
 \title{MSEP, RMSEP and R2 of PLSR and PCR models}
 \description{
@@ -12,9 +14,13 @@
   estimates are implemented.
 }
 \usage{
-MSEP(object, estimate, newdata, comps = 1:object$ncomp,
+MSEP(object, ...)
+\method{MSEP}{mvr}(object, estimate, newdata, comps = 1:object$ncomp,
      cumulative = TRUE, intercept = cumulative, se = FALSE, \dots)
-RMSEP(\dots)
+
+RMSEP(object, ...)
+\method{RMSEP}{mvr}(object, ...)
+
 R2(object, estimate, newdata, comps = 1:object$ncomp,
    cumulative = TRUE, intercept = cumulative, se = FALSE, \dots)
 }
