@@ -27,6 +27,8 @@ User-visible changes:
 
 Internal changes:
 -----------------
+- MSEP and RMSEP are now generic, with methods for `mvr' objects.
+
 - loadingplot is now generic, with a default method that handles matrices and
   objects whose loadings method return a matrix.
 
@@ -49,8 +51,6 @@ Internal changes:
 - new internal functions fitted.mvr, residuals.mvr and naExcludeMvr to
   handle observations with missing values.
 
-Documentation:
---------------
 
 Changes in 1.1-0
 ================
