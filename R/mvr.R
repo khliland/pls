@@ -52,7 +52,7 @@ mvr <- function(formula, ncomp, data, subset, na.action,
     }
 
     ## Handle any fixed scaling before the the validation
-    sdscale <- isTRUE(scale)            # Signals scaling by sd
+    sdscale <- identical(TRUE, scale)   # Signals scaling by sd
     if (is.numeric(scale))
         if (length(scale) == ncol(X))
             X <- sweep(X, 2, scale, "/")
@@ -74,7 +74,7 @@ mvr <- function(formula, ncomp, data, subset, na.action,
            }
            )
     ## Check and possibly adjust ncomp:
-    if (isTRUE(ncomp > val$ncomp)) {
+    if (identical(TRUE, ncomp > val$ncomp)) {
         ncomp <- val$ncomp
         if (ncompWarn) warning("`ncomp' reduced to ", ncomp,
                                " due to cross-validation")

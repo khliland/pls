@@ -1,16 +1,17 @@
 $Id$
 
-Changes since 1.1-0:
+Changes in 1.2-0
+================
 
 New features:
 -------------
-- Line plot parameter arguments have been added to predplotXy, so one can
-  control the properties of the target line in predplot.
+- Line plot parameter arguments have been added to predplotXy(), so one can
+  control the properties of the target line in predplot().
 
-- predict.mvr now handles missing data like predict.lm does (the default is to
-  predict 'NA').
+- The `mvr' method for predict() now handles missing data like the `lm'
+  method does (the default is to predict `NA').
 
-- fitted and residuals now return NA for observations with missing values,
+- fitted() and residuals() now return NA for observations with missing values,
   if na.action is na.exclude.
 
 Bug fixes:
@@ -18,37 +19,38 @@ Bug fixes:
 - `ncomp' is now reduced when it is too large for the requested 
   cross-validation.
 
-- The (optional) plot parametres "cex" and "font" were incorrectly matched
-  with "cex.main" and "font.main" in predplot.
+- The (optional) plot parametres `cex' and `font' were incorrectly matched
+  with `cex.main' and `font.main' in predplot().
 
 User-visible changes:
 ---------------------
-- predict.mvr now checks the number of coloumns of newdata when it is a matrix.
+- The `mvr' method for predict() now checks the number of coloumns of
+  `newdata' when it is a matrix.
 
 Internal changes:
 -----------------
-- MSEP and RMSEP are now generic, with methods for `mvr' objects.
+- MSEP() and RMSEP() are now generic, with methods for `mvr' objects.
 
-- loadingplot is now generic, with a default method that handles matrices and
-  objects whose loadings method return a matrix.
+- loadingplot() is now generic, with a default method that handles matrices and
+  objects whose loadings() method return a matrix.
 
-- A new function 'loadings'.  It is generic, with a default method that
-  handles prcomp objects and anything with a "loadings" component.
+- A new function loadings().  It is generic, with a default method that
+  handles `prcomp' objects and anything with a `loadings' component.
 
-- scoreplot is now generic, with a default method that handles matrices and
-  objects whose scores method return a matrix.
+- scoreplot() is now generic, with a default method that handles matrices and
+  objects whose scores() method return a matrix.
 
-- The prcomp method for scores has been removed.  The default method now
-  handles prcomp objects as an exception.  scores also attaches the explained
-  variances (if available) as the attribute "explvar".
+- The `prcomp' method for scores() has been removed.  The default method now
+  handles `prcomp' objects as an exception.  scores() now also attaches the
+  explained variances (if available) as the attribute `explvar'.
 
-- compnames now handles matrices as well as objects with score matrices
+- compnames() now handles matrices as well as objects with score matrices
 
-- explvar now also hanles score and loadings matrices
+- explvar() now also hanles score and loadings matrices
 
-- mvr now returns a na.action component.
+- mvr() now returns a `na.action' component.
 
-- new internal functions fitted.mvr, residuals.mvr and naExcludeMvr to
+- new internal functions fitted.mvr(), residuals.mvr() and naExcludeMvr() to
   handle observations with missing values.
 
 
