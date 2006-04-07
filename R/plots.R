@@ -198,8 +198,8 @@ plot.loadings <- function(x, ...) loadingplot(x, ...)
 ### Correlation loadings plot
 ###
 
-corrplot <- function(object, comps = 1:2, labels, identify = FALSE,
-                     type = "p", xlab, ylab, ...) {
+corrplot <- function(object, comps = 1:2, labels, radii = c(sqrt(1/2), 1),
+                     identify = FALSE, type = "p", xlab, ylab, ...) {
     nComps <- length(comps)
     if (nComps < 2) stop("At least two components must be selected.")
     if (is.matrix(object)) {
@@ -224,14 +224,21 @@ corrplot <- function(object, comps = 1:2, labels, identify = FALSE,
         labels <- as.character(labels)
         type <- "n"
     }
+    ## Build the expression to add circles:
+    if (length(radii)) {
+        addcircles <- substitute(symbols(cent, cent, circles = radii,
+                                         inches = FALSE, add = TRUE),
+                                 list(cent = rep(0, length(radii))))
+    } else {
+        addcircles <- expression()
+    }
     if (nComps == 2) {
         ## Second component versus first
         if (missing(xlab)) xlab <- varlab[1]
         if (missing(ylab)) ylab <- varlab[2]
         plot(cl, xlim = c(-1,1), ylim = c(-1,1), asp = 1,
              xlab = xlab, ylab = ylab, type = type, ...)
-        symbols(c(0, 0), c(0, 0), circles = c(0.5, 1), inches = FALSE,
-                add = TRUE)
+        eval(addcircles)
         segments(x0 = c(-1, 0), y0 = c(0, -1), x1 = c(1, 0), y1 = c(0, 1))
         if (!missing(labels)) text(cl, labels, ...)
         if (identify) {
@@ -251,13 +258,12 @@ corrplot <- function(object, comps = 1:2, labels, identify = FALSE,
         panel <- function(x, y, ...) {
             ## Ignore the leading `ghost points':
             pointsOrText(x[-(1:2)], y[-(1:2)], ...)
-            symbols(c(0, 0), c(0, 0), circles = c(0.5, 1),
-                    inches = FALSE, add = TRUE)
+            eval(addcircles)
             segments(x0 = c(-1, 0), y0 = c(0, -1), x1 = c(1, 0),
                      y1 = c(0, 1))
         }
         ## Call `pairs' with two leading `ghost points', to get
-        ## correct xlab and ylab:
+        ## correct xlim and ylim:
         pairs(rbind(-1, 1, cl), labels = varlab, panel = panel, asp = 1, ...)
     }
 }

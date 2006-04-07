@@ -25,8 +25,8 @@ loadingplot(object, \dots)
             col, legendpos, xlab, ylab, \dots)
 \method{plot}{loadings}(x, \dots)
 
-corrplot(object, comps = 1:2, labels, identify = FALSE, type = "p",
-          xlab, ylab, \dots)
+corrplot(object, comps = 1:2, labels, radii = c(sqrt(1/2), 1),
+         identify = FALSE, type = "p", xlab, ylab, \dots)
 }
 \arguments{
   \item{object}{an \R object.  The fitted model.}
@@ -38,6 +38,9 @@ corrplot(object, comps = 1:2, labels, identify = FALSE, type = "p",
     label the \eqn{x} axis tick marks.  Either a vector (of length > 1)
     of labels, or one of \code{"names"} and \code{"numbers"} for using
     row names and row numbers, respectively.}
+  \item{radii}{numeric vector, giving the radii of the circles drawn in
+    \code{corrplot}.  The default radii represent 50\% and 100\%
+    explained variance of the \eqn{X} variables by the chosen components.}
   \item{identify}{logical.  Whether to use \code{identify} to
     interactively identify points.  See below.}
   \item{type}{character.  What type of plot to make.  Defaults to
@@ -91,11 +94,15 @@ corrplot(object, comps = 1:2, labels, identify = FALSE, type = "p",
   if \code{legendpos} is given, a legend is drawn at the position
   indicated.
 
-  \code{corrplot} works exactly like the default \code{scoreplot} method, except that at
-  least two components must be selected.  The \dQuote{correlation
-    loadings}, i.e. the correlations between each variable and the
-  selected components, are plotted as pairwise scatter plots, with
-  two concentric circles of radius 0.5 and 1.
+  \code{corrplot} works exactly like the default \code{scoreplot}
+  method, except that at least two components must be selected.  The
+  \dQuote{correlation loadings}, i.e. the correlations between each
+  variable and the selected components, are plotted as pairwise scatter
+  plots, with concentric circles of radii given by \code{radii}.  Each
+  point corresponds to an \eqn{X} variable.  The squared distance
+  between the point and origo equals the fraction of the variance of the
+  variable explained by the components in the panel.  The default
+  \code{radii} corresponds to 50\% and 100\% explained variance.
 
   \code{scoreplot}, \code{loadingplot} and \code{corrplot} can also be
   called through the plot method for \code{mvr} objects, by specifying
