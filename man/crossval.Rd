@@ -33,6 +33,9 @@ crossval(object, segments = 10,
   \code{crossval(mvr(\dots))} is identical to \code{mvr(\dots,
     validation = "CV")}, but slower.
 
+  Note that to use \code{crossval}, the data \emph{must} be specified
+  with a \code{data} argument when fitting \code{object}.
+
   If \code{segments} is a list, the arguments \code{segment.type} and
   \code{length.seg} are ignored.  The elements of the list should be
   integer vectors specifying the indices of the segments.  See
