@@ -26,8 +26,8 @@ kernelpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
     X <- sweep(X, 2, Xmeans)
     Ymeans <- colMeans(Y)
     Y <- sweep(Y, 2, Ymeans)
-  
-    PP <- matrix(0, ncol = ncomp, nrow = nvar) # X loadings
+
+    WW <- PP <- matrix(0, ncol = ncomp, nrow = nvar) # X loadings
     QQ <- matrix(0, ncol = ncomp, nrow = npred)# Y loadings
     TT <- matrix(0, ncol = ncomp, nrow = nobj)
     RR <- matrix(0, ncol = ncomp, nrow = nvar)
@@ -37,24 +37,21 @@ kernelpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
         UU <- matrix(0, ncol = ncomp, nrow = nobj)
         Ypred <- array(0, c(nobj, npred, ncomp))
     }
-  
+
     XtY <- crossprod(X, Y)
     for (a in 1:ncomp) {
         if (npred == 1)
             ww <- XtY
         else {
-            if (npred > nvar)
-                qq <- La.svd(XtY)$vt[1,]
-            else
-                qq <- La.svd(XtY)$u[1,]
+            qq <- La.svd(XtY)$vt[1,]
             ww <- XtY %*% qq
         }
-    
+
         rr <- ww
         if (a > 1)
             for (j in 1:(a - 1))
                 rr <- rr - (PP[,j] %*% ww) * RR[,j]
-    
+
         tt <- X %*% rr
         tt <- tt - mean(tt)             # centered X scores
         tnorm <- sqrt(sum(tt * tt))
@@ -65,16 +62,19 @@ kernelpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
         uu <- Y %*% matrix(qq, ncol = 1) # Y block factor scores
         if (a > 1)
             uu <- uu - TT %*% crossprod(TT, uu) # uu orth to previous tt values
-    
+
         ## Now deflate crossprod matrices
         XtY <- XtY - (pp %*% qq)
-    
+
         ## store weights and loadings
         TT[,a] <- tt
-        PP[,a] <- pp 
+        PP[,a] <- pp
         QQ[,a] <- qq
         RR[,a] <- rr
-        if (!stripped) UU[,a] <- uu
+        if (!stripped) {
+            WW[,a] <- ww
+            UU[,a] <- uu
+        }
 
         B[,,a] <- RR[,1:a, drop=FALSE] %*% t(QQ[,1:a, drop=FALSE])
         if (!stripped) Ypred[,,a] <- X %*% B[,,a]
@@ -95,16 +95,18 @@ kernelpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
         compnames <- paste("Comp", 1:ncomp)
         nCompnames <- paste(1:ncomp, "comps")
         dimnames(TT) <- dimnames(UU) <- list(objnames, compnames)
-        dimnames(RR) <- dimnames(PP) <- list(xvarnames, compnames)
+        dimnames(RR) <- dimnames(WW) <- dimnames(PP) <-
+            list(xvarnames, compnames)
         dimnames(QQ) <- list(yvarnames, compnames)
         dimnames(B) <- list(xvarnames, yvarnames, nCompnames)
         dimnames(Ypred) <- dimnames(residuals) <-
             list(objnames, yvarnames, nCompnames)
         class(TT) <- class(UU) <- "scores"
-        class(PP) <- class(QQ) <- "loadings"
+        class(WW) <- class(PP) <- class(QQ) <- "loadings"
 
         list(coefficients = B,
              scores = TT, loadings = PP,
+             loading.weights = WW,
              Yscores = UU, Yloadings = QQ,
              projection = RR,
              Xmeans = Xmeans, Ymeans = Ymeans,

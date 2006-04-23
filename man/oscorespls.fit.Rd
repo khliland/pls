@@ -5,7 +5,8 @@
 \title{Orthogonal scores PLSR}
 \description{Fits a PLSR model with the orthogonal scores algorithm
 (aka the NIPALS algorithm).}
-\usage{oscorespls.fit(X, Y, ncomp, stripped = FALSE, tol = 1e-6, \dots)}
+\usage{oscorespls.fit(X, Y, ncomp, stripped = FALSE,
+               tol = .Machine$double.eps^0.5, \dots)}
 \arguments{
   \item{X}{a matrix of observations.  \code{NA}s and \code{Inf}s are not
     allowed.} 

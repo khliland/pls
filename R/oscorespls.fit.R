@@ -1,10 +1,10 @@
 ### oscorespls.fit.R: The multiresponse orthogonal scores
 ### algorithm (Martens and Næs, pp. 121--122 and 157--158)
 ###
-### By Bjørn-Helge Mevik
 ### $Id$
 
-oscorespls.fit <- function(X, Y, ncomp, stripped = FALSE, tol = 1e-6, ...)
+oscorespls.fit <- function(X, Y, ncomp, stripped = FALSE,
+                           tol = .Machine$double.eps^0.5, ...)
 {
     ## Initialise
     Y <- as.matrix(Y)
@@ -106,7 +106,7 @@ oscorespls.fit <- function(X, Y, ncomp, stripped = FALSE, tol = 1e-6, ...)
         list(coefficients = B, Xmeans = X.mean, Ymeans = Y.mean)
     } else {
         fitted <- sweep(fitted, 2, Y.mean, "+") # Add mean
-    
+
         ## Add dimnames and classes:
         objnames <- dnX[[1]]
         if (is.null(objnames)) objnames <- dnY[[1]]
@@ -122,7 +122,7 @@ oscorespls.fit <- function(X, Y, ncomp, stripped = FALSE, tol = 1e-6, ...)
             list(objnames, yvarnames, nCompnames)
         class(TEE) <- class(U) <- "scores"
         class(P) <- class(W) <- class(Q) <- "loadings"
-    
+
         list(coefficients = B,
              scores = TEE, loadings = P,
              loading.weights = W,

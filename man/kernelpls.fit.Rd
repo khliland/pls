@@ -37,6 +37,7 @@
     predicted in \code{Y}.}
   \item{scores}{a matrix of scores.}
   \item{loadings}{a matrix of loadings.}
+  \item{loading.weights}{a matrix of loading weights.}
   \item{Yscores}{a matrix of Y-scores.}
   \item{Yloadings}{a matrix of Y-loadings.}
   \item{projection}{the projection matrix used to convert X to scores.}
