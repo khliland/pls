@@ -1,5 +1,29 @@
 $Id$
 
+Changes in 1.2-1
+================
+
+New features:
+-------------
+- It is now possible to select the radii of the circles in corrplot
+
+Bug fixes:
+----------
+- Fixed bug in kernelpls.fit() that resulted in incorrect results when fitting
+  mulitresponse models with fewer responses than predictors
+
+User-visible changes:
+---------------------
+- The default convergence tolerance limit (when fitting multiresponse models)
+  in oscorespls.fit() has been changed
+
+- Changed default radii in corrplot()
+
+- kernelpls.fit() now returns loading.weights
+
+- crossval() now checks whether the model was fit with a `data' argument
+
+
 Changes in 1.2-0
 ================
 
