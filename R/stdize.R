@@ -19,7 +19,7 @@ stdize <- function(x, center = TRUE, scale = TRUE) {
             scale <- sqrt(colSums(sweep(x, 2, colMeans(x))^2) / (nrow(x) - 1))
             x <- sweep(x, 2, scale, "/")
         }
-    } else if (is.numeric(scale) && length(scale) == nc) 
+    } else if (is.numeric(scale) && length(scale) == nc)
         x <- sweep(x, 2, scale, "/")
     else stop("invalid 'scale'")
     if (is.numeric(center)) attr(x, "stdized:center") <- center
@@ -50,4 +50,13 @@ makepredictcall.stdized <- function(var, call) {
     if (!is.null(z <- attr(var, "stdized:scale")))
         call$scale <- z
     call
+}
+
+
+## An optimized function for subtracting values from the coloumns of a
+## matrix (or more generally, the 2. dimension of an array).
+## Note that no tests of the arguments are performed, so take care!
+colsubtract <- function(x, vals) {
+    ## The c() is neccessary when length(dim(x)) > 2.  It could be if'ed out
+    x - c(matrix(1, nrow = dim(x)[1], ncol = 1) %*% vals)
 }
