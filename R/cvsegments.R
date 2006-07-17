@@ -9,6 +9,9 @@ cvsegments <- function(N, k, length.seg = ceiling(N / k),
     incomplete <- k * length.seg - N    # Number of incomplete segments
     complete <- k - incomplete          # Number of complete segments
 
+    ## Check arguments:
+    if (N < k) stop("More segments than observations requested")
+
     ## The idea is to generate a k times length.seg matrix with indices, and
     ## use each row as a segment.  If k*length.seg > N, the last element of
     ## the N - k*length.seg last rows will be NA.  Any NAs are stripped when
