@@ -5,7 +5,7 @@
 
 mvrCv <- function(X, Y, ncomp,
                   ## Maybe use FUN directly?
-                  method = c("kernelpls", "simpls", "oscorespls", "svdpc"),
+                  method = pls.options()$mvrarg,
                   scale = FALSE, segments = 10,
                   segment.type = c("random", "consecutive", "interleaved"),
                   length.seg, trace = FALSE, ...)
@@ -40,7 +40,7 @@ mvrCv <- function(X, Y, ncomp,
     ncomp <- min(ncomp, dx[1] - max(sapply(segments, length)) - 1)
 
     ## Select fit function:
-    method <- match.arg(method)
+    method <- match.arg(method,c("kernelpls", "simpls", "oscorespls", "svdpc"))
     fitFunc <- switch(method,
                       simpls = simpls.fit,
                       kernelpls = kernelpls.fit,

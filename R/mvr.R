@@ -6,7 +6,7 @@
 ## correct fit function to do the work.
 ## The function borrows heavily from lm().
 mvr <- function(formula, ncomp, data, subset, na.action,
-                method = c("kernelpls", "simpls", "oscorespls", "svdpc", "model.frame"),
+                method = pls.options()$mvralg,
                 scale = FALSE, validation = c("none", "CV", "LOO"),
                 model = TRUE, x = FALSE, y = FALSE, ...)
 {
@@ -18,7 +18,8 @@ mvr <- function(formula, ncomp, data, subset, na.action,
     mf <- mf[c(1, m)]                # Retain only the named arguments
     mf[[1]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
-    method <- match.arg(method)
+    method <- match.arg(method, c("kernelpls", "simpls", "oscorespls",
+                                  "svdpc", "model.frame"))
     if (method == "model.frame") return(mf)
     ## Get the terms
     mt <- attr(mf, "terms")        # This is to include the `predvars'
