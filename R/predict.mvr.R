@@ -16,7 +16,7 @@ predict.mvr <- function(object, newdata, comps = 1:object$ncomp,
         m <- model.frame(Terms, newdata, na.action = na.action)
         if (!is.null(cl <- attr(Terms, "dataClasses")))
             .checkMFClasses(cl, m)
-        newX <- model.matrix(Terms, m)
+        newX <- delete.intercept(model.matrix(Terms, m))
     }
     ## Perform any scaling:
     if (!is.null(object$scale)) newX <- sweep(newX, 2, object$scale, "/")

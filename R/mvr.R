@@ -24,7 +24,6 @@ mvr <- function(formula, ncomp, data, subset, na.action,
     ## Get the terms
     mt <- attr(mf, "terms")        # This is to include the `predvars'
                                    # attribute of the terms
-    attr(mt, "intercept") <- 0          # Remove the intercept term
     ## Get the data matrices
     Y <- model.response(mf, "numeric")
     if (is.matrix(Y)) {
@@ -34,7 +33,7 @@ mvr <- function(formula, ncomp, data, subset, na.action,
         Y <- as.matrix(Y)
         colnames(Y) <- deparse(formula[[2]])
     }
-    X <- model.matrix(mt, mf)
+    X <- delete.intercept(model.matrix(mt, mf))
     ## model.matrix prepends the term name to the colnames of matrices.
     ## If there is only one predictor term, and the corresponding matrix
     ## has colnames, remove the prepended term name:
