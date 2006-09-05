@@ -97,7 +97,7 @@ corrplot(object, comps = 1:2, labels, radii = c(sqrt(1/2), 1),
   \code{corrplot} works exactly like the default \code{scoreplot}
   method, except that at least two components must be selected.  The
   \dQuote{correlation loadings}, i.e. the correlations between each
-  variable and the selected components, are plotted as pairwise scatter
+  variable and the selected components (see References), are plotted as pairwise scatter
   plots, with concentric circles of radii given by \code{radii}.  Each
   point corresponds to an \eqn{X} variable.  The squared distance
   between the point and origo equals the fraction of the variance of the
@@ -112,6 +112,12 @@ corrplot(object, comps = 1:2, labels, radii = c(sqrt(1/2), 1),
 \value{
   The functions return whatever the underlying plot function (or
   \code{identify}) returns.
+}
+\references{
+  Martens, H., Martens, M. (2000) Modified Jack-knife Estimation of
+  Parameter Uncertainty in Bilinear Modelling by Partial Least Squares
+  Regression (PLSR).
+  \emph{Food Quality and Preference}, \bold{11}(1--2), 5--16.
 }
 \author{Ron Wehrens and Bjørn-Helge Mevik}
 \note{\code{\link{legend}} has many options.  If you want greater
