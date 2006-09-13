@@ -1,4 +1,4 @@
-### svdpc.fit.R: SVD PC fit algorithm.
+### svdpc.fit.R: SVD PC fit algorithm
 ### $Id$
 
 svdpc.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
@@ -9,60 +9,65 @@ svdpc.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
         dnX <- dimnames(X)
         dnY <- dimnames(Y)
     }
-    ## Remove dimnames during calculation.  This can save time!
-    dimnames(X) <- dimnames(Y) <- NULL
+    ## Remove dimnames during calculation  (doesn't seem to matter; in fact,
+    ## as far as it has any effect, it hurts a tiny bit in most situations).
+    ## dimnames(X) <- dimnames(Y) <- NULL
+
+    nobj <- dim(X)[1]
+    npred <- dim(X)[2]
+    nresp <- dim(Y)[2]
+
+    B <- array(0, dim = c(npred, nresp, ncomp))
+    if (!stripped) fitted <- array(0, dim = c(nobj, nresp, ncomp))
 
     ## Center variables:
     Xmeans <- colMeans(X)
-    X <- sweep(X, 2, Xmeans)
+    X <- colsubtract(X, Xmeans)
     Ymeans <- colMeans(Y)
-    Y <- sweep(Y, 2, Ymeans)
-
-    B <- array(0, c(dim(X)[2], dim(Y)[2], ncomp))
-
-    if (!stripped) Ypred <- array(0, c(dim(X)[1], dim(Y)[2], ncomp))
+    Y <- colsubtract(Y, Ymeans)
 
     huhn <- La.svd(X)
-    U <- huhn$u[,1:ncomp, drop=FALSE]
     D <- huhn$d[1:ncomp]
-    Vt <- huhn$vt[1:ncomp,, drop=FALSE]
+    TT <- huhn$u[,1:ncomp, drop=FALSE] %*% diag(D)
+    P <- t(huhn$vt[1:ncomp,, drop=FALSE])
+    tQ <- crossprod(TT, Y) / D^2
 
-    for (i in 1:ncomp) {
-        B[,,i] <- t(Vt[1:i,, drop=FALSE]) %*%
-            diag(1 / D[1:i], nrow = i) %*%
-                t(U[,1:i, drop=FALSE]) %*% Y
-        if (!stripped) Ypred[,,i] <- X %*% B[,,i]
+    for (a in 1:ncomp) {
+        B[,,a] <- P[,1:a, drop=FALSE] %*% tQ[1:a,]
+        if (!stripped) fitted[,,a] <- TT[,1:a, drop=FALSE] %*% tQ[1:a,]
     }
 
     if (stripped) {
         ## Return as quickly as possible
         list(coefficients = B, Xmeans = Xmeans, Ymeans = Ymeans)
     } else {
-        residuals <- - Ypred + c(Y)
-        Ypred <- sweep(Ypred, 2, Ymeans, "+")# Add mean
-        loadings <- t(Vt * D)
-        projection <- t(Vt / D)
+        residuals <- c(Y) - fitted
+        fitted <- colsubtract(fitted, -Ymeans) # Add mean
 
         ## Add dimnames and classes:
         objnames <- dnX[[1]]
         if (is.null(objnames)) objnames <- dnY[[1]]
-        xvarnames <- dnX[[2]]
-        yvarnames <- dnY[[2]]
+        prednames <- dnX[[2]]
+        respnames <- dnY[[2]]
         compnames <- paste("Comp", 1:ncomp)
         nCompnames <- paste(1:ncomp, "comps")
-        dimnames(U) <- list(objnames, compnames)
-        dimnames(loadings) <- dimnames(projection) <- list(xvarnames, compnames)
-        dimnames(B) <- list(xvarnames, yvarnames, nCompnames)
-        dimnames(Ypred) <- dimnames(residuals) <-
-            list(objnames, yvarnames, nCompnames)
+        dimnames(TT) <- list(objnames, compnames)
+        dimnames(P) <- list(prednames, compnames)
+        dimnames(tQ) <- list(compnames, respnames)
+        dimnames(B) <- list(prednames, respnames, nCompnames)
+        dimnames(fitted) <- dimnames(residuals) <-
+            list(objnames, respnames, nCompnames)
         names(D) <- compnames
+        class(TT) <- "scores"
+        R <- P                          # To avoid class "loadings" on projection
+        class(P) <- class(tQ) <- "loadings"
 
         list(coefficients = B,
-             scores = structure(U[,1:ncomp, drop=FALSE], class = "scores"),
-             loadings = loadings,
-             projection = projection,
+             scores = TT, loadings = P,
+             Yloadings = t(tQ),
+             projection = R,
              Xmeans = Xmeans, Ymeans = Ymeans,
-             fitted.values = Ypred, residuals = residuals,
-             Xvar = D^2, Xtotvar = sum(X^2))
+             fitted.values = fitted, residuals = residuals,
+             Xvar = D^2, Xtotvar = sum(X * X))
     }
 }
