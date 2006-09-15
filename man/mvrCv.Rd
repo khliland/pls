@@ -71,7 +71,7 @@ mvrCv(X, Y, ncomp,
 }
 \value{
   A list with the following components:
-  \item{method}{euqals \code{"CV"} for cross-validation.}
+  \item{method}{equals \code{"CV"} for cross-validation.}
   \item{pred}{an array with the cross-validated predictions.}
   \item{MSEP0}{a vector of MSEP values (one for each response variable)
     for a model with zero components, i.e., only the intercept.}
