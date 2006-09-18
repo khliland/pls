@@ -1,10 +1,11 @@
 ### mvr.R: plsr/pcr modelling functions
 ###
 ### $Id$
+###
+### The top level user function.  Implements a formula interface and calls the
+### correct fit function to do the work.
+### The function borrows heavily from lm().
 
-## The top level user function.  Implements a formula interface and calls the
-## correct fit function to do the work.
-## The function borrows heavily from lm().
 mvr <- function(formula, ncomp, data, subset, na.action,
                 method = pls.options()$mvralg,
                 scale = FALSE, validation = c("none", "CV", "LOO"),
@@ -12,6 +13,7 @@ mvr <- function(formula, ncomp, data, subset, na.action,
 {
     ret.x <- x                          # More useful names
     ret.y <- y
+
     ## Get the model frame
     mf <- match.call(expand.dots = FALSE)
     m <- match(c("formula", "data", "subset", "na.action"), names(mf), 0)
@@ -34,6 +36,10 @@ mvr <- function(formula, ncomp, data, subset, na.action,
         colnames(Y) <- deparse(formula[[2]])
     }
     X <- delete.intercept(model.matrix(mt, mf))
+
+    nobj <- dim(X)[1]
+    npred <- dim(X)[2]
+
     ## model.matrix prepends the term name to the colnames of matrices.
     ## If there is only one predictor term, and the corresponding matrix
     ## has colnames, remove the prepended term name:
@@ -43,10 +49,10 @@ mvr <- function(formula, ncomp, data, subset, na.action,
 
     ## Set or check the number of components:
     if (missing(ncomp)) {
-        ncomp <- min(nrow(X) - 1, ncol(X))
+        ncomp <- min(nobj - 1, npred)
         ncompWarn <- FALSE              # Don't warn about changed `ncomp'
     } else {
-        if (ncomp < 1 || ncomp > min(nrow(X) - 1, ncol(X)))
+        if (ncomp < 1 || ncomp > min(nobj - 1, npred))
             stop("Invalid number of components, ncomp")
         ncompWarn <- TRUE
     }
@@ -54,8 +60,8 @@ mvr <- function(formula, ncomp, data, subset, na.action,
     ## Handle any fixed scaling before the the validation
     sdscale <- identical(TRUE, scale)   # Signals scaling by sd
     if (is.numeric(scale))
-        if (length(scale) == ncol(X))
-            X <- sweep(X, 2, scale, "/")
+        if (length(scale) == npred)
+            X <- X / rep(scale, each = nobj)
         else stop("length of 'scale' must equal the number of x variables")
 
     ## Optionally, perform validation:
@@ -64,7 +70,7 @@ mvr <- function(formula, ncomp, data, subset, na.action,
                val <- mvrCv(X, Y, ncomp, method = method, scale = sdscale, ...)
            },
            LOO = {
-               segments <- as.list(1:nrow(X))
+               segments <- as.list(1:nobj)
                attr(segments, "type") <- "leave-one-out"
                val <- mvrCv(X, Y, ncomp, method = method, scale = sdscale,
                             segments = segments, ...)
@@ -90,8 +96,9 @@ mvr <- function(formula, ncomp, data, subset, na.action,
     ## Perform any scaling by sd:
     if (sdscale) {
         ## This is faster than sd(X), but cannot handle missing values:
-        scale <- sqrt(colSums(sweep(X, 2, colMeans(X))^2) / (nrow(X) - 1))
-        X <- sweep(X, 2, scale, "/")
+        scale <- sqrt(colSums((X - rep(colMeans(X), each = nobj))^2) /
+                      (nobj - 1))
+        X <- X / rep(scale, each = nobj)
     }
 
     ## Fit the model:
