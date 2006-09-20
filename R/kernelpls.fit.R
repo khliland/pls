@@ -29,9 +29,9 @@ kernelpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
 
     ## Center variables:
     Xmeans <- colMeans(X)
-    X <- colsubtract(X, Xmeans)
+    X <- X - rep(Xmeans, each = nobj)
     Ymeans <- colMeans(Y)
-    Y <- colsubtract(Y, Ymeans)
+    Y <- Y - rep(Ymeans, each = nobj)
 
     ## Projection, loadings
     R <- P <- matrix(0, ncol = ncomp, nrow = npred)
@@ -108,7 +108,7 @@ kernelpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
         list(coefficients = B, Xmeans = Xmeans, Ymeans = Ymeans)
     } else {
         residuals <- - fitted + c(Y)
-        fitted <- colsubtract(fitted, -Ymeans) # Add mean
+        fitted <- fitted + rep(Ymeans, each = nobj) # Add mean
 
         ## Add dimnames:
         objnames <- dnX[[1]]

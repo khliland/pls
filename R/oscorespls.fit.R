@@ -34,9 +34,9 @@ oscorespls.fit <- function(X, Y, ncomp, stripped = FALSE,
 
     ## C1
     Xmeans <- colMeans(X)
-    X <- colsubtract(X, Xmeans)
+    X <- X - rep(Xmeans, each = nobj)
     Ymeans <- colMeans(Y)
-    Y <- colsubtract(Y, Ymeans)
+    Y <- Y - rep(Ymeans, each = nobj)
 
     ## Must be done here due to the deflation of X
     if (!stripped) Xtotvar <- sum(X * X)
@@ -80,7 +80,7 @@ oscorespls.fit <- function(X, Y, ncomp, stripped = FALSE,
 
         ## C2.3 contd.
         p.a <- crossprod(X, t.tt)
-        
+
         ## C2.5
         X <- X - t.a %*% t(p.a)
         Y <- Y - t.a %*% t(q.a)
@@ -125,7 +125,7 @@ oscorespls.fit <- function(X, Y, ncomp, stripped = FALSE,
         ## Return as quickly as possible
         list(coefficients = B, Xmeans = Xmeans, Ymeans = Ymeans)
     } else {
-        fitted <- colsubtract(fitted, -Ymeans) # Add mean
+        fitted <- fitted + rep(Ymeans, each = nobj) # Add mean
 
         ## Add dimnames and classes:
         objnames <- dnX[[1]]

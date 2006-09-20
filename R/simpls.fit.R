@@ -33,10 +33,10 @@ simpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
 
     ## Center variables:
     Xmeans <- colMeans(X)
-    X <- colsubtract(X, Xmeans)         # This is not strictly neccessary
+    X <- X - rep(Xmeans, each = nobj)   # This is not strictly neccessary
                                         # (but might be good for accuracy?)!
     Ymeans <- colMeans(Y)
-    Y <- colsubtract(Y, Ymeans)
+    Y <- Y - rep(Ymeans, each = nobj)
 
     S <- crossprod(X, Y)
 
@@ -93,7 +93,7 @@ simpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
         list(coefficients = B, Xmeans = Xmeans, Ymeans = Ymeans)
     } else {
         residuals <- - fitted + c(Y)
-        fitted <- colsubtract(fitted, -Ymeans) # Add mean
+        fitted <- fitted + rep(Ymeans, each = nobj) # Add mean
 
         ## Add dimnames and classes:
         objnames <- dnX[[1]]

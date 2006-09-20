@@ -22,9 +22,9 @@ svdpc.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
 
     ## Center variables:
     Xmeans <- colMeans(X)
-    X <- colsubtract(X, Xmeans)
+    X <- X - rep(Xmeans, each = nobj)
     Ymeans <- colMeans(Y)
-    Y <- colsubtract(Y, Ymeans)
+    Y <- Y - rep(Ymeans, each = nobj)
 
     huhn <- La.svd(X)
     D <- huhn$d[1:ncomp]
@@ -42,7 +42,7 @@ svdpc.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
         list(coefficients = B, Xmeans = Xmeans, Ymeans = Ymeans)
     } else {
         residuals <- c(Y) - fitted
-        fitted <- colsubtract(fitted, -Ymeans) # Add mean
+        fitted <- fitted + rep(Ymeans, each = nobj) # Add mean
 
         ## Add dimnames and classes:
         objnames <- dnX[[1]]

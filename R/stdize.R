@@ -51,12 +51,3 @@ makepredictcall.stdized <- function(var, call) {
         call$scale <- z
     call
 }
-
-
-## An optimized function for subtracting values from the coloumns of a
-## matrix (or more generally, the 2. dimension of an array).
-## Note that no tests of the arguments are performed, so take care!
-colsubtract <- function(x, vals) {
-    ## The c() is neccessary when length(dim(x)) > 2.  It could be if'ed out
-    x - c(matrix(1, nrow = dim(x)[1], ncol = 1) %*% vals)
-}
