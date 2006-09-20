@@ -19,7 +19,7 @@ stdize <- function(x, center = TRUE, scale = TRUE) {
             scale <- sqrt(colSums(sweep(x, 2, colMeans(x))^2) / (nrow(x) - 1))
             x <- sweep(x, 2, scale, "/")
         }
-    } else if (is.numeric(scale) && length(scale) == nc) 
+    } else if (is.numeric(scale) && length(scale) == nc)
         x <- sweep(x, 2, scale, "/")
     else stop("invalid 'scale'")
     if (is.numeric(center)) attr(x, "stdized:center") <- center

@@ -31,6 +31,7 @@
     predicted in \code{Y}.}
   \item{scores}{a matrix of scores.}
   \item{loadings}{a matrix of loadings.}
+  \item{Yloadings}{a matrix of Y-loadings.}
   \item{projection}{the projection matrix used to convert X to scores.}
   \item{Xmeans}{a vector of means of the X variables.}
   \item{Ymeans}{a vector of means of the Y variables.}

@@ -1,136 +1,157 @@
-### oscorespls.fit.R: The multiresponse orthogonal scores
-### algorithm (Martens and Næs, pp. 121--122 and 157--158)
+### oscorespls.fit.R: The multiresponse orthogonal scores algorithm
 ###
 ### $Id$
+###
+### Implements an adapted version of the `orthogonal scores' algorithm as
+###   described in Martens and Næs, pp. 121--122 and 157--158.
 
 oscorespls.fit <- function(X, Y, ncomp, stripped = FALSE,
                            tol = .Machine$double.eps^0.5, ...)
 {
     ## Initialise
     Y <- as.matrix(Y)
-    dx <- dim(X)
-    dy <- dim(Y)
     if (!stripped) {
         ## Save dimnames
         dnX <- dimnames(X)
         dnY <- dimnames(Y)
     }
-    ## Remove dimnames for performance (does it matter?):
-    dimnames(X) <- dimnames(Y) <- NULL
+    ## Remove dimnames for performance (doesn't seem to matter; in fact,
+    ## as far as it has any effect, it hurts a tiny bit in most situations.
+    ## dimnames(X) <- dimnames(Y) <- NULL
 
-    W <- P <- matrix(0, dx[2], ncomp)
-    Q <- matrix(0, dy[2], ncomp)
-    residuals <- array(dim = c(dx[1], dy[2], ncomp))
+    nobj <- dim(X)[1]
+    npred <- dim(X)[2]
+    nresp <- dim(Y)[2]
+
+    W <- P <- matrix(0, nrow = npred, ncol = ncomp)
+    tQ <- matrix(0, nrow = ncomp, ncol = nresp) # Y loadings; transposed
+    B <- array(0, dim = c(npred, nresp, ncomp))
     if (!stripped) {
-        fitted <- residuals
-        TEE <- U <- matrix(0, dx[1], ncomp)
+        TT <- U <- matrix(0, nrow = nobj, ncol = ncomp)
+        tsqs <- numeric(ncomp)          # t't
+        fitted <- residuals <- array(0, dim = c(nobj, nresp, ncomp))
     }
+
     ## C1
-    X.mean <- colMeans(X)
-    X <- sweep(X, 2, X.mean)
-    if (!stripped) X0 <- X              # Needed for calc. of fitted
-    Y.mean <- colMeans(Y)
-    Y <- sweep(Y, 2, Y.mean)
+    Xmeans <- colMeans(X)
+    X <- X - rep(Xmeans, each = nobj)
+    Ymeans <- colMeans(Y)
+    Y <- Y - rep(Ymeans, each = nobj)
+
+    ## Must be done here due to the deflation of X
+    if (!stripped) Xtotvar <- sum(X * X)
+
     for(a in 1:ncomp) {
         ## Initial values:
-        if (dy[2] == 1) {               # pls1
-            u.a <- Y
+        if (nresp == 1) {               # pls1
+            u.a <- Y                    # FIXME: scale?
         } else {                        # pls2
             ## The coloumn of Y with largest sum of squares:
-            u.a <- Y[,which.max(colSums(Y^2))]
-            t.a.old <- matrix(rep(0, dx[1]))
+            u.a <- Y[,which.max(colSums(Y * Y))]
+            t.a.old <- 0
         }
         repeat {
             ## C2.1
             w.a <- crossprod(X, u.a)
-            w.a <- w.a / drop(sqrt(crossprod(w.a)))
+            w.a <- w.a / sqrt(c(crossprod(w.a)))
+
             ## C2.2
             t.a <- X %*% w.a
+
             ## C2.3
-            t.tt <- t.a / drop(crossprod(t.a))
-            p.a <- crossprod(X, t.tt)
+            tsq <- c(crossprod(t.a))
+            t.tt <- t.a / tsq
+
             ## C2.4
             q.a <- crossprod(Y, t.tt)
-            if (dy[2] == 1) break       # pls1: no iteration
+
+            if (nresp == 1)
+                break                   # pls1: no iteration
+
+            ## C2.4b-c
             ## Convergence check for pls2:
-            ## C2.4b
-            convergence <- sum(abs((t.a - t.a.old) / t.a)) < tol
-            ## C2.4c
-            if (convergence)
+            if (sum(abs((t.a - t.a.old) / t.a), na.rm = TRUE) < tol)
                 break
             else {
-                u.a <- Y %*% q.a / drop(crossprod(q.a))
+                u.a <- Y %*% q.a / c(crossprod(q.a))
                 t.a.old <- t.a          # Save for comparison
             }
         }
+
+        ## C2.3 contd.
+        p.a <- crossprod(X, t.tt)
+
         ## C2.5
         X <- X - t.a %*% t(p.a)
-        Y <- residuals[,,a] <- Y - t.a %*% t(q.a)
+        Y <- Y - t.a %*% t(q.a)
+
         ## Save scores etc:
         W[,a] <- w.a
         P[,a] <- p.a
-        Q[,a] <- q.a
+        tQ[a,] <- q.a
         if (!stripped) {
-            TEE[,a] <- t.a
+            TT[,a] <- t.a
             U[,a] <- u.a
+            tsqs[a] <- tsq
+            ## (For very tall, slim X and Y, X0 %*% B[,,a] is slightly faster,
+            ## due to less overhead.)
+            fitted[,,a] <- TT[,1:a] %*% tQ[1:a,, drop=FALSE]
+            residuals[,,a] <- Y
         }
     }
 
-    ## Calculate regression coefficients and fitted values:
+    ## Calculate rotation matrix:
     PW <- crossprod(P, W)
     ## It is known that P^tW is right bi-diagonal (one response) or upper
     ## triangular (multiple responses), with all diagonal elements equal to 1.
-    ## Old: On MSWin, this doesn't make much difference:
-    ## R1.9.1/Linux: up to numeric accuracy (2.2e-16) this is a noop:
-    diag(PW) <- 1
-    ## Old: On MSWin, this destroys the coefficients for the last component (when
-    ## ncomp = dx[1]):
-    ## R1.9.1/Linux: When p > n, PW[-((n-1):n),n] can be far from 0, especially
-    ## for the first components.  This has an effect on the n'th component.
-    if (dy[2] == 1) {
-        ## Single response; make shure all elements above the bidiagonal are 0:
-        PW[row(PW) < col(PW)-1] <- 0
+    if (nresp == 1) {
+        ## For single-response models, direct calculation of (P^tW)^-1 is
+        ## simple, and faster than using backsolve.
+        PWinv <- diag(ncomp)
+        bidiag <- - PW[row(PW) == col(PW)-1]
+        for (a in 1:(ncomp - 1))
+            PWinv[a,(a+1):ncomp] <- cumprod(bidiag[a:(ncomp-1)])
+    } else {
+        PWinv <- backsolve(PW, diag(ncomp))
     }
-    ## For small p, this is faster:
-    ## R <- t(backsolve(PW, t(W), transpose = TRUE))
-    ## When p is large, this is faster (due to the transpositions of W and R):
-    R <- W %*% backsolve(PW, diag(ncomp))
-    B <- array(dim = c(dx[2], dy[2], ncomp))
-    for (i in 1:ncomp) {
-        B[,,i] <- R[,1:i, drop=FALSE] %*% t(Q[,1:i, drop=FALSE])
-        if (!stripped) fitted[,,i] <- X0 %*% B[,,i]
+    R <- W %*% PWinv
+
+    ## Calculate regression coefficients:
+    for (a in 1:ncomp) {
+        B[,,a] <- R[,1:a, drop=FALSE] %*% tQ[1:a,, drop=FALSE]
     }
 
     if (stripped) {
         ## Return as quickly as possible
-        list(coefficients = B, Xmeans = X.mean, Ymeans = Y.mean)
+        list(coefficients = B, Xmeans = Xmeans, Ymeans = Ymeans)
     } else {
-        fitted <- sweep(fitted, 2, Y.mean, "+") # Add mean
+        fitted <- fitted + rep(Ymeans, each = nobj) # Add mean
 
         ## Add dimnames and classes:
         objnames <- dnX[[1]]
         if (is.null(objnames)) objnames <- dnY[[1]]
-        xvarnames <- dnX[[2]]
-        yvarnames <- dnY[[2]]
+        prednames <- dnX[[2]]
+        respnames <- dnY[[2]]
         compnames <- paste("Comp", 1:ncomp)
         nCompnames <- paste(1:ncomp, "comps")
-        dimnames(TEE) <- dimnames(U) <- list(objnames, compnames)
-        dimnames(R) <- dimnames(W) <- dimnames(P) <- list(xvarnames, compnames)
-        dimnames(Q) <- list(yvarnames, compnames)
-        dimnames(B) <- list(xvarnames, yvarnames, nCompnames)
+        dimnames(TT) <- dimnames(U) <- list(objnames, compnames)
+        dimnames(R) <- dimnames(W) <- dimnames(P) <-
+            list(prednames, compnames)
+        dimnames(tQ) <- list(compnames, respnames)
+        dimnames(B) <- list(prednames, respnames, nCompnames)
         dimnames(fitted) <- dimnames(residuals) <-
-            list(objnames, yvarnames, nCompnames)
-        class(TEE) <- class(U) <- "scores"
-        class(P) <- class(W) <- class(Q) <- "loadings"
+            list(objnames, respnames, nCompnames)
+        class(TT) <- class(U) <- "scores"
+        class(P) <- class(W) <- class(tQ) <- "loadings"
 
         list(coefficients = B,
-             scores = TEE, loadings = P,
+             scores = TT, loadings = P,
              loading.weights = W,
-             Yscores = U, Yloadings = Q,
+             Yscores = U, Yloadings = t(tQ),
              projection = R,
-             Xmeans = X.mean, Ymeans = Y.mean,
+             Xmeans = Xmeans, Ymeans = Ymeans,
              fitted.values = fitted, residuals = residuals,
-             Xvar = colSums(P^2) * colSums(TEE^2),# FIXME: Is this the best way?
-             Xtotvar = sum(X0^2))
+             Xvar = colSums(P * P) * tsqs,
+             Xtotvar = Xtotvar)
     }
 }
