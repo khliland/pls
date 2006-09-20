@@ -8,6 +8,7 @@
   A data set with NIR spectra and octane numbers of 60 gasoline samples.
   The NIR spectra were measured using diffuse reflectance as log(1/R)
   from 900 nm to 1700 nm in 2 nm intervals, giving 401 wavelengths.
+  Many thanks to John H. Kalivas.
 }
 \usage{data(gasoline)}
 \format{

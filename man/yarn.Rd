@@ -1,19 +1,19 @@
 %% $Id$
 \encoding{latin1}
-\name{NIR}
+\name{yarn}
+\alias{yarn}
 \docType{data}
-\alias{NIR}
-\title{Multivariate Dataset of NIR Spectra}
+\title{NIR spectra and density measurements of PET yarns}
 \description{
   A training set consisting of 21 NIR spectra of PET yarns, measured at
   268 wavelengths, and 21 corresponding densities.  A test set of 7
   samples is also provided.  Many thanks to Erik Swierenga.
 }
-\usage{data(NIR)}
+\usage{data(yarn)}
 \format{A data frame with components
   \describe{
-    \item{X}{Numeric matrix of NIR measurements}
-    \item{y}{Numeric vector of densities}
+    \item{NIR}{Numeric matrix of NIR measurements}
+    \item{density}{Numeric vector of densities}
     \item{train}{Logical vector with \code{TRUE} for the training
       samples and \code{FALSE} for the test samples}
   }
