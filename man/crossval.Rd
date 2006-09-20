@@ -87,10 +87,10 @@ crossval(object, segments = 10,
   \code{\link{MSEP}}
 }
 \examples{
-data(NIR)
-NIR.pcr <- pcr(y ~ msc(X), 6, data = NIR)
-NIR.cv <- crossval(NIR.pcr, segments = 10)
-plot(MSEP(NIR.cv))
+data(yarn)
+yarn.pcr <- pcr(density ~ msc(NIR), 6, data = yarn)
+yarn.cv <- crossval(yarn.pcr, segments = 10)
+plot(MSEP(yarn.cv))
 }
 \keyword{regression}
 \keyword{multivariate}

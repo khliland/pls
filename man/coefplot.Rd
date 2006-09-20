@@ -84,8 +84,8 @@ coefplot(object, ncomp = object$ncomp, separate = FALSE, cumulative = TRUE,
 \seealso{\code{\link{mvr}}, \code{\link{plot.mvr}}, \code{\link{coef.mvr}},
   \code{\link{plot}}, \code{\link{legend}}}
 \examples{
-data(NIR)
-mod.nir <- plsr(y ~ X, ncomp = 8, data = NIR)
+data(yarn)
+mod.nir <- plsr(density ~ NIR, ncomp = 8, data = yarn)
 \dontrun{
 coefplot(mod.nir, ncomp = 1:6)
 plot(mod.nir, plottype = "coefficients", ncomp = 1:6) # Equivalent to the previous
@@ -93,8 +93,8 @@ plot(mod.nir, plottype = "coefficients", ncomp = 1:6) # Equivalent to the previo
 coefplot(mod.nir, ncom = 1:6, legendpos = "bottomright")
 }
 
-data(sensory)
-mod.sens <- plsr(Quality ~ Panel, ncomp = 4, data = sensory)
+data(oliveoil)
+mod.sens <- plsr(sensory ~ chemical, ncomp = 4, data = oliveoil)
 \dontrun{coefplot(mod.sens, ncomp = 2:4, separate = TRUE)}
 }
 \keyword{regression}

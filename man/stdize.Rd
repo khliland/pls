@@ -1,4 +1,4 @@
-%% $Id:$
+%% $Id$
 \encoding{latin1}
 \name{stdize}
 \alias{stdize}
@@ -54,14 +54,14 @@ stdize(x, center = TRUE, scale = TRUE)
 \seealso{\code{\link{mvr}}, \code{\link{pcr}}, \code{\link{plsr}},
   \code{\link{msc}}, \code{\link[base]{scale}}}
 \examples{
-data(NIR)
+data(yarn)
 ## Direct standardization:
-Ztrain <- stdize(NIR$X[NIR$train,])
-Ztest <- predict(Ztrain, NIR$X[!NIR$train,])
+Ztrain <- stdize(yarn$NIR[yarn$train,])
+Ztest <- predict(Ztrain, yarn$NIR[!yarn$train,])
 
 ## Used in formula:
-mod <- plsr(y ~ stdize(X), ncomp = 6, data = NIR[NIR$train,])
-pred <- predict(mod, newdata = NIR[!NIR$train,]) # Automatically standardized
+mod <- plsr(density ~ stdize(NIR), ncomp = 6, data = yarn[yarn$train,])
+pred <- predict(mod, newdata = yarn[!yarn$train,]) # Automatically standardized
 }
 \keyword{regression}
 \keyword{multivariate}

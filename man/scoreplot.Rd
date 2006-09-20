@@ -134,8 +134,8 @@ corrplot(object, comps = 1:2, labels, radii = c(sqrt(1/2), 1),
   \code{\link{scores}}, \code{\link{loadings}}, \code{\link{identify}},
   \code{\link{legend}}}
 \examples{
-data(NIR)
-mod <- plsr(y ~ X, ncomp = 10, data = NIR)
+data(yarn)
+mod <- plsr(density ~ NIR, ncomp = 10, data = yarn)
 ## These three are equivalent:
 \dontrun{
 scoreplot(mod, comps = 1:5)

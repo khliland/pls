@@ -52,8 +52,8 @@ Yloadings(object)
 }
 \seealso{\code{\link{mvr}}, \code{\link{coef.mvr}}}
 \examples{
-data(NIR)
-plsmod <- plsr(y ~ X, 6, data = NIR)
+data(yarn)
+plsmod <- plsr(density ~ NIR, 6, data = yarn)
 scores(plsmod)
 loadings(plsmod)[,1:4]
 }

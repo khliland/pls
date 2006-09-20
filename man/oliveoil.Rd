@@ -18,6 +18,8 @@
       \sQuote{glossy}, \sQuote{transp}, and \sQuote{syrup}.}
     \item{\code{chemical}}{a matrix with 5 columns.  Measurements of
       acidity, peroxide, K232, K270, and DK.}
+  }
+}
 \source{
   Massart, D. L., Vandeginste, B. G. M., Buydens, L. M. C., de Jong, S.,
   Lewi, P. J., Smeyers-Verbeke, J. (1998)  \emph{Handbook of

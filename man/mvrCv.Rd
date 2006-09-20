@@ -103,9 +103,9 @@ mvrCv(X, Y, ncomp,
   \code{\link{MSEP}}
 }
 \examples{
-data(NIR)
-NIR.pcr <- pcr(y ~ X, 6, data = NIR, validation = "CV", segments = 10)
-\dontrun{plot(MSEP(NIR.pcr))}
+data(yarn)
+yarn.pcr <- pcr(density ~ NIR, 6, data = yarn, validation = "CV", segments = 10)
+\dontrun{plot(MSEP(yarn.pcr))}
 }
 \keyword{regression}
 \keyword{multivariate}

@@ -59,24 +59,24 @@
   A warning message like \samp{'newdata' had 10 rows but variable(s)
     found have 106 rows} means that not all variables were found in the
   \code{newdata} data frame.  This (usually) happens if the formula
-  contains terms like \code{NIR$X}.  Do not use such terms; use the
+  contains terms like \code{yarn$NIR}.  Do not use such terms; use the
   \code{data} argument instead.  See \code{\link{mvr}} for details.
  }
 \author{Ron Wehrens and Bjørn-Helge Mevik}
 \seealso{\code{\link{mvr}}, \code{\link{summary.mvr}},
   \code{\link{coef.mvr}}, \code{\link{plot.mvr}}}
 \examples{
-data(NIR)
-nir.mvr <- mvr(y ~ X, ncomp = 5, data = NIR[NIR$train,])
+data(yarn)
+nir.mvr <- mvr(density ~ NIR, ncomp = 5, data = yarn[yarn$train,])
 
 ## Predicted responses for models with 1, 2, 3 and 4 components
-pred.resp <- predict(nir.mvr, comps = 1:4, newdata = NIR[!NIR$train,])
+pred.resp <- predict(nir.mvr, comps = 1:4, newdata = yarn[!yarn$train,])
 
 ## Predicted responses for a single model with components 1, 2, 3, 4
-predict(nir.mvr, comps = 1:4, cumulative = FALSE, newdata = NIR[!NIR$train,])
+predict(nir.mvr, comps = 1:4, cumulative = FALSE, newdata = yarn[!yarn$train,])
 
 ## Predicted scores
-predict(nir.mvr, comps = 1:3, type = "scores", newdata = NIR[!NIR$train,])
+predict(nir.mvr, comps = 1:3, type = "scores", newdata = yarn[!yarn$train,])
 }
 \keyword{regression}
 \keyword{multivariate}

@@ -117,15 +117,15 @@ explvar(object)
   \code{\link{model.matrix}}, \code{\link{na.omit}}
 }
 \examples{
-data(NIR)
-mod <- pcr(y ~ X, data = NIR[NIR$train,], ncomp = 5)
+data(yarn)
+mod <- pcr(density ~ NIR, data = yarn[yarn$train,], ncomp = 5)
 B <- coef(mod, comps = 3, intercept = TRUE)
 ## A manual predict method:
-stopifnot(drop(B[1,,] + NIR$X[!NIR$train,] \%*\% B[-1,,]) ==
-          drop(predict(mod, comps = 3, newdata = NIR[!NIR$train,])))
+stopifnot(drop(B[1,,] + yarn$NIR[!yarn$train,] \%*\% B[-1,,]) ==
+          drop(predict(mod, comps = 3, newdata = yarn[!yarn$train,])))
 
 ## Note the difference in formatting:
-mod2 <- pcr(y ~ X, data = NIR[NIR$train,])
+mod2 <- pcr(density ~ NIR, data = yarn[yarn$train,])
 compnames(mod2, explvar = TRUE)[1:3]
 compnames(mod2, comps = 1:3, explvar = TRUE)
 }

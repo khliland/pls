@@ -77,18 +77,18 @@ predplotXy(x, y, line = FALSE, main = "Prediction plot",
 }
 \seealso{\code{\link{mvr}}, \code{\link{plot.mvr}}}
 \examples{
-data(NIR)
-mod <- plsr(y ~ X, ncomp = 10, data = NIR[NIR$train,], validation = "CV")
+data(yarn)
+mod <- plsr(density ~ NIR, ncomp = 10, data = yarn[yarn$train,], validation = "CV")
 \dontrun{
 predplot(mod, ncomp = 1:6)
 plot(mod, ncomp = 1:6) # Equivalent to the previous
 ## Both cross-validated and test set predictions:
 predplot(mod, ncomp = 4:6, which = c("validation", "test"),
-         newdata = NIR[!NIR$train,])
+         newdata = yarn[!yarn$train,])
 }
 
-data(sensory)
-mod.sens <- plsr(Quality ~ Panel, ncomp = 4, data = sensory)
+data(oliveoil)
+mod.sens <- plsr(sensory ~ chemical, ncomp = 4, data = oliveoil)
 \dontrun{plot(mod.sens, ncomp = 2:4) # Several responses gives several plots}
 }
 \keyword{regression}

@@ -42,14 +42,14 @@ msc(X, reference = NULL)
 \seealso{\code{\link{mvr}}, \code{\link{pcr}}, \code{\link{plsr}},
   \code{\link{stdize}}}
 \examples{
-data(NIR)
+data(yarn)
 ## Direct correction:
-Ztrain <- msc(NIR$X[NIR$train,])
-Ztest <- predict(Ztrain, NIR$X[!NIR$train,])
+Ztrain <- msc(yarn$NIR[yarn$train,])
+Ztest <- predict(Ztrain, yarn$NIR[!yarn$train,])
 
 ## Used in formula:
-mod <- plsr(y ~ msc(X), ncomp = 6, data = NIR[NIR$train,])
-pred <- predict(mod, newdata = NIR[!NIR$train,]) # Automatically scatter correction
+mod <- plsr(density ~ msc(NIR), ncomp = 6, data = yarn[yarn$train,])
+pred <- predict(mod, newdata = yarn[!yarn$train,]) # Automatically scatter corrected
 }
 \keyword{regression}
 \keyword{multivariate}

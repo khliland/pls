@@ -35,8 +35,8 @@
 \author{Ron Wehrens and Bjørn-Helge Mevik}
 \seealso{\code{\link{mvr}}, \code{\link{plot.mvr}}, \code{\link{biplot.default}}}
 \examples{
-data(sensory)
-mod <- plsr(Panel ~ Quality, data = sensory)
+data(oliveoil)
+mod <- plsr(sensory ~ chemical, data = oliveoil)
 \dontrun{
 ## These are equivalent
 biplot(mod)

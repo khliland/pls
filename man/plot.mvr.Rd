@@ -33,8 +33,8 @@
   \code{\link{scoreplot}}, \code{\link{loadingplot}},
   \code{\link{biplot.mvr}}, \code{\link{corrplot}}}
 \examples{
-data(NIR)
-nir.pcr <- pcr(y ~ X, ncomp = 9, data = NIR, validation = "CV")
+data(yarn)
+nir.pcr <- pcr(density ~ NIR, ncomp = 9, data = yarn, validation = "CV")
 \dontrun{
 plot(nir.pcr, ncomp = 5) # Plot of cross-validated predictions
 plot(nir.pcr, "scores") # Score plot

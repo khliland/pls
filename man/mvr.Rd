@@ -137,22 +137,20 @@ pcr(\dots, method = pls.options()$pcralg)
   \code{\link{RMSEP}},
   \code{\link{plot.mvr}}}
 \examples{
-data(NIR)
+data(yarn)
 ## Default methods:
-NIR.pcr <- pcr(y ~ X, 6, data = NIR, validation = "CV")
-NIR.pls <- plsr(y ~ X, 6, data = NIR, validation = "CV")
+yarn.pcr <- pcr(density ~ NIR, 6, data = yarn, validation = "CV")
+yarn.pls <- plsr(density ~ NIR, 6, data = yarn, validation = "CV")
 
 ## Alternative methods:
-NIR.oscorespls <- mvr(y ~ X, 6, data = NIR, validation = "CV",
+yarn.oscorespls <- mvr(density ~ NIR, 6, data = yarn, validation = "CV",
                       method = "oscorespls")
-NIR.simpls <- mvr(y ~ X, 6, data = NIR, validation = "CV",
+yarn.simpls <- mvr(density ~ NIR, 6, data = yarn, validation = "CV",
                   method = "simpls")
 
-data(sensory)
-Pn <- scale(sensory$Panel)
-Ql <- scale(sensory$Quality)
-sens.pcr <- pcr(Ql ~ Pn, ncomp = 4)
-sens.pls <- plsr(Ql ~ Pn, ncomp = 4)
+data(oliveoil)
+sens.pcr <- pcr(sensory ~ chemical, ncomp = 4, scale = TRUE, data = oliveoil)
+sens.pls <- plsr(sensory ~ chemical, ncomp = 4, scale = TRUE, data = oliveoil)
 }
 \keyword{regression}
 \keyword{multivariate}
