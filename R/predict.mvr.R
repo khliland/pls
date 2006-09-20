@@ -53,7 +53,7 @@ predict.mvr <- function(object, newdata, comps = 1:object$ncomp,
             if (is.null(object$projection))
                 stop("`object' has no `projection' component.  Maybe it was fitted with `stripped = TRUE'.")
             maxComp <- max(comps)
-            TT <- (newX - rep(object$Xmeans, each = newX)) %*%
+            TT <- (newX - rep(object$Xmeans, each = nobs)) %*%
                 object$projection[,comps]
         }
         return(TT)
