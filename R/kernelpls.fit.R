@@ -41,7 +41,7 @@ kernelpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
     if (!stripped) {
         W <- P                        # Loading weights
         U <- TT <- matrix(0, ncol = ncomp, nrow = nobj)# scores
-        tsqs <- numeric(ncomp)          # t't
+        tsqs <- rep.int(1, ncomp)       # t't
         fitted <- array(0, c(nobj, nresp, ncomp))
     }
 
@@ -93,10 +93,7 @@ kernelpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
             ## Extra step to calculate Y scores:
             u.a <- Y %*% q.a / c(crossprod(q.a)) # Ok for nresp == 1 ??
             ## make u orth to previous X scores:
-            if (a > 1) {
-                Ta <- TT[,1:(a-1), drop=FALSE]
-                u.a <- u.a - Ta %*% (crossprod(Ta, u.a) / tsqs[1:(a-1)])
-            }
+            if (a > 1) u.a <- u.a - TT %*% (crossprod(TT, u.a) / tsqs)
             U[,a] <- u.a
             TT[,a] <- t.a
             W[,a] <- w.a
