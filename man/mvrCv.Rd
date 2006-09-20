@@ -8,7 +8,7 @@
 }
 \usage{
 mvrCv(X, Y, ncomp,
-      method = c("kernelpls", "simpls", "oscorespls", "svdpc"), scale = FALSE,
+      method = pls.options()$mvralg, scale = FALSE,
       segments = 10, segment.type = c("random", "consecutive", "interleaved"),
       length.seg, trace = FALSE, \dots)
 }

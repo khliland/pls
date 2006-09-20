@@ -14,11 +14,11 @@
 %% FIXME: Maybe use a \synopsis section, and show typical uses in \usage:
 \usage{
 mvr(formula, ncomp, data, subset, na.action,
-    method = c("kernelpls", "simpls", "oscorespls", "svdpc", "model.frame"),
+    method = pls.options()$mvralg,
     scale = FALSE, validation = c("none", "CV", "LOO"),
     model = TRUE, x = FALSE, y = FALSE, \dots)
-plsr(\dots, method = c("kernelpls", "simpls", "oscorespls", "model.frame"))
-pcr(\dots, method = c("svdpc", "model.frame"))
+plsr(\dots, method = pls.options()$plsralg)
+pcr(\dots, method = pls.options()$pcralg)
 }
 \arguments{
   \item{formula}{a model formula.  Most of the \code{lm} formula
@@ -50,12 +50,14 @@ pcr(\dots, method = c("svdpc", "model.frame"))
   \code{ncomp} number of components.  Multi-response models are fully
   supported.
 
-  Three PLSR algorithms are available: the kernel algorithm, SIMPLS and
-  the classical orthogonal scores algorithm.  One PCR algorithm is
-  available: using the singular value decomposition.  The type of
-  regression is specified with the \code{method} argument.  \code{pcr}
-  and \code{plsr}
-  are wrappers for \code{mvr}, with different values for \code{method}.
+  The type of model to fit is specified with the \code{method}
+  argument. Three PLSR algorithms are available: the kernel algorithm
+  (\code{"kernelpls"}), SIMPLS (\code{"simpls"}) and the classical
+  orthogonal scores algorithm (\code{"oscorespls"}).  One PCR algorithm
+  is available: using the singular value decomposition (\code{"svdpc"}).
+  If \code{method} is \code{"model.frame"}, the model frame is returned.
+  The functions \code{pcr} and \code{plsr} are wrappers for \code{mvr},
+  with different values for \code{method}.
 
   The \code{formula} argument should be a symbolic formula of the form
   \code{response ~ terms}, where \code{response} is the name of the
