@@ -3,12 +3,12 @@
 
 ## coef.mvr: Extract the base variable regression coefficients from
 ## an mvr object.
-coef.mvr <- function(object, comps = object$ncomp, intercept = FALSE,
-                       cumulative = TRUE, ...)
+coef.mvr <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
+                     ...)
 {
-    if (cumulative) {
+    if (missing(comps) || is.null(comps)) {
         ## Cumulative coefficients:
-        B <- object$coefficients[,,comps, drop=FALSE]
+        B <- object$coefficients[,,ncomp, drop=FALSE]
         if (intercept == TRUE) {      # Intercept has only meaning for
                                       # cumulative coefficients
             dB <- dim(B)
@@ -17,7 +17,7 @@ coef.mvr <- function(object, comps = object$ncomp, intercept = FALSE,
             dnB[[1]] <- c("(Intercept)", dnB[[1]])
             BInt <- array(dim = dB, dimnames = dnB)
             BInt[-1,,] <- B
-            for (i in seq(along = comps))
+            for (i in seq(along = ncomp))
                 BInt[1,,i] <- object$Ymeans - object$Xmeans %*% B[,,i]
             B <- BInt
         }
@@ -151,7 +151,7 @@ delete.intercept <- function(mm) {
     saveattr <- attributes(mm)
     ## Find the intercept coloumn:
     intercept <- which(saveattr$assign == 0)
-    ## Return if there was no intercept coloumn: 
+    ## Return if there was no intercept coloumn:
     if (!length(intercept)) return(mm)
     ## Remove the intercept coloumn:
     mm <- mm[,-intercept, drop=FALSE]
