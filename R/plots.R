@@ -502,9 +502,8 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
 ### Validation plot (MSEP/RMSEP/R2)
 ###
 
-validationplot <- function(object, val.type = c("RMSEP", "MSEP", "R2"), ...)
-    ## FIXME: Do these need to be given here?:
-    ##estimate, newdata, ncomp, comps, intercept, ...)
+validationplot <- function(object, val.type = c("RMSEP", "MSEP", "R2"),
+                           estimate, newdata, ncomp, comps, intercept, ...)
 {
     cl <- match.call(expand.dots = FALSE)
     cl[[1]] <- as.name(match.arg(val.type))
