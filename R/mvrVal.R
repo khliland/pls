@@ -61,13 +61,15 @@ MSEP.mvr <- function(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
             switch(estimate[i],
                    train = {
                        resp <- as.matrix(model.response(model.frame(object)))
+                       n <- dim(resp)[1]
+                       if (inherits(object$na.action, "exclude"))
+                           resp <- napredict(object$na.action, resp)
                        res <- if (cumulative)
                            residuals(object, ...)[,,ncomp, drop=FALSE]
                        else
                            resp - predict(object, comps = comps, ...)
-                       n <- dim(res)[1]
-                       cbind(apply(resp, 2, var) * (n - 1) / n,
-                             colMeans(res^2))
+                       cbind(apply(resp, 2, var, na.rm = TRUE) * (n - 1) / n,
+                             colMeans(res^2, na.rm = TRUE))
                    },
                    test = {
                        if (missing(newdata)) stop("Missing `newdata'.")
@@ -88,7 +90,8 @@ MSEP.mvr <- function(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
                    },
                    adjCV = {
                        MSEPtrain <-
-                           colMeans(residuals(object,...)[,,ncomp,drop=FALSE]^2)
+                           colMeans(residuals(object,...)[,,ncomp,drop=FALSE]^2,
+                                    na.rm = TRUE)
                        cbind(object$validation$MSEP0,
                              object$validation$MSEP[,ncomp, drop=FALSE] +
                              MSEPtrain -
@@ -172,12 +175,15 @@ R2 <- function(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
         switch(estimate[i],
                train = {
                    resp <- as.matrix(model.response(model.frame(object)))
+                   if (inherits(object$na.action, "exclude"))
+                       resp <- napredict(object$na.action, resp)
                    pred <- if (cumulative)
                        fitted(object)[,,ncomp, drop=FALSE]
                    else
                        predict(object, comps = comps, ...)
                    for (j in 1:dim(resp)[2])
-                       z[i,j,-1] <- cor(pred[,j,], resp[,j])^2
+                       z[i,j,-1] <- cor(pred[,j,], resp[,j],
+                                        use = "complete.obs")^2
                },
                test = {
                    if (missing(newdata)) stop("Missing `newdata'.")
