@@ -24,7 +24,7 @@ msc(X, reference = NULL)
   \item{\dots}{other arguments.  Currently ignored.}
 }
 \details{
-  \code{makepredictcall.msc} is an internal utility function; it is noe
+  \code{makepredictcall.msc} is an internal utility function; it is not
   meant for interactive use.  See \code{\link{makepredictcall}} for details.
 }
 \value{

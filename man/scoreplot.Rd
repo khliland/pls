@@ -100,7 +100,7 @@ corrplot(object, comps = 1:2, labels, radii = c(sqrt(1/2), 1),
   variable and the selected components (see References), are plotted as pairwise scatter
   plots, with concentric circles of radii given by \code{radii}.  Each
   point corresponds to an \eqn{X} variable.  The squared distance
-  between the point and origo equals the fraction of the variance of the
+  between the point and origin equals the fraction of the variance of the
   variable explained by the components in the panel.  The default
   \code{radii} corresponds to 50\% and 100\% explained variance.
 
