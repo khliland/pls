@@ -7,23 +7,20 @@
   Function to plot the regression coefficients of an \code{mvr} object.
 }
 \usage{
-coefplot(object, ncomp = object$ncomp, separate = FALSE, cumulative = TRUE,
-         intercept = FALSE, nCols, nRows, varnames = FALSE, type = "l",
+coefplot(object, ncomp = object$ncomp, comps, intercept = FALSE,
+         separate = FALSE, nCols, nRows, varnames = FALSE, type = "l",
          lty = 1:nLines, lwd = NULL, pch = 1:nLines, cex = NULL,
          col = 1:nLines, legendpos, xlab = "variable",
          ylab = "regression coefficient", \dots)
 }
 \arguments{
   \item{object}{an \code{mvr} object.  The fitted model.}
-  \item{ncomp}{integer vector.  The number of components to include.  If
-    \code{length(ncomp) > 1}, coefficients for each model size is plotted.}
+  \item{ncomp, comps}{vector of positive integers.  The components to
+    plot.  See \code{\link{coef.mvr}} for details.}
   \item{separate}{logical.  If \code{TRUE}, coefficients for different model
     sizes are blotted in separate plots.}
-  \item{cumulative}{logical.  Whether cumulative (the default) or
-    individual coefficients for each component should be plotted.  See
-    \code{\link{coef.mvr}} for details.}
   \item{intercept}{logical.  Whether coefficients for the intercept should
-    be plotted.  Ignored if \code{cumulative = FALSE}.  Defaults to
+    be plotted.  Ignored if \code{comps} is specified.  Defaults to
     \code{FALSE}.  See \code{\link{coef.mvr}} for details.}
   \item{nCols, nRows}{integer.  The number of coloumns and rows the
     plots will be laid out in.  If not specified, \code{coefplot} tries

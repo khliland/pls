@@ -28,7 +28,7 @@
   \code{plot.mvr} returns whatever the underlying plot function returns.
 }
 \author{Ron Wehrens and Bjørn-Helge Mevik}
-\seealso{\code{\link{mvr}},\code{\link{predplot.mvr}},
+\seealso{\code{\link{mvr}}, \code{\link{predplot.mvr}},
   \code{\link{validationplot}}, \code{\link{coefplot}},
   \code{\link{scoreplot}}, \code{\link{loadingplot}},
   \code{\link{biplot.mvr}}, \code{\link{corrplot}}}

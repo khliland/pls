@@ -4,12 +4,16 @@
 ### $Id$
 
 MSEP <- function(object, ...) UseMethod("MSEP")
-MSEP.mvr <- function(object, estimate, newdata, comps = 1:object$ncomp,
-                     cumulative = TRUE, intercept = cumulative, se = FALSE, ...)
+MSEP.mvr <- function(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
+                     intercept = cumulative, se = FALSE, ...)
 {
+    ## Makes the code slightly simpler:
+    cumulative <- missing(comps) || is.null(comps)
+
+    ## Figure out which estimate(s) to calculate:
     allEstimates <- c("all", "train", "CV", "adjCV", "test")
     if (missing(estimate)) {
-        ## Decide what type of estimate to calculate
+        ## Select the `best' available estimate
         if (!missing(newdata)) {
             estimate = "test"
         } else {
@@ -30,64 +34,81 @@ MSEP.mvr <- function(object, estimate, newdata, comps = 1:object$ncomp,
                 estimate <- setdiff(estimate, c("CV", "adjCV"))
         }
     }
+    if (any(estimate %in% c("CV", "adjCV"))) {
+        ## Check that cross-validation is possible:
+        if (!cumulative)
+            stop("Cross-validation is not supported when `comps' is specified")
+        if (is.null(object$validation))
+            stop("`object' has no `validation' component")
+    }
+
+    ## The calculated estimates:
     z <- array(dim = c(length(estimate), dim(fitted(object))[2],
-               if(cumulative) 1+length(comps) else 2),
+                       if(cumulative) 1 + length(ncomp) else 2),
                dimnames = list(estimate = estimate,
                response = dimnames(object$fitted)[[2]],
-               model = if (cumulative) c("(Intercept)", paste(comps, "comps")) else c("(Intercept)", paste("(Intercept), Comp", paste(comps, collapse = ", ")))))
+               model = if (cumulative) {
+                   c("(Intercept)", paste(ncomp, "comps"))
+               } else {
+                   c("(Intercept)", paste("(Intercept), Comp",
+                                          paste(comps, collapse = ", ")))
+               }
+               ))
 
+    ## Calculate the estimates:
     for (i in seq(along = estimate)) {
         z[i,,] <-
             switch(estimate[i],
                    train = {
                        resp <- as.matrix(model.response(model.frame(object)))
+                       n <- dim(resp)[1]
+                       if (inherits(object$na.action, "exclude"))
+                           resp <- napredict(object$na.action, resp)
                        res <- if (cumulative)
-                           residuals(object, ...)[,,comps, drop = FALSE]
+                           residuals(object, ...)[,,ncomp, drop=FALSE]
                        else
-                           resp - predict(object, comps = comps,
-                                          cumulative = FALSE, ...)
-                       n <- dim(res)[1]
-                       cbind(apply(resp, 2, var) * (n - 1) / n,
-                             colMeans(res^2))
+                           resp - predict(object, comps = comps, ...)
+                       cbind(apply(resp, 2, var, na.rm = TRUE) * (n - 1) / n,
+                             colMeans(res^2, na.rm = TRUE))
                    },
                    test = {
                        if (missing(newdata)) stop("Missing `newdata'.")
-                       resp <- as.matrix(model.response(model.frame(formula(object), data = newdata)))
-                       pred <- predict(object, comps = comps,
-                                       newdata = newdata,
-                                       cumulative = cumulative, ...)
+                       resp <-
+                           as.matrix(model.response(model.frame(formula(object),
+                                                                data=newdata)))
+                       pred <- if (cumulative)
+                           predict(object, ncomp = ncomp, newdata = newdata,...)
+                       else
+                           predict(object, comps = comps, newdata = newdata,...)
                        n <- nrow(newdata)
                        cbind(apply(resp, 2, var) * (n - 1) / n,
                              colMeans(sweep(pred, 1:2, resp)^2))
                    },
                    CV = {
-                       if (is.null(object$validation))
-                           stop("`object' has no `validation' component.")
-                       if (!cumulative) stop("`cumulative = FALSE' not supported with cross-validation")
                        cbind(object$validation$MSEP0,
-                             object$validation$MSEP[,comps, drop = FALSE])
+                             object$validation$MSEP[,ncomp, drop=FALSE])
                    },
                    adjCV = {
-                       if (is.null(object$validation))
-                           stop("`object' has no `validation' component.")
-                       if (!cumulative) stop("`cumulative = FALSE' not supported with cross-validation")
                        MSEPtrain <-
-                           colMeans(residuals(object, ...)[,,comps, drop = FALSE]^2)
+                           colMeans(residuals(object,...)[,,ncomp,drop=FALSE]^2,
+                                    na.rm = TRUE)
                        cbind(object$validation$MSEP0,
-                             object$validation$MSEP[,comps, drop = FALSE] + MSEPtrain -
-                             object$validation$adj[,comps, drop = FALSE])
+                             object$validation$MSEP[,ncomp, drop=FALSE] +
+                             MSEPtrain -
+                             object$validation$adj[,ncomp, drop=FALSE])
                    }
                    )
     }
 
+    if (cumulative) comps <- ncomp
     ## Either remove the intercept MSEP or add a "zeroth" component:
     if (intercept)
         comps <- c(0, comps)
     else
-        z <- z[,,-1, drop = FALSE]
+        z <- z[,,-1, drop=FALSE]
 
     return(structure(list(val = z, type = "MSEP", comps = comps,
-                          call = match.call()),
+                          cumulative = cumulative, call = match.call()),
                      class = "mvrVal"))
 }
 
@@ -106,11 +127,15 @@ RMSEP.mvr <- function(object, ...) {
 
 
 ## R2:  Return R2
-R2 <- function(object, estimate, newdata, comps = 1:object$ncomp,
-               cumulative = TRUE, intercept = cumulative, se = FALSE, ...) {
+R2 <- function(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
+               intercept = cumulative, se = FALSE, ...) {
+    ## Makes the code slightly simpler:
+    cumulative <- missing(comps) || is.null(comps)
+
+    ## Figure out which estimate(s) to calculate:
     allEstimates <- c("all", "train", "CV", "test")
     if (missing(estimate)) {
-        ## Decide what type of estimate to calculate
+        ## Select the `best' available estimate
         if (!missing(newdata)) {
             estimate = "test"
         } else {
@@ -131,48 +156,64 @@ R2 <- function(object, estimate, newdata, comps = 1:object$ncomp,
                 estimate <- setdiff(estimate, "CV")
         }
     }
+
+    ## The calculated estimates:
     z <- array(0, dim = c(length(estimate), dim(fitted(object))[2],
-               if(cumulative) 1+length(comps) else 2),
+                          if(cumulative) 1 + length(ncomp) else 2),
                dimnames = list(estimate = estimate,
                response = dimnames(object$fitted)[[2]],
-               model = if (cumulative) c("(Intercept)", paste(comps, "comps")) else c("(Intercept)", paste("(Intercept), Comp", paste(comps, collapse = ", ")))))
+               model = if (cumulative) {
+                   c("(Intercept)", paste(ncomp, "comps"))
+               } else {
+                   c("(Intercept)", paste("(Intercept), Comp",
+                                          paste(comps, collapse = ", ")))
+               }
+               ))
+
+    ## Calculate the estimates:
     for (i in seq(along = estimate)) {
         switch(estimate[i],
                train = {
                    resp <- as.matrix(model.response(model.frame(object)))
+                   if (inherits(object$na.action, "exclude"))
+                       resp <- napredict(object$na.action, resp)
                    pred <- if (cumulative)
-                       fitted(object)[,,comps, drop = FALSE]
+                       fitted(object)[,,ncomp, drop=FALSE]
                    else
-                       predict(object, comps = comps,
-                               cumulative = FALSE, ...)
+                       predict(object, comps = comps, ...)
                    for (j in 1:dim(resp)[2])
-                       z[i,j,-1] <- cor(pred[,j,], resp[,j])^2
+                       z[i,j,-1] <- cor(pred[,j,], resp[,j],
+                                        use = "complete.obs")^2
                },
                test = {
                    if (missing(newdata)) stop("Missing `newdata'.")
-                   resp <- as.matrix(model.response(model.frame(formula(object), data = newdata)))
-                   pred <- predict(object, comps = comps,
-                                   newdata = newdata,
-                                   cumulative = cumulative, ...)
+                   resp <- as.matrix(model.response(model.frame(formula(object),
+                                                                data=newdata)))
+                   pred <- if (cumulative)
+                       predict(object, ncomp = ncomp, newdata = newdata,...)
+                   else
+                       predict(object, comps = comps, newdata = newdata,...)
                    for (j in 1:dim(resp)[2])
                        z[i,j,-1] <- cor(pred[,j,], resp[,j])^2
                },
                CV = {
                    if (is.null(object$validation))
                        stop("`object' has no `validation' component.")
-                   if (!cumulative) stop("`cumulative = FALSE' not supported with cross-validation")
-                   z[i,,-1] <- object$validation$R2[,comps, drop = FALSE]
+                   if (!cumulative)
+                       stop("Cross-validation is not supported when `comps' is specified")
+                   z[i,,-1] <- object$validation$R2[,ncomp, drop=FALSE]
                }
                )
     }
 
+    if (cumulative) comps <- ncomp
     ## Either remove the intercept R2 or add a "zeroth" component:
     if (intercept)
         comps <- c(0, comps)
     else
-        z <- z[,,-1, drop = FALSE]
+        z <- z[,,-1, drop=FALSE]
 
     return(structure(list(val = z, type = "R2", comps = comps,
-                          call = match.call()),
+                          cumulative = cumulative, call = match.call()),
                      class = "mvrVal"))
 }

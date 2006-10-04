@@ -26,7 +26,7 @@ stdize(x, center = TRUE, scale = TRUE)
   \item{\dots}{other arguments.  Currently ignored.}
 }
 \details{
-  \code{makepredictcall.stdized} is an internal utility function; it is noe
+  \code{makepredictcall.stdized} is an internal utility function; it is not
   meant for interactive use.  See \code{\link{makepredictcall}} for details.
 
   If \code{center} is \code{TRUE}, \code{x} is centered by subtracting

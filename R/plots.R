@@ -351,7 +351,7 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
         if (missing(newdata)) stop("Missing `newdata'.")
         test.measured <- as.matrix(model.response(model.frame(formula(object),
                                                               data = newdata)))
-        test.predicted <- predict(object, comps = ncomp, newdata = newdata)
+        test.predicted <- predict(object, ncomp = ncomp, newdata = newdata)
     }
 
     ## Do the plots
@@ -407,17 +407,19 @@ predplotXy <- function(x, y, line = FALSE, main = "Prediction plot",
 ### Coefficient plot
 ###
 
-coefplot <- function(object, ncomp = object$ncomp, separate = FALSE,
-                     cumulative = TRUE, intercept = FALSE,
-                     nCols, nRows, varnames = FALSE, type = "l",
-                     lty = 1:nLines, lwd = NULL,
+coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
+                     separate = FALSE, nCols, nRows, varnames = FALSE,
+                     type = "l", lty = 1:nLines, lwd = NULL,
                      pch = 1:nLines, cex = NULL, col = 1:nLines, legendpos,
                      xlab = "variable", ylab = "regression coefficient", ...)
 {
+    ## This simplifies code below:
+    if (missing(comps)) comps <- NULL
+
     ## Help variables
-    nSize <- if (separate) length(ncomp) else 1
+    nLines <- if (is.null(comps)) length(ncomp) else length(comps)
+    nSize <- if (separate) nLines else 1
     nResp <- dim(object$fitted.values)[2]
-    nLines <- length(ncomp)
 
     ## Set plot parametres as needed:
     dims <- c(nSize, nResp)
@@ -445,8 +447,8 @@ coefplot <- function(object, ncomp = object$ncomp, separate = FALSE,
     ## Are we plotting points?
     dopoints <- type %in% c("p", "b", "o")
 
-    coefs <- coef(object, comps = ncomp, intercept = intercept,
-                  cumulative = cumulative)
+    ## Get the coefficients:
+    coefs <- coef(object, ncomp = ncomp, comps = comps, intercept = intercept)
     complabs <- dimnames(coefs)[[3]]
     if (varnames) {
         varlabs <- prednames(object, intercept = intercept)
@@ -501,7 +503,7 @@ coefplot <- function(object, ncomp = object$ncomp, separate = FALSE,
 ###
 
 validationplot <- function(object, val.type = c("RMSEP", "MSEP", "R2"),
-                           estimate, newdata, comps, intercept, ...)
+                           estimate, newdata, ncomp, comps, intercept, ...)
 {
     cl <- match.call(expand.dots = FALSE)
     cl[[1]] <- as.name(match.arg(val.type))

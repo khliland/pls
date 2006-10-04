@@ -18,8 +18,7 @@
   variance explained by the components.
 }
 \usage{
-\method{coef}{mvr}(object, comps = object$ncomp, intercept = FALSE,
-     cumulative = TRUE, \dots)
+\method{coef}{mvr}(object, ncomp = object$ncomp, comps, intercept = FALSE, \dots)
 \method{fitted}{mvr}(object, \dots)
 \method{residuals}{mvr}(object, \dots)
 \method{model.matrix}{mvr}(object, \dots)
@@ -31,35 +30,34 @@ explvar(object)
 }
 \arguments{
   \item{object, formula}{an \code{mvr} object.  The fitted model.}
-  \item{comps}{vector of positive integers.  The components to include in
-    the coefficients or to extract the names of.}
+  \item{ncomp, comps}{vector of positive integers.  The components to include in
+    the coefficients or to extract the names of.  See below.}
   \item{intercept}{logical.  Whether coefficients for the intercept should
-    be included.  Ignored if \code{cumulative = FALSE}.  Defaults to
+    be included.  Ignored if \code{comps} is specified.  Defaults to
     \code{FALSE}.}
-  \item{cumulative}{logical.  Whether cumulative (the default) or
-    individual coefficients for each component should be returned.  See below.}
   \item{explvar}{logical.  Whether the explained \eqn{X} variance should
     be appended to the component names.}
   \item{\dots}{other arguments sent to underlying functions.  Currently
     only used for \code{model.frame.mvr} and \code{model.matrix.mvr}.}
 }
 \details{
-  These functions are mostly used inside other functions.
-  (\code{coef.mvr}, \code{fitted.mvr} and \code{residuals.mvr} are
+  These functions are mostly used inside other functions.  (Functions
+  \code{coef.mvr}, \code{fitted.mvr} and \code{residuals.mvr} are
   usually called through their generic functions \code{\link{coef}},
   \code{\link{fitted}} and \code{\link{residuals}}, respectively.)
   
   \code{coef.mvr} is used to extract the regression coefficients of a
   model, i.e. the \eqn{B} in \eqn{y = XB}.  An array of dimension
-  \code{c(nxvar, nyvar, length(comps))} is returned.  
+  \code{c(nxvar, nyvar, length(ncomp))}  or \code{c(nxvar, nyvar,
+    length(comps))} is returned.
 
-  If \code{cumulative = TRUE}, \code{coef()[,,comps[i]]} are
-  the coefficients for models with \code{comps[i]} components, for
-  \eqn{i = 1, \ldots, length(comps)}.  Also, if \code{intercept = TRUE},
-  the first dimension is \eqn{nxvar + 1}, with the intercept
-  coefficients as the first row.
+  If \code{comps} is missing (or is \code{NULL}),
+  \code{coef()[,,ncomp[i]]} are the coefficients for models with
+  \code{ncomp[i]} components, for \eqn{i = 1, \ldots, length(ncomp)}.
+  Also, if \code{intercept = TRUE}, the first dimension is \eqn{nxvar +
+    1}, with the intercept coefficients as the first row.
 
-  If \code{cumulative = FALSE}, however, \code{coef()[,,comps[i]]} are
+  If \code{comps} is given, however, \code{coef()[,,comps[i]]} are
   the coefficients for a model with only the component \code{comps[i]},
   i.e. the contribution of the component \code{comps[i]} on the
   regression coefficients.
@@ -119,10 +117,10 @@ explvar(object)
 \examples{
 data(yarn)
 mod <- pcr(density ~ NIR, data = yarn[yarn$train,], ncomp = 5)
-B <- coef(mod, comps = 3, intercept = TRUE)
+B <- coef(mod, ncomp = 3, intercept = TRUE)
 ## A manual predict method:
 stopifnot(drop(B[1,,] + yarn$NIR[!yarn$train,] \%*\% B[-1,,]) ==
-          drop(predict(mod, comps = 3, newdata = yarn[!yarn$train,])))
+          drop(predict(mod, ncomp = 3, newdata = yarn[!yarn$train,])))
 
 ## Note the difference in formatting:
 mod2 <- pcr(density ~ NIR, data = yarn[yarn$train,])

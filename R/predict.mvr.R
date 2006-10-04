@@ -1,8 +1,8 @@
 ### predict.mvr.R: A predict method
 ### $Id$
 
-predict.mvr <- function(object, newdata, comps = 1:object$ncomp,
-                        type = c("response", "scores"), cumulative = TRUE,
+predict.mvr <- function(object, newdata, ncomp = 1:object$ncomp, comps,
+                        type = c("response", "scores"),
                         na.action = na.pass, ...) {
     if (missing(newdata) || is.null(newdata))
         newX <- model.matrix(object)
@@ -25,28 +25,29 @@ predict.mvr <- function(object, newdata, comps = 1:object$ncomp,
     if (!is.null(object$scale)) newX <- newX / rep(object$scale, each = nobs)
     type <- match.arg(type)
     if (type == "response") {
-        if (cumulative) {
-            ## Predict with models containing comps[1] components,
-            ## comps[2] components, etc.
-            if (missing(newdata)) return(fitted(object)[,,comps, drop=FALSE])
-            B <- coef(object, comps = comps, intercept = TRUE)
+        if (missing(comps) || is.null(comps)) {
+            ## Predict with models containing ncomp[1] components,
+            ## ncomp[2] components, etc.
+            if (missing(newdata)) return(fitted(object)[,,ncomp, drop=FALSE])
+            B <- coef(object, ncomp = ncomp, intercept = TRUE)
             dPred <- dim(B)
             dPred[1] <- dim(newX)[1]
             dnPred <- dimnames(B)
             dnPred[1] <- dimnames(newX)[1]
             pred <- array(dim = dPred, dimnames = dnPred)
-            for (i in seq(along = comps))
+            for (i in seq(along = ncomp))
                 pred[,,i] <- newX %*% B[-1,,i] + rep(B[1,,i], each = nobs)
             return(pred)
         } else {
             ## Predict with a model containing the components `comps'
-            B <- rowSums(coef(object, comps = comps, cumulative = FALSE),
-                         dims = 2)
+            B <- rowSums(coef(object, comps = comps), dims = 2)
             B0 <- object$Ymeans - object$Xmeans %*% B
             return(newX %*% B + rep(B0, each = nobs))
         }
     } else {
         ## Return predicted scores (for scores, `cumulative' has no meaning)
+        ## When predicting scores, we allow ncomp as an alias for comps:
+        if (missing(comps) || is.null(comps)) comps <- ncomp
         if (missing(newdata)) {
             TT <- object$scores[,comps]
         } else {
