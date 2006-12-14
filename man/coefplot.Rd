@@ -8,10 +8,11 @@
 }
 \usage{
 coefplot(object, ncomp = object$ncomp, comps, intercept = FALSE,
-         separate = FALSE, nCols, nRows, varnames = FALSE, type = "l",
+         separate = FALSE, nCols, nRows, labels, type = "l",
          lty = 1:nLines, lwd = NULL, pch = 1:nLines, cex = NULL,
          col = 1:nLines, legendpos, xlab = "variable",
-         ylab = "regression coefficient", \dots)
+         ylab = "regression coefficient", pretty.xlabels = TRUE,
+         xlim, \dots)
 }
 \arguments{
   \item{object}{an \code{mvr} object.  The fitted model.}
@@ -25,8 +26,7 @@ coefplot(object, ncomp = object$ncomp, comps, intercept = FALSE,
   \item{nCols, nRows}{integer.  The number of coloumns and rows the
     plots will be laid out in.  If not specified, \code{coefplot} tries
     to be intelligent.}
-  \item{varnames}{logical.  If \code{TRUE}, the \eqn{x} axis tick marks
-    are labelled with the variable names.}
+  \item{labels}{optional.  Alternative \eqn{x} axis labels.  See Details.}
   \item{type}{character.  What type of plot to make.  Defaults to
     \code{"l"} (lines).  Alternative types include \code{"p"} (points)
     and \code{"b"} (both).  See \code{\link{plot}} for a complete list
@@ -53,6 +53,10 @@ coefplot(object, ncomp = object$ncomp, comps, intercept = FALSE,
   \item{xlab,ylab}{titles for \eqn{x} and \eqn{y} axes.  Typically
     character strings, but can be expressions (e.g.,
     \code{expression(R^2)} or lists.  See \code{\link{title}} for details.}
+  \item{pretty.xlabels}{logical.  If \code{TRUE}, \code{coefplot}
+    tries to plot the \eqn{x} labels more nicely.  See Details.}
+  \item{xlim}{optional vector of length two, with the \eqn{x} limits of
+    the plot.}
   \item{\dots}{Further arguments sent to the underlying plot functions.}
 }
 \details{
@@ -64,11 +68,21 @@ coefplot(object, ncomp = object$ncomp, comps, intercept = FALSE,
   If \code{legendpos} is given, a legend is drawn at the given position
   (unless \code{separate} is \code{TRUE}).
 
-  If \code{varnames} is \code{TRUE}, the \eqn{x} axis tick marks are
-  labelled with the regressor variable names.  Hint: If there is not
-  enough room for all names to be displayed, try reducing the text size
-  by giving the argument \code{cex.axis} with a value less than 1, or
-  try printing the names vertically by giving the argument \code{las = 3}.
+  The argument \code{labels} can be a vector of labels or one of
+  \code{"names"} and \code{"numbers"}.  The labels are
+  used as \eqn{x} axis labels.  If \code{labels} is \code{"names"} or
+  \code{"numbers"}, the variable names are used as labels, the
+  difference being that with \code{"numbers"}, the variable names are
+  converted to numbers, if possible.  Variable names of the forms
+  \samp{"number"} or \samp{"number text"} (where the space is optional),
+  are handled.
+
+  The argument \code{pretty.xlabels} is only used when \code{labels} is
+  specified.  If \code{TRUE} (default), the code tries
+  to use a \sQuote{pretty} selection of labels.  If \code{labels} is
+  \code{"numbers"}, it also uses the numerical values of the labels for
+  horisontal spacing.  If one has excluded parts of the spectral
+  region, one might therefore want to use \code{pretty.xlabels = FALSE}.
 
   The function can also be called through the \code{mvr} plot method by
   specifying \code{plottype = "coefficients"}.
@@ -77,6 +91,8 @@ coefplot(object, ncomp = object$ncomp, comps, intercept = FALSE,
 \note{\code{\link{legend}} has many options.  If you want greater
   control over the appearance of the legend, omit the \code{legendpos}
   argument and call \code{legend} manually.
+
+  The handling of \code{labels} and \code{pretty.xlabels} is experimental.
 }
 \seealso{\code{\link{mvr}}, \code{\link{plot.mvr}}, \code{\link{coef.mvr}},
   \code{\link{plot}}, \code{\link{legend}}}
