@@ -1,5 +1,53 @@
 $Id$
 
+Changes in 2.0-0
+================
+
+New features:
+-------------
+- There is now an options mechanism for selecting default fit algorithms.
+  See ?pls.options.
+
+- loadingplot() and coefplot() now try to be more intelligent when plotting
+  x axis labels.
+
+- The handling of factors in X has been improved, by changing the way the
+  intercept is removed from the model matrix.
+
+- A new data set 'gasoline' has been included.
+
+User-visible changes:
+---------------------
+- All PLSR and PCR algorithms, as well as mvrCv(), have been optimised.
+  Depending on the algorithm used, the size of the matrices, and the number
+  of components used, one can expect from 5% to 65% reduction in
+  computation time.
+
+- Scaling of scores and loadings of kernel PLS and svd PCR algorithm has
+  changed.  They are now scaled using the `classic' scaling found in
+  oscorespls.
+
+- The arguments `ncomp' now always means "number of components", and `comps'
+  always means "component number".  The argument `cumulative' has been
+  removed.
+
+- cvsegments() now gives an error of k > n.
+
+- The 'NIR' and 'sensory' data sets have been renamed to 'yarn' and 'oliveoil'.
+
+Bug fixes:
+----------
+- Fixed bugs in MSEP.mvr and R2 that gave 'NA's and errors with 'na.exclude'.
+
+- Numerous small fixes in the documentation.
+
+Internal changes:
+-----------------
+- New utility function delete.intercept().
+
+- Standardised variable names in several fit functions.
+
+
 Changes in 1.2-1
 ================
 

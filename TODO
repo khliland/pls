@@ -3,9 +3,6 @@ TODO:
 .) bootstrap .632 estimator: Ron : ? : ?
    Alternative for CV
 
-.) mvr(X, Y, ncomp): ? : ? : ?
-   For people not used to formula interfaces...
-
 .) summary.mvr: ? : ? : ?
    include validated R2, and/or allow to select which statistics.
 
@@ -23,8 +20,5 @@ Wishlist/ideas/thoughts:
 .) Properly crossvalidate MSEP0?  (Now it is always LOOCV.)
 
 .) Properly crossvalidate R2 for 0 comps?
-
-.) a package-options mechanism for choosing default methods, scalings and
-   estimates?
 
 .) A fit algorithm that handles missing values.

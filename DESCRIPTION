@@ -1,6 +1,6 @@
 Package: pls
-Version: 1.9-0
-Date: 2006-09-27
+Version: 2.0-0
+Date: 2006-12-15
 Title: Partial Least Squares Regression (PLSR) and Principal Component Regression (PCR)
 Author: Ron Wehrens and Bjørn-Helge Mevik
 Maintainer: Bjørn-Helge Mevik <pls@mevik.net>
