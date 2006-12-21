@@ -7,6 +7,5 @@ Maintainer: Bjørn-Helge Mevik <pls@mevik.net>
 Encoding: latin1
 Description: Multivariate regression by partial least squares
 	regression (PLSR) and principal component regression (PCR).
-	This package supersedes the pls.pcr package.
 License: GPL version 2
 URL: http://mevik.net/work/software/pls.html
