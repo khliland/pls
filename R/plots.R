@@ -180,7 +180,7 @@ loadingplot.default <- function(object, comps = 1:2, scatter = FALSE, labels,
                            labels <- xnam
                        },
                        numbers = {      # Try to use them as numbers
-                           if (length(grep("^[0-9.]+[^0-9]*$", xnam)) ==
+                           if (length(grep("^[-0-9.]+[^0-9]*$", xnam)) ==
                                length(xnam)) {
                                ## Labels are on "num+text" format
                                labels <- sub("[^0-9]*$", "", xnam)
@@ -502,7 +502,7 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
                        labels <- xnam
                    },
                    numbers = {          # Try to use them as numbers
-                       if (length(grep("^[0-9.]+[^0-9]*$", xnam)) ==
+                       if (length(grep("^[-0-9.]+[^0-9]*$", xnam)) ==
                            length(xnam)) {
                            ## Labels are on "num+text" format
                            labels <- sub("[^0-9]*$", "", xnam)
