@@ -28,7 +28,7 @@ svdpc.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
 
     huhn <- La.svd(X)
     D <- huhn$d[1:ncomp]
-    TT <- huhn$u[,1:ncomp, drop=FALSE] %*% diag(D)
+    TT <- huhn$u[,1:ncomp, drop=FALSE] %*% diag(D, nrow = ncomp)
     P <- t(huhn$vt[1:ncomp,, drop=FALSE])
     tQ <- crossprod(TT, Y) / D^2
 
