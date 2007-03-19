@@ -101,20 +101,25 @@ oscorespls.fit <- function(X, Y, ncomp, stripped = FALSE,
     }
 
     ## Calculate rotation matrix:
-    PW <- crossprod(P, W)
-    ## It is known that P^tW is right bi-diagonal (one response) or upper
-    ## triangular (multiple responses), with all diagonal elements equal to 1.
-    if (nresp == 1) {
-        ## For single-response models, direct calculation of (P^tW)^-1 is
-        ## simple, and faster than using backsolve.
-        PWinv <- diag(ncomp)
-        bidiag <- - PW[row(PW) == col(PW)-1]
-        for (a in 1:(ncomp - 1))
-            PWinv[a,(a+1):ncomp] <- cumprod(bidiag[a:(ncomp-1)])
+    if (ncomp == 1) {
+        ## For 1 component, R == W:
+        R <- W
     } else {
-        PWinv <- backsolve(PW, diag(ncomp))
-    }
+        PW <- crossprod(P, W)
+        ## It is known that P^tW is right bi-diagonal (one response) or upper
+        ## triangular (multiple responses), with all diagonal elements equal to 1.
+        if (nresp == 1) {
+            ## For single-response models, direct calculation of (P^tW)^-1 is
+            ## simple, and faster than using backsolve.
+            PWinv <- diag(ncomp)
+            bidiag <- - PW[row(PW) == col(PW)-1]
+            for (a in 1:(ncomp - 1))
+                PWinv[a,(a+1):ncomp] <- cumprod(bidiag[a:(ncomp-1)])
+        } else {
+            PWinv <- backsolve(PW, diag(ncomp))
+        }
     R <- W %*% PWinv
+    }
 
     ## Calculate regression coefficients:
     for (a in 1:ncomp) {
