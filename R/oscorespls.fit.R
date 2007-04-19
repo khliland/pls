@@ -3,7 +3,7 @@
 ### $Id$
 ###
 ### Implements an adapted version of the `orthogonal scores' algorithm as
-###   described in Martens and Næs, pp. 121--122 and 157--158.
+###   described in Martens and Naes, pp. 121--122 and 157--158.
 
 oscorespls.fit <- function(X, Y, ncomp, stripped = FALSE,
                            tol = .Machine$double.eps^0.5, ...)

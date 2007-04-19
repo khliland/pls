@@ -328,7 +328,7 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
 {
     ## Select type(s) of prediction
     if (missing(which)) {
-        ## Pick the «best» alternative.
+        ## Pick the `best' alternative.
         if (!missing(newdata)) {
             which <- "test"
         } else {
