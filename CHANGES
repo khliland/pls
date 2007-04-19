@@ -1,5 +1,18 @@
 $Id$
 
+Changes in 2.0-1
+================
+
+Bug fixes:
+- Fixed 1-component bugs in oscorespls.fit() and svdpc.fit()
+
+- Fix to recognise negative numbers as numeric variable names in
+  loadingplot and coefplot
+
+- Removed non-ASCII characters from comments in R files (these gave
+  warnings/errors when checking on Macosx)
+
+
 Changes in 2.0-0
 ================
 
