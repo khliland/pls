@@ -42,7 +42,10 @@ predict.mvr <- function(object, newdata, ncomp = 1:object$ncomp, comps,
             ## Predict with a model containing the components `comps'
             B <- rowSums(coef(object, comps = comps), dims = 2)
             B0 <- object$Ymeans - object$Xmeans %*% B
-            return(newX %*% B + rep(B0, each = nobs))
+            pred <- newX %*% B + rep(B0, each = nobs)
+            if (!is.null(object$na.action))
+                pred <- napredict(object$na.action, pred)
+            return(pred)
         }
     } else {
         ## Return predicted scores (for scores, `cumulative' has no meaning)
@@ -50,6 +53,7 @@ predict.mvr <- function(object, newdata, ncomp = 1:object$ncomp, comps,
         if (missing(comps) || is.null(comps)) comps <- ncomp
         if (missing(newdata)) {
             TT <- object$scores[,comps]
+            if (!is.null(object$na.action))  TT <- napredict(object$na.action, TT)
         } else {
             if (is.null(object$projection))
                 stop("`object' has no `projection' component.  Maybe it was fitted with `stripped = TRUE'.")
