@@ -48,7 +48,7 @@ mvrCv <- function(X, Y, ncomp,
                       svdpc = svdpc.fit)
 
     ## Variables to save CV results in:
-    adj <- numeric(ncomp)
+    adj <- matrix(nrow = nresp, ncol = ncomp)
     cvPred <- pred <- array(0, dim = c(nobj, nresp, ncomp))
 
     if (trace) cat("Segment: ")
