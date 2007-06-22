@@ -80,23 +80,19 @@ crossval <- function(object, segments = 10,
     }
     if (trace) cat("\n")
 
-    ## Calculate MSEP
-    MSEP0 <- apply(Y, 2, var) * n / (n - 1) # FIXME: Only correct for loocv!
-    MSEP <- colMeans((cvPred - c(Y))^2)
-
-    ## Calculate R2:
-    R2 <- matrix(nrow = npred, ncol = ncomp)
-    for (i in 1:npred) R2[i,] <- cor(cvPred[,i,], Y[,i])^2
+    ## Calculate validation statistics:
+    PRESS0 <- apply(Y, 2, var) * n^2 / (n - 1) # FIXME: Only correct for loocv!
+    PRESS <- colSums((cvPred - c(Y))^2)
 
     ## Add dimnames:
     objnames <- rownames(data)
     if (is.null(objnames)) objnames <- rownames(Y)
     dimnames(cvPred) <- c(list(objnames), dimnames(fitted(object))[-1])
-    dimnames(MSEP) <- dimnames(R2) <- dimnames(adj)
+    dimnames(PRESS) <- dimnames(adj)
 
     ## Return the original object, with a component `validation' added
     object$validation <- list(method = "CV", pred = cvPred,
-                              MSEP0 = MSEP0, MSEP = MSEP, adj = adj / n^2,
-                              R2 = R2, segments = segments, ncomp = ncomp)
+                              PRESS0 = PRESS0, PRESS = PRESS, adj = adj / n^2,
+                              segments = segments, ncomp = ncomp)
     return(object)
 }

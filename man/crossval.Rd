@@ -47,9 +47,6 @@ crossval(object, segments = 10,
   \code{length.seg}.  If both are specified, \code{segments} is
   ignored.
 
-  The R2 component returned is calculated as the squared correlation
-  between the cross-validated predictions and the responses.
-
   When tracing is turned on, the segment number is printed for each segment.
 }
 \value{
@@ -57,14 +54,12 @@ crossval(object, segments = 10,
   \code{validation}, which is a list with components
   \item{method}{euqals \code{"CV"} for cross-validation.}
   \item{pred}{an array with the cross-validated predictions.}
-  \item{MSEP0}{a vector of MSEP values (one for each response variable)
+  \item{PRESS0}{a vector of PRESS values (one for each response variable)
     for a model with zero components, i.e., only the intercept.}
-  \item{MSEP}{a matrix of MSEP values for models with 1, \ldots,
+  \item{PRESS}{a matrix of PRESS values for models with 1, \ldots,
     \code{ncomp} components.  Each row corresponds to one response variable.}
   \item{adj}{a matrix of adjustment values for calculating bias
     corrected MSEP.  \code{MSEP} uses this.}
-  \item{R2}{a matrix of R2 values for models with 1, \ldots,
-    \code{ncomp} components.  Each row corresponds to one response variable.}
   \item{segments}{the list of segments used in the cross-validation.}
   \item{ncomp}{the number of components.}
 }
@@ -76,7 +71,7 @@ crossval(object, segments = 10,
 }
 \author{Ron Wehrens and Bjørn-Helge Mevik}
 \note{
-  The \code{MSEP0} is always cross-validated using leave-one-out
+  The \code{PRESS0} is always cross-validated using leave-one-out
   cross-validation.  This usually makes little difference in practice,
   but should be fixed for correctness.
 }
@@ -90,7 +85,7 @@ crossval(object, segments = 10,
 data(yarn)
 yarn.pcr <- pcr(density ~ msc(NIR), 6, data = yarn)
 yarn.cv <- crossval(yarn.pcr, segments = 10)
-plot(MSEP(yarn.cv))
+\dontrun{plot(MSEP(yarn.cv))}
 }
 \keyword{regression}
 \keyword{multivariate}

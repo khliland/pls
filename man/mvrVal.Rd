@@ -1,15 +1,17 @@
 %% $Id$
 \encoding{latin1}
-\name{MSEP}
+\name{mvrVal}
 \alias{MSEP}
 \alias{MSEP.mvr}
 \alias{RMSEP}
 \alias{RMSEP.mvr}
 \alias{R2}
+\alias{mvrValstats}
 \title{MSEP, RMSEP and R2 of PLSR and PCR models}
 \description{
   Functions to estimate the mean squared error of prediction (MSEP),
-  root mean squared error of prediction (RMSEP) and \eqn{R^2} for fitted
+  root mean squared error of prediction (RMSEP) and \eqn{R^2}
+  (A.K.A. coefficient of multiple determination) for fitted
   PCR and PLSR models.  Test-set, cross-validation and calibration-set
   estimates are implemented.
 }
@@ -23,6 +25,9 @@ RMSEP(object, ...)
 
 R2(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
    intercept = cumulative, se = FALSE, \dots)
+
+mvrValstats(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
+            intercept = cumulative, se = FALSE, \dots)
 }
 \arguments{
   \item{object}{an \code{mvr} object}
@@ -55,7 +60,8 @@ R2(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
   Finally, \code{"test"} is the test set estimate, using \code{newdata}
   as test set.
 
-  Which estimators to use is decided as follows.  If
+  Which estimators to use is decided as follows (see below for
+  \code{mvrValstats}).  If
   \code{estimate} is not specified, the test set estimate is returned if
   \code{newdata} is specified, otherwise the CV and adjusted CV (for
   \code{RMSEP} and \code{MSEP})
@@ -69,20 +75,60 @@ R2(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
   \code{ncomp[1]} components, \ldots, \code{ncomp[length(ncomp)]}
   components.  Otherwise, a single model with the components
   \code{comps[1]}, \ldots, \code{comps[length(comps)]} is used.
-
   If \code{intercept} is \code{TRUE}, a model with zero components is
-  also used (in addition to the above).  For \code{R2}, this is simply
-  defined as 0.
+  also used (in addition to the above).
+
+  The \eqn{R^2} values returned by \code{"R2"} are calculated as \eqn{1
+    - SSE/SST}, where \eqn{SST} is the (corrected) total sum of squares
+  of the response, and \eqn{SSE} is the sum of squared errors for either
+  the fitted values (i.e., the residual sum of squares), test set
+  predictions or cross-validated predictions (i.e., the \eqn{PRESS}).
+  For \code{estimate = "train"}, this is equivalent to the squared
+  correlation between the fitted values and the response.  For
+  \code{estimate = "train"}, the estimate is often called the prediction
+  \eqn{R^2}.
+  
+  \code{mvrValstats} is a utility function that calculates the
+  statistics needed by \code{MSEP} and \code{R2}.  It is not intended to
+  be used interactively.  It accepts the same arguments as \code{MSEP}
+  and \code{R2}.  However, the \code{estimate} argument must be
+  specified explicitly: no partial matching and no automatic choice is
+  made.  The function simply calculates the types of estimates it knows,
+  and leaves the other untouched.
 }
-\value{
-  An object of class \code{"mvrVal"}, with components
+%\value{
+\section{Value}{
+  \code{mvrValstats} returns a list with components
+  \describe{
+  \item{SSE}{three-dimensional array of SSE values.  The first dimension
+    is the different estimators, the second is the response variables
+    and the third is the models.}
+  \item{SST}{matrix of SST values.  The first dimension
+    is the different estimators and the second is the response
+    variables.}
+  \item{nobj}{a numeric vector giving the number of objects used for
+    each estimator.}
+  \item{nNA}{a numeric vector giving the number of objects with missing
+    values for each estimator.}
+  \item{comps}{the components specified, with \code{0} prepended if
+    \code{intercept} is \code{TRUE}.}
+  \item{cumulative}{\code{TRUE} if \code{comps} was \code{NULL} or not
+    specified.}
+  }
+
+  The other functions return an object of class \code{"mvrVal"}, with
+  components
+  \describe{
   \item{val}{three-dimensional array of estimates.  The first dimension
     is the different estimators, the second is the response variables
     and the third is the models.}
   \item{type}{\code{"MSEP"}, \code{"RMSEP"} or \code{"R2"}.}
   \item{comps}{the components specified, with \code{0} prepended if
     \code{intercept} is \code{TRUE}.}
+  \item{cumulative}{\code{TRUE} if \code{comps} was \code{NULL} or not
+    specified.}
   \item{call}{the function call}
+  }
 }
 \references{
   Mevik, B.-H., Cederkvist, H. R. (2004) Mean Squared Error of

@@ -86,25 +86,21 @@ mvrCv <- function(X, Y, ncomp,
     }
     if (trace) cat("\n")
 
-    ## Calculate MSEP:
-    MSEP0 <- apply(Y, 2, var) * nobj / (nobj - 1) # FIXME: Only correct for loocv!
-    MSEP <- colMeans((cvPred - c(Y))^2)
-
-    ## Calculate R2:
-    R2 <- matrix(nrow = nresp, ncol = ncomp)
-    for (i in 1:nresp) R2[i,] <- cor(cvPred[,i,], Y[,i])^2
+    ## Calculate validation statistics:
+    PRESS0 <- apply(Y, 2, var) * nobj^2 / (nobj - 1) # FIXME: Only correct for loocv!
+    PRESS <- colSums((cvPred - c(Y))^2)
 
     ## Add dimnames:
     objnames <- dnX[[1]]
     if (is.null(objnames)) objnames <- dnY[[1]]
     respnames <- dnY[[2]]
     nCompnames <- paste(1:ncomp, "comps")
-    names(MSEP0) <- respnames
-    dimnames(adj) <- dimnames(MSEP) <- dimnames(R2) <-
+    names(PRESS0) <- respnames
+    dimnames(adj) <- dimnames(PRESS) <-
         list(respnames, nCompnames)
     dimnames(cvPred) <- list(objnames, respnames, nCompnames)
 
     list(method = "CV", pred = cvPred,
-         MSEP0 = MSEP0, MSEP = MSEP, adj = adj / nobj^2,
-         R2 = R2, segments = segments, ncomp = ncomp)
+         PRESS0 = PRESS0, PRESS = PRESS, adj = adj / nobj^2,
+         segments = segments, ncomp = ncomp)
 }
