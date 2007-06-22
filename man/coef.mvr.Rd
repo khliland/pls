@@ -47,8 +47,9 @@ explvar(object)
   \code{\link{fitted}} and \code{\link{residuals}}, respectively.)
   
   \code{coef.mvr} is used to extract the regression coefficients of a
-  model, i.e. the \eqn{B} in \eqn{y = XB}.  An array of dimension
-  \code{c(nxvar, nyvar, length(ncomp))}  or \code{c(nxvar, nyvar,
+  model, i.e. the \eqn{B} in \eqn{y = XB} (for the \eqn{Q} in \eqn{y = TQ}
+  where \eqn{T} is the scores, see \code{\link{Yloadings}}).  An array of
+  dimension \code{c(nxvar, nyvar, length(ncomp))} or \code{c(nxvar, nyvar,
     length(comps))} is returned.
 
   If \code{comps} is missing (or is \code{NULL}),
