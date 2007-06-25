@@ -43,7 +43,7 @@ predict.mvr <- function(object, newdata, ncomp = 1:object$ncomp, comps,
             B <- rowSums(coef(object, comps = comps), dims = 2)
             B0 <- object$Ymeans - object$Xmeans %*% B
             pred <- newX %*% B + rep(B0, each = nobs)
-            if (!is.null(object$na.action))
+            if (missing(newdata) && !is.null(object$na.action))
                 pred <- napredict(object$na.action, pred)
             return(pred)
         }
