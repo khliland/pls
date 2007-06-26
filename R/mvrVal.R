@@ -40,37 +40,30 @@ mvrValstats <- function(object, estimate,
                  dimnames = list(estimate = estimate, response = respnames))
     nobj <- numeric(nestimates)
     names(nobj) <- estimate
-    nNA <- nobj                         # FIXME: perhaps just update nobj?
 
     ## Calculate the statistics:
     for (i in seq(along = estimate)) {
         switch(estimate[i],
                train = {
-                   ## NAx; cumulative; "omit", "exclude": OK
-                   ## NAx; !cumulative; omit, exclude: should be OK
                    resp <- as.matrix(model.response(model.frame(object)))
                    nobj[i] <- nrow(resp)
                    if (inherits(object$na.action, "exclude")) {
                        resp <- napredict(object$na.action, resp) # inserts NAs
-                       nNA[i] <- length(object$na.action)
                    }
                    res <- if (cumulative)
                        residuals(object, ...)[,,ncomp, drop=FALSE]
                    else
                        resp - predict(object, comps = comps, ...)
 
-                   ## FIXME: Do we always have an equal number of NAs
-                   ## in all residuals  and responses?
                    SST[i,] <- apply(resp, 2, var, na.rm = TRUE) *
-                       (nobj[i] - nNA[i] - 1)
+                       (nobj[i] - 1)
                    SSE[i,,] <- cbind(SST[i,], colSums(res^2, na.rm = TRUE))
                },
                test = {
-                   ## FIXME: Handling of NAs in X and/or Y?
                    if (missing(newdata)) stop("Missing `newdata'.")
-                   resp <-
-                       as.matrix(model.response(model.frame(formula(object),
-                                                            data=newdata)))
+                   ## Remove any observations with NAs:
+                   newdata <- model.frame(formula(object), data = newdata)
+                   resp <- as.matrix(model.response(newdata))
                    pred <- if (cumulative)
                        predict(object, ncomp = ncomp, newdata = newdata,...)
                    else
@@ -98,7 +91,7 @@ mvrValstats <- function(object, estimate,
     else
         SSE <- SSE[,,-1, drop=FALSE]
 
-    return(list(SSE = SSE, SST = SST, nobj = nobj, nNA = nNA, comps = comps,
+    return(list(SSE = SSE, SST = SST, nobj = nobj, comps = comps,
                 cumulative = cumulative))
 }
 
@@ -197,7 +190,7 @@ MSEP.mvr <- function(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
     valstats <- eval(cl, parent.frame())
 
     ## Calculate the MSEPs:
-    MSEP <- valstats$SSE / (valstats$nobj - valstats$nNA)
+    MSEP <- valstats$SSE / valstats$nobj
     if (adjCV) {
         ## Calculate the adjusted CV
         MSEP["adjCV",,] <- MSEP["CV",,]

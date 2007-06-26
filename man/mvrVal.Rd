@@ -108,8 +108,6 @@ mvrValstats(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
     variables.}
   \item{nobj}{a numeric vector giving the number of objects used for
     each estimator.}
-  \item{nNA}{a numeric vector giving the number of objects with missing
-    values for each estimator.}
   \item{comps}{the components specified, with \code{0} prepended if
     \code{intercept} is \code{TRUE}.}
   \item{cumulative}{\code{TRUE} if \code{comps} was \code{NULL} or not
