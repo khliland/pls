@@ -3,7 +3,7 @@
 
 crossval <- function(object, segments = 10,
                      segment.type = c("random", "consecutive", "interleaved"),
-                     length.seg, trace = 15, ...)
+                     length.seg, jackknife = FALSE, trace = 15, ...)
 {
     if(!inherits(object, "mvr")) stop("`object' not an mvr object.")
     ## Get data frame
@@ -58,12 +58,16 @@ crossval <- function(object, segments = 10,
              nobj - max(sapply(segments, length)))
     cvPred <- array(dim = c(nobj, nresp, ncomp))
     adj <- matrix(0, nrow = nresp, ncol = ncomp)
+    if (jackknife <- isTRUE(jackknife))
+        cvCoef <- array(dim = c(npred, nresp, ncomp, length(segments)))
 
     ## Run cv, using update and predict
     for (n.seg in 1:length(segments)) {
         if (n.seg == 1) trace.time <- proc.time()[3] # Can't use system.time!
         seg <- segments[[n.seg]]
         fit <- update(object, data = data[-seg,])
+        ## Optionally collect coefficients:
+        if (jackknife) cvCoef[,,,n.seg] <- fit$coefficients
         pred <- predict(fit, newdata = data)
         ## Update the adjMSEP adjustment:
         adj <- adj + length(seg) * colSums((pred - c(Y))^2)
@@ -92,6 +96,7 @@ crossval <- function(object, segments = 10,
 
     ## Return the original object, with a component `validation' added
     object$validation <- list(method = "CV", pred = cvPred,
+                              coefficients = if (jackknife) cvPred,
                               PRESS0 = PRESS0, PRESS = PRESS,
                               adj = adj / nobj^2,
                               segments = segments, ncomp = ncomp)

@@ -5,7 +5,7 @@ mvrCv <- function(X, Y, ncomp,
                   method = pls.options()$mvralg,
                   scale = FALSE, segments = 10,
                   segment.type = c("random", "consecutive", "interleaved"),
-                  length.seg, trace = FALSE, ...)
+                  length.seg, jackknife = FALSE, trace = FALSE, ...)
 {
     ## Initialise:
     Y <- as.matrix(Y)
@@ -50,6 +50,8 @@ mvrCv <- function(X, Y, ncomp,
     ## Variables to save CV results in:
     adj <- matrix(0, nrow = nresp, ncol = ncomp)
     cvPred <- pred <- array(0, dim = c(nobj, nresp, ncomp))
+    if (jackknife)
+        cvCoef <- array(dim = c(npred, nresp, ncomp, length(segments)))
 
     if (trace) cat("Segment: ")
     for (n.seg in 1:length(segments)) {
@@ -69,6 +71,9 @@ mvrCv <- function(X, Y, ncomp,
 
         ## Fit the model:
         fit <- fitFunc(Xtrain, Y[-seg,], ncomp, stripped = TRUE, ...)
+
+        ## Optionally collect coefficients:
+        if (jackknife) cvCoef[,,,n.seg] <- fit$coefficients
 
         ## Set up test data:
         Xtest <- X
@@ -100,7 +105,7 @@ mvrCv <- function(X, Y, ncomp,
         list(respnames, nCompnames)
     dimnames(cvPred) <- list(objnames, respnames, nCompnames)
 
-    list(method = "CV", pred = cvPred,
+    list(method = "CV", pred = cvPred, coefficients = if (jackknife) cvPred,
          PRESS0 = PRESS0, PRESS = PRESS, adj = adj / nobj^2,
          segments = segments, ncomp = ncomp)
 }
