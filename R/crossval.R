@@ -57,7 +57,7 @@ crossval <- function(object, segments = 10,
              "\nPlease refit with `ncomp' less than ",
              nobj - max(sapply(segments, length)))
     cvPred <- array(dim = c(nobj, nresp, ncomp))
-    adj <- numeric(ncomp)
+    adj <- matrix(0, nrow = nresp, ncol = ncomp)
 
     ## Run cv, using update and predict
     for (n.seg in 1:length(segments)) {
