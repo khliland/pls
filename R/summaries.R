@@ -37,15 +37,15 @@ summary.mvr <- function(object, what = c("all", "validation", "training"),
     what <- match.arg(what)
     if (what == "all") what <- c("validation", "training")
     if (is.null(object$validation)) what <- "training"
-  
+
     nobj <- nrow(object$scores)
-    npred <- length(object$Ymeans)
+    nresp <- length(object$Ymeans)
     yvarnames <- respnames(object)
     cat("Data: \tX dimension:", nobj, length(object$Xmeans),
-        "\n\tY dimension:", nobj, npred)
+        "\n\tY dimension:", nobj, nresp)
     cat("\nFit method:", object$method)
     cat("\nNumber of components considered:", object$ncomp)
-  
+
     for (wh in what) {
         if (wh == "training") {
             cat("\nTRAINING: % variance explained\n")
@@ -67,11 +67,11 @@ summary.mvr <- function(object, what = c("all", "validation", "training"),
 
 ## Print method for mvrVal objects:
 print.mvrVal <- function(x, digits = 4, print.gap = 2, ...) {
-    npred <- dim(x$val)[2]
+    nresp <- dim(x$val)[2]
     yvarnames <- dimnames(x$val)[[2]]
     names(dimnames(x$val)) <- NULL
-    for (i in 1:npred) {
-        if (npred > 1) cat("\nResponse:", yvarnames[i], "\n")
+    for (i in 1:nresp) {
+        if (nresp > 1) cat("\nResponse:", yvarnames[i], "\n")
         print(x$val[,i,], digits = digits, print.gap = print.gap, ...)
     }
     invisible(x)

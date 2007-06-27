@@ -34,7 +34,7 @@ crossval <- function(object, segments = 10,
 
     ## Get response:
     Y <- as.matrix(model.response(mf))
-    npred <- dim(Y)[2]
+    nresp <- dim(Y)[2]
     ## Calculate effective number of observations
     n <- nrow(data)
 
@@ -56,7 +56,7 @@ crossval <- function(object, segments = 10,
         stop("`ncomp' too large for cross-validation.",
              "\nPlease refit with `ncomp' less than ",
              n - max(sapply(segments, length)))
-    cvPred <- array(dim = c(n, npred, ncomp))
+    cvPred <- array(dim = c(n, nresp, ncomp))
     adj <- numeric(ncomp)
 
     ## Run cv, using update and predict
