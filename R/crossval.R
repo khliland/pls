@@ -36,7 +36,7 @@ crossval <- function(object, segments = 10,
     Y <- as.matrix(model.response(mf))
     nresp <- dim(Y)[2]
     ## Calculate effective number of observations
-    n <- nrow(data)
+    nobj <- nrow(data)
 
     ## Set up segments
     if (is.list(segments)) {
@@ -44,19 +44,19 @@ crossval <- function(object, segments = 10,
             attr(segments, "type") <- "user supplied"
     } else {
         if (missing(length.seg)) {
-            segments <- cvsegments(n, k = segments, type = segment.type)
+            segments <- cvsegments(nobj, k = segments, type = segment.type)
         } else {
-            segments <- cvsegments(n, length.seg = length.seg,
+            segments <- cvsegments(nobj, length.seg = length.seg,
                                    type = segment.type)
         }
     }
 
     ncomp <- object$ncomp
-    if (ncomp > n - max(sapply(segments, length)) - 1)
+    if (ncomp > nobj - max(sapply(segments, length)) - 1)
         stop("`ncomp' too large for cross-validation.",
              "\nPlease refit with `ncomp' less than ",
-             n - max(sapply(segments, length)))
-    cvPred <- array(dim = c(n, nresp, ncomp))
+             nobj - max(sapply(segments, length)))
+    cvPred <- array(dim = c(nobj, nresp, ncomp))
     adj <- numeric(ncomp)
 
     ## Run cv, using update and predict
@@ -81,7 +81,7 @@ crossval <- function(object, segments = 10,
     if (trace) cat("\n")
 
     ## Calculate validation statistics:
-    PRESS0 <- apply(Y, 2, var) * n^2 / (n - 1) # FIXME: Only correct for loocv!
+    PRESS0 <- apply(Y, 2, var) * nobj^2 / (nobj - 1) # FIXME: Only correct for loocv!
     PRESS <- colSums((cvPred - c(Y))^2)
 
     ## Add dimnames:
@@ -92,7 +92,8 @@ crossval <- function(object, segments = 10,
 
     ## Return the original object, with a component `validation' added
     object$validation <- list(method = "CV", pred = cvPred,
-                              PRESS0 = PRESS0, PRESS = PRESS, adj = adj / n^2,
+                              PRESS0 = PRESS0, PRESS = PRESS,
+                              adj = adj / nobj^2,
                               segments = segments, ncomp = ncomp)
     return(object)
 }
