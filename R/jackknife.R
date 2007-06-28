@@ -1,7 +1,8 @@
 ### jackknife.R: Jackknife variance estimation of regression coefficients.
 ### $Id$
 
-varJack <- function(object, covariance = TRUE, use.mean = TRUE) {
+varJack <- function(object, ncomp = object$ncomp, covariance = FALSE,
+                    use.mean = TRUE) {
     if (!inherits(object, "mvr"))
         stop("Not an 'mvr' object")
     if (is.null(object$validation) || is.null(object$validation$coefficients))
@@ -13,19 +14,25 @@ varJack <- function(object, covariance = TRUE, use.mean = TRUE) {
     nseg <- length(seglengths)
     if (isTRUE(use.mean)) {
         ## The `proper' version of the jackknife
-        cent <- rowMeans(object$validation$coefficients, dims = 3)
+        cent <-
+            rowMeans(object$validation$coefficients[,,ncomp,, drop=FALSE],
+                     dims = 3)
     } else {
         ## The `sloppy' version, used by e.g. Westad FIXME: ref
-        cent <- object$coefficients
+        cent <- object$coefficients[,,ncomp, drop=FALSE]
     }
-    Bdiff <- object$validation$coefficients - c(cent)
-    BdiffSq <- apply(Bdiff, 3:4, function(x) tcrossprod(c(x)))
-    dims <- dim(Bdiff)
-    dims[1:2] <- dims[1] * dims[2]
-    dim(BdiffSq) <- dims
-    est <- (nseg - 1) * rowMeans(BdiffSq, dims = 3)
-    if (!isTRUE(covariance))
-        est <- apply(est, 3, diag)
+    Bdiff <- object$validation$coefficients[,,ncomp,, drop=FALSE] - c(cent)
+    if (isTRUE(covariance)) {
+        BdiffSq <- apply(Bdiff, 3:4, function(x) tcrossprod(c(x)))
+        dims <- dim(Bdiff)
+        dims[1:2] <- dims[1] * dims[2]
+        dim(BdiffSq) <- dims
+        est <- (nseg - 1) * rowMeans(BdiffSq, dims = 3)
+    } else {
+        BdiffSq <- apply(Bdiff, 3:4, function(x) c(x)^2)
+        est <- (nseg - 1) * rowMeans(BdiffSq, dims = 2)
+        dim(est) <- dim(cent)
+    }
     return(est)
 }
 
@@ -34,13 +41,13 @@ varJack <- function(object, covariance = TRUE, use.mean = TRUE) {
 ### kruskal.test, etc.)
 jack.test <- function(object, ncomp = object$ncomp, use.mean = TRUE) {
     nresp <- dim(object$coefficients)[2]
-    sdjack <- sqrt(varJack(object, covariance = FALSE,
-                           use.mean = use.mean)[,ncomp])
+    sdjack <- sqrt(varJack(object, ncomp = ncomp, covariance = FALSE,
+                           use.mean = use.mean))
     B <- coef(object, ncomp = ncomp)
     df <- length(object$validation$segments) - 1
     tvals <- B / sdjack
     pvals <- 2 * pt(abs(tvals), df = df, lower.tail = FALSE)
-    structure(list(coefficients = B, sd = matrix(sdjack, ncol = nresp),
+    structure(list(coefficients = B, sd = sdjack,
                    tvalues = tvals, df = df, pvalues = pvals),
               class = "jacktest")
 }
@@ -50,16 +57,21 @@ jack.test <- function(object, ncomp = object$ncomp, use.mean = TRUE) {
 print.jacktest <- function(x, ...) {
     nresp <- dim(x$coefficients)[2]
     respnames <- dimnames(x$coefficients)[[2]]
+    nmod <- dim(x$coefficients)[3]
+    modnames <- dimnames(x$coefficients)[[3]]
     for (resp in 1:nresp) {
-        if (resp > 1) cat("\n")
-        cat("Response ", respnames[resp], ":\n", sep = "")
-        anovatab <- cbind(Estimate = x$coefficients[,resp,],
-                          "Std. Error" = x$sd[,resp],
-                          Df = x$df,
-                          "t value" = x$tvalues[,resp,],
-                          "Pr(>|t|)" = x$pvalues[,resp,])
-	class(anovatab) <- "anova"
-	print(anovatab)
+        for (mod in 1:nmod) {
+            if (resp > 1 || mod > 1) cat("\n")
+            cat("Response ", respnames[resp], " (", modnames[mod], "):\n",
+                sep = "")
+            anovatab <- cbind(Estimate = x$coefficients[,resp,mod],
+                              "Std. Error" = x$sd[,resp,mod],
+                              Df = x$df,
+                              "t value" = x$tvalues[,resp,mod],
+                              "Pr(>|t|)" = x$pvalues[,resp,mod])
+            class(anovatab) <- "anova"
+            print(anovatab)
+        }
     }
     invisible(x)
 }
