@@ -17,6 +17,7 @@ mvrCv <- function(X, Y, ncomp,
     ## dimnames(X) <- dimnames(Y) <- NULL
 
     nobj <- dim(X)[1]
+    npred <- dim(X)[2]
     nresp <- dim(Y)[2]
 
     ## Check the `scale' parameter:
@@ -105,7 +106,7 @@ mvrCv <- function(X, Y, ncomp,
         list(respnames, nCompnames)
     dimnames(cvPred) <- list(objnames, respnames, nCompnames)
 
-    list(method = "CV", pred = cvPred, coefficients = if (jackknife) cvPred,
+    list(method = "CV", pred = cvPred, coefficients = if (jackknife) cvCoef,
          PRESS0 = PRESS0, PRESS = PRESS, adj = adj / nobj^2,
          segments = segments, ncomp = ncomp)
 }

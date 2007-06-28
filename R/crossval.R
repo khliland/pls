@@ -35,6 +35,7 @@ crossval <- function(object, segments = 10,
     ## Get response:
     Y <- as.matrix(model.response(mf))
     nresp <- dim(Y)[2]
+    npred <- dim(X)[2]
     ## Calculate effective number of observations
     nobj <- nrow(data)
 
@@ -96,7 +97,7 @@ crossval <- function(object, segments = 10,
 
     ## Return the original object, with a component `validation' added
     object$validation <- list(method = "CV", pred = cvPred,
-                              coefficients = if (jackknife) cvPred,
+                              coefficients = if (jackknife) cvCoef,
                               PRESS0 = PRESS0, PRESS = PRESS,
                               adj = adj / nobj^2,
                               segments = segments, ncomp = ncomp)
