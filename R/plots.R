@@ -104,7 +104,9 @@ loadingplot.default <- function(object, comps = 1:2, scatter = FALSE, labels,
     ## Check arguments
     nComps <- length(comps)
     if (nComps == 0) stop("At least one component must be selected.")
-    if (!missing(type) && sum(nchar(type)) != 1) stop("Invalid plot type.")
+    if (!missing(type) &&
+        (length(type) != 1 || is.na(nchar(type, "c")) || nchar(type, "c") != 1))
+        stop("Invalid plot type.")
     ## Get the loadings
     if (is.matrix(object)) {
         ## Assume this is already a loading matrix
@@ -189,7 +191,7 @@ loadingplot.default <- function(object, comps = 1:2, scatter = FALSE, labels,
                                    xaxt <- par("xaxt")
                                }
                            } else {
-                               stop("Could not convert variable names to numbers")
+                               stop("Could not convert variable names to numbers.")
                            }
                        }
                        )
@@ -246,7 +248,7 @@ corrplot <- function(object, comps = 1:2, labels, radii = c(sqrt(1/2), 1),
     } else {
         S <- scores(object)[,comps, drop = FALSE]
         if (is.null(S))
-            stop("`", deparse(substitute(object)), "' has no scores")
+            stop("`", deparse(substitute(object)), "' has no scores.")
         cl <- cor(model.matrix(object), S)
         varlab <- compnames(object, comps, explvar = TRUE)
     }
@@ -479,7 +481,8 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
         nCols <- nRows <- 1
     }
     if (length(lty) > nLines) lty <- lty[1:nLines] # otherwise legend chokes
-    if (sum(nchar(type)) != 1) stop("invalid plot type")
+    if (length(type) != 1 || is.na(nchar(type, "c")) || nchar(type, "c") != 1)
+        stop("Invalid plot type.")
     ## Are we plotting lines?
     dolines <- type %in% c("l", "b", "c", "o", "s", "S", "h")
     ## Are we plotting points?
@@ -511,7 +514,7 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
                                xaxt <- par("xaxt")
                            }
                        } else {
-                           stop("Could not convert variable names to numbers")
+                           stop("Could not convert variable names to numbers.")
                        }
                    }
                    )
@@ -610,7 +613,8 @@ plot.mvrVal <- function(x, nCols, nRows, type = "l", lty = 1:nEst, lwd = NULL,
     estnames <- dimnames(x$val)[[1]]    # Names of estimators
     nEst <- length(estnames)
     if (length(lty) > nEst) lty <- lty[1:nEst] # otherwise legend chokes
-    if (sum(nchar(type)) != 1) stop("invalid plot type")
+    if (length(type) != 1 || is.na(nchar(type, "c")) || nchar(type, "c") != 1)
+        stop("Invalid plot type.")
     ## Are we plotting lines?
     dolines <- type %in% c("l", "b", "c", "o", "s", "S", "h")
     ## Are we plotting points?
@@ -654,7 +658,7 @@ plot.mvrVal <- function(x, nCols, nRows, type = "l", lty = 1:nEst, lwd = NULL,
 biplot.mvr <- function(x, comps = 1:2,
                        which = c("x", "y", "scores", "loadings"),
                        var.axes = FALSE, xlabs, ylabs, main, ...) {
-    if (length(comps) != 2) stop("Exactly 2 components must be selected")
+    if (length(comps) != 2) stop("Exactly 2 components must be selected.")
     which <- match.arg(which)
     switch(which,
            x = {
@@ -679,7 +683,7 @@ biplot.mvr <- function(x, comps = 1:2,
            }
            )
     if (is.null(objects) || is.null(vars))
-        stop("'x' lacks the required scores/loadings")
+        stop("'x' lacks the required scores/loadings.")
     ## Build a call to `biplot'
     mc <- match.call()
     mc$comps <- mc$which <- NULL
