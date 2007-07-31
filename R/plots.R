@@ -125,7 +125,12 @@ loadingplot.default <- function(object, comps = 1:2, scatter = FALSE, labels,
             ## Set up point/tick mark labels
             if (length(labels) == 1) {
                 labels <- switch(match.arg(labels, c("names", "numbers")),
-                                 names = rownames(L),
+                                 names = {
+                                     if (is.null(rnames <- rownames(L))) {
+                                         stop("The loadings have no row names.")
+                                     } else {
+                                         rnames
+                                     }},
                                  numbers = 1:nrow(L)
                                  )
             }
