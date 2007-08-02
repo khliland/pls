@@ -94,6 +94,9 @@ crossval <- function(object, segments = 10,
     if (is.null(objnames)) objnames <- rownames(Y)
     dimnames(cvPred) <- c(list(objnames), dimnames(fitted(object))[-1])
     dimnames(PRESS) <- dimnames(adj)
+    if (jackknife)
+        dimnames(cvCoef) <- c(dimnames(coef(object)),
+                              list(paste("Seg", seq.int(along = segments))))
 
     ## Return the original object, with a component `validation' added
     object$validation <- list(method = "CV", pred = cvPred,

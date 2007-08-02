@@ -105,6 +105,9 @@ mvrCv <- function(X, Y, ncomp,
     dimnames(adj) <- dimnames(PRESS) <-
         list(respnames, nCompnames)
     dimnames(cvPred) <- list(objnames, respnames, nCompnames)
+    if (jackknife)
+        dimnames(cvCoef) <- list(dnX[[2]], respnames, nCompnames,
+                                 paste("Seg", seq.int(along = segments)))
 
     list(method = "CV", pred = cvPred, coefficients = if (jackknife) cvCoef,
          PRESS0 = PRESS0, PRESS = PRESS, adj = adj / nobj^2,

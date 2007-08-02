@@ -10,7 +10,7 @@ varJack <- function(object, ncomp = object$ncomp, covariance = FALSE,
 
     seglengths <- sapply(object$validation$segments, length)
     if (any(diff(seglengths) != 0))
-        warning("Unequal segment lengths.  Estimate currently ignores that")
+        warning("Unequal segment lengths.  Estimator currently ignores that")
     nseg <- length(seglengths)
     if (isTRUE(use.mean)) {
         ## The `proper' version of the jackknife
@@ -21,6 +21,7 @@ varJack <- function(object, ncomp = object$ncomp, covariance = FALSE,
         ## The `sloppy' version, used by e.g. Westad FIXME: ref
         cent <- object$coefficients[,,ncomp, drop=FALSE]
     }
+    dnB <- dimnames(object$validation$coefficients[,,ncomp,, drop=FALSE])
     Bdiff <- object$validation$coefficients[,,ncomp,, drop=FALSE] - c(cent)
     if (isTRUE(covariance)) {
         BdiffSq <- apply(Bdiff, 3:4, function(x) tcrossprod(c(x)))
@@ -28,10 +29,13 @@ varJack <- function(object, ncomp = object$ncomp, covariance = FALSE,
         dims[1:2] <- dims[1] * dims[2]
         dim(BdiffSq) <- dims
         est <- (nseg - 1) * rowMeans(BdiffSq, dims = 3)
+        dim(est) <- c(dim(cent)[1:2], dim(cent))
+        dimnames(est) <- c(dnB[1:2], dnB[1:3])
     } else {
         BdiffSq <- apply(Bdiff, 3:4, function(x) c(x)^2)
         est <- (nseg - 1) * rowMeans(BdiffSq, dims = 2)
         dim(est) <- dim(cent)
+        dimnames(est) <- dnB[1:3]
     }
     return(est)
 }
