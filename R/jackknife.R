@@ -1,8 +1,9 @@
 ### jackknife.R: Jackknife variance estimation of regression coefficients.
 ### $Id$
 
-varJack <- function(object, ncomp = object$ncomp, covariance = FALSE,
-                    use.mean = TRUE) {
+## var.jack: Calculate jackknife variance (or covariance) estimates
+var.jack <- function(object, ncomp = object$ncomp, covariance = FALSE,
+                     use.mean = TRUE) {
     if (!inherits(object, "mvr"))
         stop("Not an 'mvr' object")
     if (is.null(object$validation) || is.null(object$validation$coefficients))
@@ -29,8 +30,14 @@ varJack <- function(object, ncomp = object$ncomp, covariance = FALSE,
         dims[1:2] <- dims[1] * dims[2]
         dim(BdiffSq) <- dims
         est <- (nseg - 1) * rowMeans(BdiffSq, dims = 3)
-        dim(est) <- c(dim(cent)[1:2], dim(cent))
-        dimnames(est) <- c(dnB[1:2], dnB[1:3])
+        if (length(dnB[[2]]) == 1) {
+            nxy <- dnB[[1]]
+        } else if (length(dnB[[1]]) == 1) {
+            nxy <- dnB[[2]]
+        } else {
+            nxy <- c(t(outer(dnB[[2]], dnB[[1]], paste, sep = ":")))
+        }
+        dimnames(est) <- list(nxy, nxy, dnB[[3]])
     } else {
         BdiffSq <- apply(Bdiff, 3:4, function(x) c(x)^2)
         est <- (nseg - 1) * rowMeans(BdiffSq, dims = 2)
@@ -40,14 +47,13 @@ varJack <- function(object, ncomp = object$ncomp, covariance = FALSE,
     return(est)
 }
 
-### FIXME: Perhaps model the function arguments and return values more after
-### the standard hypothesis test functions (t.test, wilcox.test,
-### kruskal.test, etc.)
+## jack.test: Use jackknife variance estimates to test B = 0
 jack.test <- function(object, ncomp = object$ncomp, use.mean = TRUE) {
     nresp <- dim(object$coefficients)[2]
-    sdjack <- sqrt(varJack(object, ncomp = ncomp, covariance = FALSE,
+    sdjack <- sqrt(var.jack(object, ncomp = ncomp, covariance = FALSE,
                            use.mean = use.mean))
     B <- coef(object, ncomp = ncomp)
+    ## FIXME: This is an approximation at best:
     df <- length(object$validation$segments) - 1
     tvals <- B / sdjack
     pvals <- 2 * pt(abs(tvals), df = df, lower.tail = FALSE)
