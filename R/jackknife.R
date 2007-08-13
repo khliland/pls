@@ -62,9 +62,8 @@ jack.test <- function(object, ncomp = object$ncomp, use.mean = TRUE) {
               class = "jacktest")
 }
 
-### FIXME: Se print.summary.mlm / print.summary.lm for en bedre løsning.
-### Also: perhaps see print.htest
-print.jacktest <- function(x, ...) {
+## print.jacktest: Print method for jacktest objects
+print.jacktest <- function(x, P.values = TRUE, ...) {
     nresp <- dim(x$coefficients)[2]
     respnames <- dimnames(x$coefficients)[[2]]
     nmod <- dim(x$coefficients)[3]
@@ -74,13 +73,13 @@ print.jacktest <- function(x, ...) {
             if (resp > 1 || mod > 1) cat("\n")
             cat("Response ", respnames[resp], " (", modnames[mod], "):\n",
                 sep = "")
-            anovatab <- cbind(Estimate = x$coefficients[,resp,mod],
-                              "Std. Error" = x$sd[,resp,mod],
-                              Df = x$df,
-                              "t value" = x$tvalues[,resp,mod],
-                              "Pr(>|t|)" = x$pvalues[,resp,mod])
-            class(anovatab) <- "anova"
-            print(anovatab)
+            coefmat <- cbind(Estimate = x$coefficients[,resp,mod],
+                             "Std. Error" = x$sd[,resp,mod],
+                             Df = x$df,
+                             "t value" = x$tvalues[,resp,mod],
+                             "Pr(>|t|)" = x$pvalues[,resp,mod])
+            printCoefmat(coefmat, P.values = P.values,
+                         cs.ind = 1:2, tst.ind = 4, ...)
         }
     }
     invisible(x)
