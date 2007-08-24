@@ -16,7 +16,7 @@ simpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
     }
     ## Remove dimnames during calculation (doesn't seem to matter; in fact,
     ## as far as it has any effect, it hurts a tiny bit in most situations).
-    ## dimnames(X) <- dimnames(Y) <- NULL
+    dimnames(X) <- dimnames(Y) <- NULL
 
     nobj <- dim(X)[1] # n in paper
     npred <- dim(X)[2] # p in paper

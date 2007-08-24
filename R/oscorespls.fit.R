@@ -17,7 +17,7 @@ oscorespls.fit <- function(X, Y, ncomp, stripped = FALSE,
     }
     ## Remove dimnames for performance (doesn't seem to matter; in fact,
     ## as far as it has any effect, it hurts a tiny bit in most situations.
-    ## dimnames(X) <- dimnames(Y) <- NULL
+    dimnames(X) <- dimnames(Y) <- NULL
 
     nobj <- dim(X)[1]
     npred <- dim(X)[2]
