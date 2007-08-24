@@ -10,7 +10,7 @@
 mvrCv(X, Y, ncomp,
       method = pls.options()$mvralg, scale = FALSE,
       segments = 10, segment.type = c("random", "consecutive", "interleaved"),
-      length.seg, trace = FALSE, \dots)
+      length.seg, jackknife = FALSE, trace = FALSE, \dots)
 }
 \arguments{
   \item{X}{a matrix of observations.  \code{NA}s and \code{Inf}s are not
@@ -30,6 +30,8 @@ mvrCv(X, Y, ncomp,
   \item{length.seg}{Positive integer.  The length of the segments to
     use.  If specified, it overrides \code{segments} unless
     \code{segments} is a list.}
+  \item{jackknife}{logical.  Whether jackknifing of regression
+    coefficients should be performed.}
   \item{trace}{logical; if \code{TRUE}, the segment number is printed
     for each segment.}
   \item{\dots}{additional arguments, sent to the underlying fit function.}
@@ -51,6 +53,10 @@ mvrCv(X, Y, ncomp,
   \code{length.seg}.  If both are specified, \code{segments} is
   ignored.
 
+  If \code{jackknife} is \code{TRUE}, jackknifed regression coefficients
+  are returned, which can be used for for variance estimation
+  (\code{\link{var.jack}}) or hypothesis testing (\code{\link{jack.test}}).
+
   \code{X} and \code{Y} do not need to be centered.
   
   Note that this function cannot be used in situations where \eqn{X}
@@ -70,6 +76,10 @@ mvrCv(X, Y, ncomp,
   A list with the following components:
   \item{method}{equals \code{"CV"} for cross-validation.}
   \item{pred}{an array with the cross-validated predictions.}
+  \item{coefficients}{(only if \code{jackknife} is \code{TRUE}) an array
+    with the jackknifed regression coefficients.  The dimensions
+    correspond to the predictors, responses, number of components, and
+    segments, respectively.}
   \item{PRESS0}{a vector of PRESS values (one for each response variable)
     for a model with zero components, i.e., only the intercept.}
   \item{PRESS}{a matrix of PRESS values for models with 1, \ldots,
@@ -96,6 +106,8 @@ mvrCv(X, Y, ncomp,
   \code{\link{crossval}}
   \code{\link{cvsegments}}
   \code{\link{MSEP}}
+  \code{\link{var.jack}}
+  \code{\link{jack.test}}
 }
 \examples{
 data(yarn)
