@@ -8,6 +8,10 @@ print.mvr <- function(x, ...) {
                regr = "Partial least squares"
                alg = "kernel"
            },
+           widekernelpls = {
+               regr = "Partial least squares"
+               alg = "wide kernel"
+           },
            simpls = {
                regr = "Partial least squares"
                alg = "simpls"

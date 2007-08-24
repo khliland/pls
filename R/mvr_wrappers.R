@@ -4,8 +4,8 @@
 plsr <- function(..., method = pls.options()$plsralg)
 {
     cl <- match.call()
-    cl$method <- match.arg(method, c("kernelpls", "simpls", "oscorespls",
-                                     "model.frame"))
+    cl$method <- match.arg(method, c("kernelpls", "widekernelpls", "simpls",
+                                     "oscorespls", "model.frame"))
     cl[[1]] <- as.name("mvr")
     res <- eval(cl, parent.frame())
     res$call <- match.call()            # Fix call component

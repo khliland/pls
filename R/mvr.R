@@ -20,8 +20,8 @@ mvr <- function(formula, ncomp, data, subset, na.action,
     mf <- mf[c(1, m)]                # Retain only the named arguments
     mf[[1]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
-    method <- match.arg(method, c("kernelpls", "simpls", "oscorespls",
-                                  "svdpc", "model.frame"))
+    method <- match.arg(method, c("kernelpls", "widekernelpls", "simpls",
+                                  "oscorespls", "svdpc", "model.frame"))
     if (method == "model.frame") return(mf)
     ## Get the terms
     mt <- attr(mf, "terms")        # This is to include the `predvars'
@@ -88,8 +88,9 @@ mvr <- function(formula, ncomp, data, subset, na.action,
 
     ## Select fit function:
     fitFunc <- switch(method,
-                      simpls = simpls.fit,
                       kernelpls = kernelpls.fit,
+                      widekernelpls = widekernelpls.fit,
+                      simpls = simpls.fit,
                       oscorespls = oscorespls.fit,
                       svdpc = svdpc.fit)
 

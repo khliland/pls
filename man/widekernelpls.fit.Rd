@@ -1,12 +1,11 @@
 %% $Id$
 \encoding{latin1}
-\name{oscorespls.fit}
-\alias{oscorespls.fit}
-\title{Orthogonal scores PLSR}
-\description{Fits a PLSR model with the orthogonal scores algorithm
-(aka the NIPALS algorithm).}
-\usage{oscorespls.fit(X, Y, ncomp, stripped = FALSE,
-               tol = .Machine$double.eps^0.5, \dots)}
+\name{widekernelpls.fit}
+\alias{widekernelpls.fit}
+\title{Wide Kernel PLS (Rännar et al.)}
+\description{Fits a PLSR model with the wide kernel algorithm.}
+\usage{widekernelpls.fit(X, Y, ncomp, stripped = FALSE,
+                  tol = .Machine$double.eps^0.5, \dots)}
 \arguments{
   \item{X}{a matrix of observations.  \code{NA}s and \code{Inf}s are not
     allowed.} 
@@ -19,15 +18,18 @@
     cross-validation or simulations when only the coefficients are
     needed.  Defaults to \code{FALSE}.}
   \item{tol}{numeric.  The tolerance used for determining convergence in
-    multi-response models.}
+    the algorithm.}
   \item{\dots}{other arguments.  Currently ignored.}
 }
 \details{This function should not be called directly, but through
   the generic functions \code{plsr} or \code{mvr} with the argument
-  \code{method="oscorespls"}.  It implements the orthogonal scores
-  algorithm, as described in \cite{Martens and Næs (1989)}.  This is one
-  of the two \dQuote{classical}
-  PLSR algorithms, the other being the orthogonal loadings algorithm.}
+  \code{method="widekernelpls"}.  The wide kernel PLS algorithm is
+  particularly efficient when the number of variables is (much) larger
+  than the number of observations.  It is especially fast compared to
+  the default kernel algorithm when the number of responses is also
+  larger than the number of observations.  The results are equal to the
+  results of the NIPALS algorithm.
+}
 \value{A list containing the following components is returned:
   \item{coefficients}{an array of regression coefficients for 1, \ldots,
     \code{ncomp} components.  The dimensions of \code{coefficients} are
@@ -56,17 +58,19 @@
   \code{coefficients}, \code{Xmeans} and \code{Ymeans} are returned.
 }
 \references{
-  Martens, H., Næs, T. (1989) \emph{Multivariate calibration.}
-  Chichester: Wiley.
+  Rännar, S., Lindgren, F., Geladi, P. and Wold, S. (1994) A PLS
+  Kernel Algorithm for Data Sets with Many Variables and Fewer
+  Objects.  Part 1: Theory and Algorithm.
+  \emph{Journal of Chemometrics}, \bold{8}, 111--125.
 }
-\author{Ron Wehrens and Bjørn-Helge Mevik}
+\author{Bjørn-Helge Mevik}
 \seealso{
   \code{\link{mvr}}
   \code{\link{plsr}}
   \code{\link{pcr}}
   \code{\link{kernelpls.fit}}
-  \code{\link{widekernelpls.fit}}
   \code{\link{simpls.fit}}
+  \code{\link{oscorespls.fit}}
 }
 \keyword{regression}
 \keyword{multivariate}

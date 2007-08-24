@@ -40,10 +40,11 @@ mvrCv <- function(X, Y, ncomp,
     ncomp <- min(ncomp, nobj - max(sapply(segments, length)) - 1)
 
     ## Select fit function:
-    method <- match.arg(method,c("kernelpls", "simpls", "oscorespls", "svdpc"))
+    method <- match.arg(method,c("kernelpls", "widekernelpls", "simpls", "oscorespls", "svdpc"))
     fitFunc <- switch(method,
-                      simpls = simpls.fit,
                       kernelpls = kernelpls.fit,
+                      widekernelpls = widekernelpls.fit,
+                      simpls = simpls.fit,
                       oscorespls = oscorespls.fit,
                       svdpc = svdpc.fit)
 

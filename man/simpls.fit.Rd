@@ -64,6 +64,7 @@
   \code{\link{plsr}}
   \code{\link{pcr}}
   \code{\link{kernelpls.fit}}
+  \code{\link{widekernelpls.fit}}
   \code{\link{oscorespls.fit}}
 }
 \keyword{regression}

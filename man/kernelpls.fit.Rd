@@ -68,6 +68,7 @@
   \code{\link{mvr}}
   \code{\link{plsr}}
   \code{\link{pcr}}
+  \code{\link{widekernelpls.fit}}
   \code{\link{simpls.fit}}
   \code{\link{oscorespls.fit}}
 }
