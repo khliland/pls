@@ -99,6 +99,8 @@ mvr <- function(formula, ncomp, data, subset, na.action,
         ## This is faster than sd(X), but cannot handle missing values:
         scale <- sqrt(colSums((X - rep(colMeans(X), each = nobj))^2) /
                       (nobj - 1))
+        if (any(abs(scale) < .Machine$double.eps^0.5))
+            warning("Scaling with (near) zero standard deviation")
         X <- X / rep(scale, each = nobj)
     }
 

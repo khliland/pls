@@ -65,6 +65,8 @@ mvrCv <- function(X, Y, ncomp,
             sdtrain <-
                 sqrt(colSums((Xtrain - rep(colMeans(Xtrain), each = ntrain))^2) /
                      (ntrain - 1))
+            if (any(abs(sdtrain) < .Machine$double.eps^0.5))
+                warning("Scaling with (near) zero standard deviation")
             Xtrain <- Xtrain / rep(sdtrain, each = ntrain)
         }
 
