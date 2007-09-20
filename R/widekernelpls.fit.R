@@ -27,6 +27,7 @@ widekernelpls.fit <- function(X, Y, ncomp, stripped = FALSE,
     TT <- U <- matrix(0, ncol = ncomp, nrow = nobj)# scores
     B <- array(0, c(npred, nresp, ncomp))
     In <- diag(nobj)
+    nits <- numeric(ncomp)              # for debugging
     if (!stripped) {
         fitted <- array(0, dim = c(nobj, nresp, ncomp))
         Xresvar <- numeric(ncomp)
@@ -45,10 +46,16 @@ widekernelpls.fit <- function(X, Y, ncomp, stripped = FALSE,
 
     for (a in 1:ncomp) {
         XXtYYt <- XXt %*% YYt
+        ## This avoids problems with negative eigenvalues due to roundoff
+        ## errors in zero rank cases, and can potentionally give slightly
+        ## faster and/or more accurate results:
+        XXtYYt <- XXtYYt %*% XXtYYt
 
         ## Initial values:
         t.a.old <- Y[,1]
+        nit <- 0                        # for debugging
         repeat {
+            nit <- nit + 1              # for debugging
             t.a <- XXtYYt %*% t.a.old
             t.a <- t.a / sqrt(c(crossprod(t.a)))
             if (sum(abs((t.a - t.a.old) / t.a), na.rm = TRUE) < tol)
@@ -56,6 +63,7 @@ widekernelpls.fit <- function(X, Y, ncomp, stripped = FALSE,
             else
                 t.a.old <- t.a
         }
+        nits[a] <- nit                  # for debugging
 
         u.a <- YYt %*% t.a
         utmp <- u.a / c(crossprod(t.a, u.a))
@@ -139,6 +147,7 @@ widekernelpls.fit <- function(X, Y, ncomp, stripped = FALSE,
              projection = R,
              Xmeans = Xmeans, Ymeans = Ymeans,
              fitted.values = fitted, residuals = residuals,
-             Xvar = Xvar, Xtotvar = Xtotvar)
+             Xvar = Xvar, Xtotvar = Xtotvar,
+             nits = nits)               # for debugging
     }
 }
