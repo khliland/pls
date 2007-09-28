@@ -35,7 +35,7 @@ crossval <- function(object, segments = 10,
     ## Get response:
     Y <- as.matrix(model.response(mf))
     nresp <- dim(Y)[2]
-    npred <- dim(X)[2]
+    npred <- length(object$Xmeans)
     ## Calculate effective number of observations
     nobj <- nrow(data)
 
