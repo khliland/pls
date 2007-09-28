@@ -5,7 +5,7 @@
 \title{Wide Kernel PLS (Rännar et al.)}
 \description{Fits a PLSR model with the wide kernel algorithm.}
 \usage{widekernelpls.fit(X, Y, ncomp, stripped = FALSE,
-                  tol = .Machine$double.eps^0.5, \dots)}
+                  tol = .Machine$double.eps^0.5, maxit = 100, \dots)}
 \arguments{
   \item{X}{a matrix of observations.  \code{NA}s and \code{Inf}s are not
     allowed.} 
@@ -19,6 +19,8 @@
     needed.  Defaults to \code{FALSE}.}
   \item{tol}{numeric.  The tolerance used for determining convergence in
     the algorithm.}
+  \item{maxit}{positive integer.  The maximal number of iterations used
+    in the internal Eigenvector calculation.}
   \item{\dots}{other arguments.  Currently ignored.}
 }
 \details{This function should not be called directly, but through

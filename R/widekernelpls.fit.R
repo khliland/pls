@@ -8,7 +8,8 @@
 ###  \emph{Journal of Chemometrics}, \bold{8}, 111--125.
 
 widekernelpls.fit <- function(X, Y, ncomp, stripped = FALSE,
-                              tol = .Machine$double.eps^0.5, ...)
+                              tol = .Machine$double.eps^0.5,
+                              maxit = 100, ...)
 {
     ## Initialise
     Y <- as.matrix(Y)
@@ -62,6 +63,10 @@ widekernelpls.fit <- function(X, Y, ncomp, stripped = FALSE,
                 break
             else
                 t.a.old <- t.a
+            if (nit >= maxit) {         # for debugging
+              warning("No convergence in", maxit, "iterations\n")
+              break
+            }
         }
         nits[a] <- nit                  # for debugging
 
