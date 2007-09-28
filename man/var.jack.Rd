@@ -22,7 +22,7 @@ var.jack(object, ncomp = object$ncomp, covariance = FALSE, use.mean = TRUE)
 }
 \details{
   The original (Tukey) jackknife variance estimator is defined as
-  \eqn{1/(g-1)\sum_{i=1}^g(\tilde\beta_{-i} - \bar\beta)^2}, where
+  \eqn{(g-1)/g \sum_{i=1}^g(\tilde\beta_{-i} - \bar\beta)^2}, where
   \eqn{g} is the number of segments, \eqn{\tilde\beta_{-i}} is the
   estimated coefficient when segment \eqn{i} is left out (called the
   jackknife replicates), and
@@ -32,17 +32,18 @@ var.jack(object, ncomp = object$ncomp, covariance = FALSE, use.mean = TRUE)
 
   This is the definition \code{var.jack} uses by default.
 
-  However, Martens FIXME defined the estimator as
-  \eqn{1/(g-1)\sum_{i=1}^g(\tilde\beta_{-i} - \hat\beta)^2}, where
+  However, Martens and Martens (2000) defined the estimator as
+  \eqn{(g-1)/g \sum_{i=1}^g(\tilde\beta_{-i} - \hat\beta)^2}, where
   \eqn{\hat\beta} is the coefficient estimate using the entire data set.
   I.e., they use the original fitted coefficients instead of the
-  mean of the jackknife replicates.  Most (all?) jackknife
+  mean of the jackknife replicates.  Most (all?) other jackknife
   implementations for PLSR use this estimator.  \code{var.jack} can be
   made to use this definition with \code{use.mean = FALSE}.  In
-  practice, the difference should not be large if the number of
+  practice, the difference should be small if the number of
   observations is sufficiently large.  Note, however, that all
   theoretical results about the jackknife refer to the `proper'
-  definition.
+  definition.  (Also note that this option might disappear in a future
+  version.)
 }
 \value{
   If \code{covariance} is \code{FALSE}, an \eqn{p\times q \times c}
@@ -53,28 +54,45 @@ var.jack(object, ncomp = object$ncomp, covariance = FALSE, use.mean = TRUE)
   If \code{covariance} id \code{TRUE}, an \eqn{pq\times pq \times c}
   array of variance-covariance estimates.
 }
-\references{ FIXME: Tukey, Martens, Hinkley, Wu etal }
-\author{Bjørn-Helge Mevik}
 \section{Warning}{
-  Note that the Tukey jackknife variance estimator is not unbiased.
+  Note that the Tukey jackknife variance estimator is not unbiased for
+  the variance of regression coefficients (Hinkley 1977).
   The bias depends on the \eqn{X} matrix.  For ordinary least squares
-  regression (OLSR), the (FIXME: expected?) bias can be calculated, and depends
+  regression (OLSR), the bias can be calculated, and depends
   on the number of observations \eqn{n} and the number of parameters
   \eqn{k} in the mode.  For the common case of an orthogonal design
   matrix with \eqn{\pm 1}{±1} levels, the delete-one jackknife estimate
   equals \eqn{(n-1)/(n-k)} times the classical variance estimate for the
   regression coefficients in OLSR.  Similar expressions hold for
   delete-d estimates.  Modifications have been proposed to reduce or
-  eliminate the bias (for the OLSR case), however, they depend on the
-  number of parameters used in the model FIXME:ref.
+  eliminate the bias for the OLSR case, however, they depend on the
+  number of parameters used in the model.  See e.g. Hinkley (1977) or Wu
+  (1986).
 
   Thus, the results of \code{var.jack} should be used with caution.
 }
+\references{
+  Tukey J.W. (1958) Bias and Confidence in Not-quite Large
+  Samples. (Abstract of Preliminary Report).  \emph{Annals of
+    Mathematical Statistics}, \bold{29}(2), 614.
+
+  Martens H. and Martens M. (2000) Modified Jack-knife Estimation of
+  Parameter Uncertainty in Bilinear Modelling by Partial Least Squares
+  Regression (PLSR).  \emph{Food Quality and Preference}, \bold{11}, 5--16.
+
+  Hinkley D.V. (1977), Jackknifing in Unbalanced Situations.
+  \emph{Technometrics}, \bold{19}(3), 285--292.
+
+  Wu C.F.J. (1986) Jackknife, Bootstrap and Other Resampling Methods in
+  Regression Analysis.  \emph{Te Annals of Statistics}, \bold{14}(4),
+  1261--1295.
+}
+\author{Bjørn-Helge Mevik}
 \seealso{\code{\link{mvrCv}}, \code{\link{jack.test}}}
 \examples{
 data(oliveoil)
-mod <- pcr(sensory ~ chemical, data = oliveoil, validation = "LOO", jackknife = TRUE)
+mod <- pcr(sensory ~ chemical, data = oliveoil, validation = "LOO",
+           jackknife = TRUE)
 var.jack(mod, ncomp = 2)
 }
-\keyword{FIXME}
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{univar}

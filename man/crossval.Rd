@@ -84,6 +84,10 @@ crossval(object, segments = 10,
   The \code{PRESS0} is always cross-validated using leave-one-out
   cross-validation.  This usually makes little difference in practice,
   but should be fixed for correctness.
+
+  The current implementation of the jackknife stores all
+  jackknife-replicates of the regression coefficients, which can be very
+  costly for large matrices.  This might change in a future version.
 }
 \seealso{
   \code{\link{mvr}}
