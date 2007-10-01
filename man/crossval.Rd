@@ -9,7 +9,7 @@
 \usage{
 crossval(object, segments = 10,
          segment.type = c("random", "consecutive", "interleaved"),
-         length.seg, trace = 15, \dots)
+         length.seg, jackknife = FALSE, trace = 15, \dots)
 }
 \arguments{
   \item{object}{an \code{mvr} object; the regression to cross-validate.}
@@ -20,6 +20,8 @@ crossval(object, segments = 10,
   \item{length.seg}{Positive integer.  The length of the segments to
     use.  If specified, it overrides \code{segments} unless
     \code{segments} is a list.}
+  \item{jackknife}{logical.  Whether jackknifing of regression
+    coefficients should be performed.}
   \item{trace}{if \code{TRUE}, tracing is turned on.  If numeric, it
     denotes a time limit (in seconds).  If the estimated total time of
     the cross-validation exceeds this limit, tracing is turned on.}
@@ -47,6 +49,10 @@ crossval(object, segments = 10,
   \code{length.seg}.  If both are specified, \code{segments} is
   ignored.
 
+  If \code{jackknife} is \code{TRUE}, jackknifed regression coefficients
+  are returned, which can be used for for variance estimation
+  (\code{\link{var.jack}}) or hypothesis testing (\code{\link{jack.test}}).
+
   When tracing is turned on, the segment number is printed for each segment.
 }
 \value{
@@ -54,6 +60,10 @@ crossval(object, segments = 10,
   \code{validation}, which is a list with components
   \item{method}{euqals \code{"CV"} for cross-validation.}
   \item{pred}{an array with the cross-validated predictions.}
+  \item{coefficients}{(only if \code{jackknife} is \code{TRUE}) an array
+    with the jackknifed regression coefficients.  The dimensions
+    correspond to the predictors, responses, number of components, and
+    segments, respectively.}
   \item{PRESS0}{a vector of PRESS values (one for each response variable)
     for a model with zero components, i.e., only the intercept.}
   \item{PRESS}{a matrix of PRESS values for models with 1, \ldots,
@@ -74,12 +84,18 @@ crossval(object, segments = 10,
   The \code{PRESS0} is always cross-validated using leave-one-out
   cross-validation.  This usually makes little difference in practice,
   but should be fixed for correctness.
+
+  The current implementation of the jackknife stores all
+  jackknife-replicates of the regression coefficients, which can be very
+  costly for large matrices.  This might change in a future version.
 }
 \seealso{
   \code{\link{mvr}}
   \code{\link{mvrCv}}
   \code{\link{cvsegments}}
   \code{\link{MSEP}}
+  \code{\link{var.jack}}
+  \code{\link{jack.test}}
 }
 \examples{
 data(yarn)
