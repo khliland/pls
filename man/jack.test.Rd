@@ -8,7 +8,7 @@
 }
 \usage{
 jack.test(object, ncomp = object$ncomp, use.mean = TRUE)
-print.jacktest(x, P.values = TRUE, \dots)
+\method{print}{jacktest}(x, P.values = TRUE, \dots)
 }
 \arguments{
   \item{object}{an \code{mvr} object.  A cross-validated model fitted
