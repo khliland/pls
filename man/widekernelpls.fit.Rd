@@ -59,6 +59,18 @@
   If \code{stripped} is \code{TRUE}, only the components
   \code{coefficients}, \code{Xmeans} and \code{Ymeans} are returned.
 }
+\note{
+  The current implementation has not undergone extensive testing yet,
+  and should perhaps be regarded as experimental.  Specifically, the
+  internal Eigenvector calculation does not always converge in extreme
+  cases where the Eigenvalue is close to zero.  However, when it does
+  converge, it always converges to the same results as
+  \code{\link{kernelpls.fit}}, up to numerical inacurracies.
+
+  The algorithm also has a bit of overhead, so when the number of
+  observations is moderately high, \code{\link{kernelpls.fit}} can be
+  faster even if the number of predictors is much higher.
+}
 \references{
   Rännar, S., Lindgren, F., Geladi, P. and Wold, S. (1994) A PLS
   Kernel Algorithm for Data Sets with Many Variables and Fewer
