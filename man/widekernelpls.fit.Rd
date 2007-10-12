@@ -70,7 +70,7 @@
   The algorithm also has a bit of overhead, so when the number of
   observations is moderately high, \code{\link{kernelpls.fit}} can be
   faster even if the number of predictors is much higher.  The relative
-  speed of the algorithms can also depend greatly on the BLAS and/or
+  speed of the algorithms can also depend greatly on which BLAS and/or
   LAPACK library \R is linked against.
 }
 \references{

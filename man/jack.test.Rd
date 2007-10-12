@@ -46,7 +46,7 @@ jack.test(object, ncomp = object$ncomp, use.mean = TRUE)
   Also, the distribution of the regression coefficient estimates and the
   jackknife variance estimates are unknown (at least in PLSR/PCR).
   Consequently, the distribution (and in particular, the degrees of
-  freedom) of the resulting t statistics is unknown.  The present code
+  freedom) of the resulting \eqn{t} statistics is unknown.  The present code
   simply assumes a \eqn{t} distribution with \eqn{m - 1} degrees of
   freedom, where \eqn{m} is the number of cross-validation segments.
 

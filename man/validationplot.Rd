@@ -5,7 +5,7 @@
 \alias{plot.mvrVal}
 \title{Validation Plots}
 \description{
-  Functions to plot validation statistics, such as RMSEP or R2, as a
+  Functions to plot validation statistics, such as RMSEP or \eqn{R^2}, as a
   function of the number of components.
 }
 \usage{

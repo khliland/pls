@@ -63,7 +63,7 @@ pls.options(\dots)
 \author{Bjørn-Helge Mevik and Ron Wehrens}
 \note{
   The function is a slight modification of the function
-  \code{\link[sm]{sm.options}} from the package sm.
+  \code{\link[sm]{sm.options}} from the package \pkg{sm}.
 }
 \examples{
 ## Return current options:
