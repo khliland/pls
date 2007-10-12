@@ -26,11 +26,11 @@
 \details{This function should not be called directly, but through
   the generic functions \code{plsr} or \code{mvr} with the argument
   \code{method="widekernelpls"}.  The wide kernel PLS algorithm is
-  particularly efficient when the number of variables is (much) larger
-  than the number of observations.  It is especially fast compared to
-  the default kernel algorithm when the number of responses is also
-  larger than the number of observations.  The results are equal to the
-  results of the NIPALS algorithm.
+  efficient when the number of variables is (much) larger
+  than the number of observations.  For very wide \code{X}, for instance
+  12x18000, it can be twice as fast as \code{\link{kernelpls.fit}} and
+  \code{\link{simpls.fit}}.  For other matrices, however, it can be much
+  slower.  The results are equal to the results of the NIPALS algorithm.
 }
 \value{A list containing the following components is returned:
   \item{coefficients}{an array of regression coefficients for 1, \ldots,
@@ -69,7 +69,9 @@
 
   The algorithm also has a bit of overhead, so when the number of
   observations is moderately high, \code{\link{kernelpls.fit}} can be
-  faster even if the number of predictors is much higher.
+  faster even if the number of predictors is much higher.  The relative
+  speed of the algorithms can also depend greatly on the BLAS and/or
+  LAPACK library \R is linked against.
 }
 \references{
   Rännar, S., Lindgren, F., Geladi, P. and Wold, S. (1994) A PLS
