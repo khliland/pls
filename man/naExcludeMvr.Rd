@@ -36,3 +36,4 @@ naExcludeMvr(omit, x, \dots)
   \code{\link{napredict}}, \code{\link{naresid}}}
 \keyword{regression}
 \keyword{multivariate}
+\keyword{internal}

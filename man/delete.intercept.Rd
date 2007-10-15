@@ -19,4 +19,4 @@ delete.intercept(mm)
 }
 \author{Bjørn-Helge Mevik and Ron Wehrens}
 \seealso{\code{\link{mvr}}, \code{\link{model.matrix.mvr}}}
-\keyword{regression}
+\keyword{internal}
