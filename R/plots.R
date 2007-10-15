@@ -374,7 +374,7 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
         on.exit(par(opar))
         par(mfrow = c(nRows, nCols),
             oma = c(1,1,0,0) + 0.1, mar = c(3,3,3,1) + 0.1)
-        if (nRows * nCols < prod(dims)) par(ask = TRUE)
+        if (nRows * nCols < prod(dims) && dev.interactive()) par(ask = TRUE)
     } else {
         nCols <- nRows <- 1
     }
@@ -481,7 +481,7 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
         on.exit(par(opar))
         par(mfrow = c(nRows, nCols),
             oma = c(1,1,0,0) + 0.1, mar = c(3,3,3,1) + 0.1)
-        if (nRows * nCols < prod(dims)) par(ask = TRUE)
+        if (nRows * nCols < prod(dims) && dev.interactive()) par(ask = TRUE)
     } else {
         nCols <- nRows <- 1
     }
@@ -610,7 +610,7 @@ plot.mvrVal <- function(x, nCols, nRows, type = "l", lty = 1:nEst, lwd = NULL,
         on.exit(par(opar))
         par(mfrow = c(nRows, nCols),
             oma = c(1,1,0,0) + 0.1, mar = c(3,3,3,1) + 0.1)
-        if (nRows * nCols < nResp) par(ask = TRUE)
+        if (nRows * nCols < nResp && dev.interactive()) par(ask = TRUE)
     } else {
         nCols <- nRows <- 1
     }
