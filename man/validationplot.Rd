@@ -13,7 +13,7 @@ validationplot(object, val.type = c("RMSEP", "MSEP", "R2"), estimate,
                newdata, ncomp, comps, intercept, \dots)
 \method{plot}{mvrVal}(x, nCols, nRows, type = "l", lty = 1:nEst, lwd = NULL,
            pch = 1:nEst, cex = NULL, col = 1:nEst, legendpos,
-           xlab = "number of components", ylab = x$type, \dots)
+           xlab = "number of components", ylab = x$type, main, \dots)
 }
 \arguments{
   \item{object}{an \code{mvr} object.}
@@ -56,6 +56,7 @@ validationplot(object, val.type = c("RMSEP", "MSEP", "R2"), estimate,
   \item{xlab,ylab}{titles for \eqn{x} and \eqn{y} axes.  Typically
     character strings, but can be expressions (e.g.,
     \code{expression(R^2)} or lists.  See \code{\link{title}} for details.}
+  \item{main}{optional main title for the plot.  See Details.}
   \item{\dots}{Further arguments sent to underlying plot functions.}
 }
 \details{
@@ -69,8 +70,20 @@ validationplot(object, val.type = c("RMSEP", "MSEP", "R2"), estimate,
   model, laid out in a rectangle.  It uses \code{\link{matplot}} for
   performing the actual plotting.  If \code{legendpos} is given, a
   legend is drawn at the given position.
+
+  The argument \code{main} can be used to specify the main title of the
+  plot.  It is handled in a non-standard way.  If there is only on (sub)
+  plot, \code{main} will be used as the main title of the plot.  If
+  there is \emph{more} than one (sub) plot, however, the presence of
+  \code{main} will produce a corresponding \sQuote{global} title on the
+  page.  Any graphical parametres, e.g., \code{cex.main}, supplied to
+  \code{coefplot} will only affect the \sQuote{ordinary} plot titles,
+  not the \sQuote{global} one.  Its appearance can be changed by setting
+  the parameters with \code{\link{par}}, which will affect \emph{both}
+  titles.  (To have different settings for the two titles, one can
+  override the \code{par} settings with arguments to the plot function.)
 }
-\value{
+\value{ FIXME: Her er jeg
   If \code{legendpos} is given, the functions return whatever
   \code{legend} returns.  Otherwise they do not return any values.
 }

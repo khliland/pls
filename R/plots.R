@@ -331,7 +331,7 @@ predplot.default <- function(object, ...) {
 ## Method for mvr objects:
 predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
                          nCols, nRows, xlab = "measured", ylab = "predicted",
-                         ..., font.main = 1, cex.main = 1.1)
+                         main, ..., font.main, cex.main)
 {
     ## Select type(s) of prediction
     if (missing(which)) {
@@ -362,7 +362,11 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
     ## Set plot parametres as needed:
     dims <- c(nEst, nSize, nResp)
     dims <- dims[dims > 1]
-    if (length(dims) > 0) {
+    nPlots <- prod(dims)
+    if (nPlots > 1) {
+        ## Set up default font.main and cex.main for individual titles:
+        if (missing(font.main)) font.main <- 1
+        if (missing(cex.main)) cex.main <- 1.1
         ## Show the *labs in the margin:
         mXlab <- xlab
         mYlab <- ylab
@@ -373,9 +377,13 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
         opar <- par(no.readonly = TRUE)
         on.exit(par(opar))
         par(mfrow = c(nRows, nCols),
-            oma = c(1,1,0,0) + 0.1, mar = c(3,3,3,1) + 0.1)
-        if (nRows * nCols < prod(dims) && dev.interactive()) par(ask = TRUE)
+            oma = c(1, 1, if(missing(main)) 0 else 2, 0) + 0.1,
+            mar = c(3,3,3,1) + 0.1)
+        if (nRows * nCols < nPlots && dev.interactive()) par(ask = TRUE)
     } else {
+        ## Set up default font.main and cex.main for the main title:
+        if (missing(font.main)) font.main <- par("font.main")
+        if (missing(cex.main)) cex.main <- par("cex.main")
         nCols <- nRows <- 1
     }
 
@@ -404,8 +412,13 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
         for (size in 1:nSize) {
             for (est in 1:nEst) {
                 plotNo <- plotNo + 1
-                main <- sprintf("%s, %d comps, %s", respnames(object)[resp],
-                                ncomp[size], which[est])
+                if (nPlots == 1 && !missing(main)) {
+                    lmain <- main
+                } else {
+                    lmain <- sprintf("%s, %d comps, %s",
+                                     respnames(object)[resp],
+                                     ncomp[size], which[est])
+                }
                 sub <- which[est]
                 switch(which[est],
                        train = {
@@ -421,18 +434,20 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
                            predicted <- test.predicted[,resp,size]
                        }
                        )
-                if (length(dims) > 0 &&
-                    (plotNo %% (nCols * nRows) == 0 || plotNo == prod(dims))) {
-                    ## Last plot on a page; add outer margin text:
+                xy <- predplotXy(measured, predicted, main = lmain,
+                                 font.main = font.main, cex.main = cex.main,
+                                 xlab = xlab, ylab = ylab, ...)
+                if (nPlots > 1 &&
+                    (plotNo %% (nCols * nRows) == 0 || plotNo == nPlots)) {
+                    ## Last plot on a page; add outer margin text and title:
                     mtext(mXlab, side = 1, outer = TRUE)
                     mtext(mYlab, side = 2, outer = TRUE)
+                    if (!missing(main)) title(main = main, outer = TRUE)
                 }
-                predplotXy(measured, predicted, main = main,
-                           font.main = font.main, cex.main = cex.main,
-                           xlab = xlab, ylab = ylab, ...)
             }
         }
     }
+    invisible(xy)
 }
 
 ## The workhorse function:
@@ -456,7 +471,7 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
                      type = "l", lty = 1:nLines, lwd = NULL,
                      pch = 1:nLines, cex = NULL, col = 1:nLines, legendpos,
                      xlab = "variable", ylab = "regression coefficient",
-                     pretty.xlabels = TRUE, xlim, ...)
+                     main, pretty.xlabels = TRUE, xlim, ...)
 {
     ## This simplifies code below:
     if (missing(comps)) comps <- NULL
@@ -469,7 +484,8 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
     ## Set plot parametres as needed:
     dims <- c(nSize, nResp)
     dims <- dims[dims > 1]
-    if (length(dims) > 0) {
+    nPlots <- prod(dims)
+    if (nPlots > 1) {
         ## Show the *labs in the margin:
         mXlab <- xlab
         mYlab <- ylab
@@ -480,8 +496,9 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
         opar <- par(no.readonly = TRUE)
         on.exit(par(opar))
         par(mfrow = c(nRows, nCols),
-            oma = c(1,1,0,0) + 0.1, mar = c(3,3,3,1) + 0.1)
-        if (nRows * nCols < prod(dims) && dev.interactive()) par(ask = TRUE)
+            oma = c(1, 1, if(missing(main)) 0 else 2, 0) + 0.1,
+            mar = c(3,3,3,1) + 0.1)
+        if (nRows * nCols < nPlots && dev.interactive()) par(ask = TRUE)
     } else {
         nCols <- nRows <- 1
     }
@@ -535,21 +552,20 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
         for (size in 1:nSize) {
             plotNo <- plotNo + 1
 
-            if (length(dims) > 0 &&
-                (plotNo %% (nCols * nRows) == 0 || plotNo == prod(dims))) {
-                ## Last plot on a page; add outer margin text:
-                mtext(mXlab, side = 1, outer = TRUE)
-                mtext(mYlab, side = 2, outer = TRUE)
+            if (nPlots == 1 && !missing(main)) {
+                lmain <- main
+            } else if (separate) {
+                lmain <- paste(respname, complabs[size], sep = ", ")
+            } else {
+                lmain <- respname
             }
-
             if (separate) {
                 plot(xnum, coefs[,resp,size],
-                     main = paste(respname, complabs[size], sep = ", "),
-                     xlab = xlab, ylab = ylab, type = type,
+                     main = lmain, xlab = xlab, ylab = ylab, type = type,
                      lty = lty, lwd = lwd, pch = pch, cex = cex,
                      col = col, xaxt = xaxt, xlim = xlim, ...)
             } else {
-                matplot(xnum, coefs[,resp,], main = respname, xlab = xlab,
+                matplot(xnum, coefs[,resp,], main = lmain, xlab = xlab,
                         ylab = ylab, type = type, lty = lty, lwd = lwd,
                         pch = pch, cex = cex, col = col, xaxt = xaxt,
                         xlim = xlim, ...)
@@ -571,6 +587,14 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
                 axis(1, ticks, labels[ticks], ...)
             }
             abline(h = 0, col = "gray")
+
+            if (nPlots > 1 &&
+                (plotNo %% (nCols * nRows) == 0 || plotNo == nPlots)) {
+                ## Last plot on a page; add outer margin text and title:
+                mtext(mXlab, side = 1, outer = TRUE)
+                mtext(mYlab, side = 2, outer = TRUE)
+                if (!missing(main)) title(main, outer = TRUE)
+            }
         }
     }
 }
@@ -593,7 +617,8 @@ validationplot <- function(object, val.type = c("RMSEP", "MSEP", "R2"),
 ## A plot method for mvrVal objects:
 plot.mvrVal <- function(x, nCols, nRows, type = "l", lty = 1:nEst, lwd = NULL,
                         pch = 1:nEst, cex = NULL, col = 1:nEst, legendpos,
-                        xlab = "number of components", ylab = x$type, ...)
+                        xlab = "number of components", ylab = x$type, main,
+                        ...)
 {
     if (!is.null(x$call$cumulative) && eval(x$call$cumulative) == FALSE)
         stop("`cumulative = FALSE' not supported.")
@@ -609,7 +634,8 @@ plot.mvrVal <- function(x, nCols, nRows, type = "l", lty = 1:nEst, lwd = NULL,
         opar <- par(no.readonly = TRUE)
         on.exit(par(opar))
         par(mfrow = c(nRows, nCols),
-            oma = c(1,1,0,0) + 0.1, mar = c(3,3,3,1) + 0.1)
+            oma = c(1, 1, if(missing(main)) 0 else 2, 0) + 0.1,
+            mar = c(3,3,3,1) + 0.1)
         if (nRows * nCols < nResp && dev.interactive()) par(ask = TRUE)
     } else {
         nCols <- nRows <- 1
@@ -626,22 +652,20 @@ plot.mvrVal <- function(x, nCols, nRows, type = "l", lty = 1:nEst, lwd = NULL,
     dopoints <- type %in% c("p", "b", "o")
 
     for (resp in 1:nResp) {
-        if (nResp > 1 && (resp %% (nCols * nRows) == 0 || resp == nResp)) {
-            ## Last plot on a page; add outer margin text:
-            mtext(mXlab, side = 1, outer = TRUE)
-            mtext(mYlab, side = 2, outer = TRUE)
+        if (nResp == 1 && !missing(main)) {
+            lmain <- main
+        } else {
+            lmain <- ynames[resp]
         }
-
         y <- x$val[,resp,]
         if (is.matrix(y)) y <- t(y)
-        if (identical(all.equal(x$comps, min(x$comps):max(x$comps)),
-                      TRUE)) {
-            matplot(x$comps, y, xlab = xlab, ylab = ylab, main = ynames[resp],
+        if (isTRUE(all.equal(x$comps, min(x$comps):max(x$comps)))) {
+            matplot(x$comps, y, xlab = xlab, ylab = ylab, main = lmain,
                     type = type, lty = lty, lwd = lwd, pch = pch, cex = cex,
                     col = col, ...)
         } else {
             ## Handle irregular x$comps:
-            matplot(y, xlab = xlab, ylab = ylab, main = ynames[resp],
+            matplot(y, xlab = xlab, ylab = ylab, main = lmain,
                     xaxt = "n", type = type, lty = lty, lwd = lwd,
                     pch = pch, cex = cex, col = col, ...)
             axis(1, seq(along = x$comps), x$comps)
@@ -651,6 +675,12 @@ plot.mvrVal <- function(x, nCols, nRows, type = "l", lty = 1:nEst, lwd = NULL,
                                 if (dolines) list(lty = lty, lwd = lwd),
                                 if (dopoints) list(pch = pch, pt.cex = cex,
                                                    pt.lwd = lwd)))
+        }
+        if (nResp > 1 && (resp %% (nCols * nRows) == 0 || resp == nResp)) {
+            ## Last plot on a page; add outer margin text and title:
+            mtext(mXlab, side = 1, outer = TRUE)
+            mtext(mYlab, side = 2, outer = TRUE)
+            if (!missing(main)) title(main, outer = TRUE)
         }
     }
 }

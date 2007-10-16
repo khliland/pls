@@ -11,7 +11,7 @@ coefplot(object, ncomp = object$ncomp, comps, intercept = FALSE,
          separate = FALSE, nCols, nRows, labels, type = "l",
          lty = 1:nLines, lwd = NULL, pch = 1:nLines, cex = NULL,
          col = 1:nLines, legendpos, xlab = "variable",
-         ylab = "regression coefficient", pretty.xlabels = TRUE,
+         ylab = "regression coefficient", main, pretty.xlabels = TRUE,
          xlim, \dots)
 }
 \arguments{
@@ -53,6 +53,7 @@ coefplot(object, ncomp = object$ncomp, comps, intercept = FALSE,
   \item{xlab,ylab}{titles for \eqn{x} and \eqn{y} axes.  Typically
     character strings, but can be expressions (e.g.,
     \code{expression(R^2)} or lists.  See \code{\link{title}} for details.}
+  \item{main}{optional main title for the plot.  See Details.}
   \item{pretty.xlabels}{logical.  If \code{TRUE}, \code{coefplot}
     tries to plot the \eqn{x} labels more nicely.  See Details.}
   \item{xlim}{optional vector of length two, with the \eqn{x} limits of
@@ -76,6 +77,18 @@ coefplot(object, ncomp = object$ncomp, comps, intercept = FALSE,
   converted to numbers, if possible.  Variable names of the forms
   \samp{"number"} or \samp{"number text"} (where the space is optional),
   are handled.
+
+  The argument \code{main} can be used to specify the main title of the
+  plot.  It is handled in a non-standard way.  If there is only on (sub)
+  plot, \code{main} will be used as the main title of the plot.  If
+  there is \emph{more} than one (sub) plot, however, the presence of
+  \code{main} will produce a corresponding \sQuote{global} title on the
+  page.  Any graphical parametres, e.g., \code{cex.main}, supplied to
+  \code{coefplot} will only affect the \sQuote{ordinary} plot titles,
+  not the \sQuote{global} one.  Its appearance can be changed by setting
+  the parameters with \code{\link{par}}, which will affect \emph{both}
+  titles.  (To have different settings for the two titles, one can
+  override the \code{par} settings with arguments to \code{coefplot}.)
 
   The argument \code{pretty.xlabels} is only used when \code{labels} is
   specified.  If \code{TRUE} (default), the code tries
