@@ -1,9 +1,57 @@
 $Id$
 
+Changes in 2.1-0
+================
+
+New features:
+-------------
+- Jackknife variance estimation of regression coefficients are now available.
+  (Note that the actual implementation is experimental, and could change in
+  the future.)
+
+- The `wide kernel' PLS algorithm has been implemented.  It is faster than the
+  other algorithms for very wide data.
+
+- The plot functions for coefficients, predictions and validation results
+  (R2, (R)MSEP) have gained an argument `main' to set the main title of the
+  plot.
+
+- mvr() and mvrCv() now check for near zero standard deviation when autoscaling
+  (`scale = TRUE')
+
+User-visible changes:
+---------------------
+- plots that go over several pages now only set `par(ask = TRUE)' if the plot
+  device is interactive (suggested by Kevin Wright).
+
+- The definition of R^2 has been changed to  1 - SSE/SST for all estimators,
+  so R2() will give different results for test sets and cross-validation.
+
+- The handling of NAs in prediction, R2, (R)MSEP and cross-validation has been
+  improved (and several bugs fixed).
+
+Bug fixes:
+----------
+- coefplot(), predplot.mvr() and validationplot(): xlab/ylab/main were added
+  too early, so they disappeared on the last plot when nCols == nRows == 1.
+
+- loadingplot.default() didn't check for NULL rownames().
+
+Internal changes:
+-----------------
+- The (R)MSEP/R^2 calculations have been reorganised.
+
+Documentation:
+--------------
+- A couple of functions have been given the keyword "internal", and so are
+  hidden from the index.
+
+
 Changes in 2.0-1
 ================
 
 Bug fixes:
+----------
 - Fixed 1-component bugs in oscorespls.fit() and svdpc.fit()
 
 - Fix to recognise negative numbers as numeric variable names in
