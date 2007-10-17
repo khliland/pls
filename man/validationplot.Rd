@@ -83,10 +83,6 @@ validationplot(object, val.type = c("RMSEP", "MSEP", "R2"), estimate,
   titles.  (To have different settings for the two titles, one can
   override the \code{par} settings with arguments to the plot function.)
 }
-\value{ FIXME: Her er jeg
-  If \code{legendpos} is given, the functions return whatever
-  \code{legend} returns.  Otherwise they do not return any values.
-}
 \author{Ron Wehrens and Bjørn-Helge Mevik}
 \note{\code{\link{legend}} has many options.  If you want greater
   control over the appearance of the legend, omit the \code{legendpos}
