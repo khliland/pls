@@ -15,7 +15,7 @@ predplot(object, \dots)
 \method{predplot}{default}(object, \dots)
 \method{predplot}{mvr}(object, ncomp = object$ncomp, which, newdata, nCols, 
          nRows, xlab = "measured", ylab = "predicted", main,
-         \dots, font.main = 1, cex.main = 1.1)
+         \dots, font.main, cex.main)
 predplotXy(x, y, line = FALSE, main = "Prediction plot",
            xlab = "measured response", ylab = "predicted response",
            line.col = par("col"), line.lty = NULL, line.lwd = NULL, \dots)
@@ -45,7 +45,6 @@ predplotXy(x, y, line = FALSE, main = "Prediction plot",
   \item{x}{numeric vector.  The observed response values.}
   \item{y}{numeric vector.  The predicted response values.}
   \item{line}{logical.  Whether a target line should be drawn.}
-  \item{main}{character.  Main title of plot.}
   \item{line.col, line.lty, line.lwd}{character or numeric.  The
     \code{col}, \code{lty} and \code{lwd} parametres for the target
     line.  See \code{\link{par}} for details.}
