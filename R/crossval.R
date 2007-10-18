@@ -93,6 +93,7 @@ crossval <- function(object, segments = 10,
     objnames <- rownames(data)
     if (is.null(objnames)) objnames <- rownames(Y)
     dimnames(cvPred) <- c(list(objnames), dimnames(fitted(object))[-1])
+    if (is.null(names(PRESS0))) names(PRESS0) <- dimnames(object$Yloadings)[[1]]
     dimnames(PRESS) <- dimnames(adj)
     if (jackknife)
         dimnames(cvCoef) <- c(dimnames(coef(object)),
