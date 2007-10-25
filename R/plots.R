@@ -451,12 +451,24 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
 }
 
 ## The workhorse function:
-predplotXy <- function(x, y, line = FALSE, main = "Prediction plot",
-                       xlab = "measured response",
+predplotXy <- function(x, y, line = FALSE, labels, type = "p",
+                       main = "Prediction plot", xlab = "measured response",
                        ylab = "predicted response", line.col = par("col"),
                        line.lty = NULL, line.lwd = NULL, ...)
 {
-    plot(y ~ x, main = main, xlab = xlab, ylab = ylab, ...)
+    if (!missing(labels)) {
+        ## Set up point labels
+        if (length(labels) == 1) {
+            labels <- switch(match.arg(labels, c("names", "numbers")),
+                             names = names(y),
+                             numbers = as.character(1:length(y))
+                             )
+        } 
+        ## Override plot type:
+        type <- "n"
+    }
+    plot(y ~ x, type = type, main = main, xlab = xlab, ylab = ylab, ...)
+    if (!missing(labels)) text(x, y, labels, ...)
     if (line) abline(0, 1, col = line.col, lty = line.lty, lwd = line.lwd)
     invisible(cbind(measured = x, predicted = as.vector(y)))
 }

@@ -16,7 +16,7 @@ predplot(object, \dots)
 \method{predplot}{mvr}(object, ncomp = object$ncomp, which, newdata, nCols, 
          nRows, xlab = "measured", ylab = "predicted", main,
          \dots, font.main, cex.main)
-predplotXy(x, y, line = FALSE, main = "Prediction plot",
+predplotXy(x, y, line = FALSE, labels, type = "p", main = "Prediction plot",
            xlab = "measured response", ylab = "predicted response",
            line.col = par("col"), line.lty = NULL, line.lwd = NULL, \dots)
 }
@@ -37,6 +37,12 @@ predplotXy(x, y, line = FALSE, main = "Prediction plot",
   \item{xlab,ylab}{titles for \eqn{x} and \eqn{y} axes.  Typically
     character strings, but can be expressions or lists.  See
     \code{\link{title}} for details.}
+  \item{labels}{optional.  Alternative plot labels to use.  Either a
+    vector of labels, or \code{"names"} or \code{"numbers"} to use the
+    row names or row numbers of the data as labels.}
+  \item{type}{character.  What type of plot to make.  Defaults to
+    \code{"p"} (points).  See \code{\link{plot}} for a complete list
+    of types.  The argument is ignored if \code{labels} is specified.}
   \item{main}{optional main title for the plot.  See Details.}
   \item{font.main}{font to use for main titles.  See \code{\link{par}}
     for details.  Also see Details below.}
