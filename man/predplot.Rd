@@ -94,6 +94,10 @@ predplotXy(x, y, line = FALSE, labels, type = "p", main = "Prediction plot",
   The \code{font.main} and \code{cex.main} must be (completely) named.
   This is to avoid that any argument \code{cex} or \code{font} matches
   them.
+
+  Tip: If the labels specified with \code{labels} are too long, they get
+  clipped at the border of the plot region.  This can be avoided by
+  supplying the graphical parameter \code{xpd = TRUE} in the plot call.
 }
 \seealso{\code{\link{mvr}}, \code{\link{plot.mvr}}}
 \examples{
