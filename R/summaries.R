@@ -20,6 +20,10 @@ print.mvr <- function(x, ...) {
                regr = "Partial least squares"
                alg = "orthogonal scores"
            },
+           cppls = {
+               regr = "Canonical powered partial least squares"
+               alg = "cppls"
+           },
            svdpc = {
                regr = "Principal component"
                alg = "singular value decomposition"
