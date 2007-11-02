@@ -150,13 +150,13 @@ lw_bestpar <- function(X, S, C, sng, Yprim, wt, lower, upper) {
     # Optimization function #
     #########################
     f <- function(p, X, S, C, sng, Yprim, wt) {
-        if(p == 0){         # 1 - Variable selection from standard deviation
+        if(p == 0){         # Variable selection from standard deviation
             S[S < max(S)] <- 0
             W0 <- S
-        } else if(p == 1) {        # 3 - Variable selection from correlation
-            sng[C < max(C)] <- 0
-            W0 <- rowSums(sng)
-        } else {        # 2 - Standard deviation and correlation with powers
+        } else if(p == 1) { # Variable selection from correlation
+            C[C < max(C)] <- 0
+            W0 <- rowSums(C)
+        } else {            # Standard deviation and correlation with powers
             S <- S^((1-p)/p)
             W0 <- (sng*(C^(p/(1-p))))*S
         }
@@ -192,12 +192,13 @@ lw_bestpar <- function(X, S, C, sng, Yprim, wt, lower, upper) {
     ########################################################
     cc <- max(-ca)                      # Determine which is more succesful
     cmin <- which.max(-ca)              # Determine which is more succesful
-    if (pot[cmin] == 0) {   # 1 - Variable selection from standard deviation
-        w <- S[S < max(S)] <- 0
-    } else if (pot[cmin] == 1) {   # 3 - Variable selection from correlation
-        sng[C < max(C)] <- 0
-        w <- rowSums(sng)
-    } else {            # 2 - Standard deviation and correlation with powers
+    if (pot[cmin] == 0) {        # Variable selection from standard deviation
+        S[S < max(S)] <- 0
+        w <- S
+    } else if (pot[cmin] == 1) { # Variable selection from correlation
+        C[C < max(C)] <- 0
+        w <- rowSums(C)
+    } else {                     # Standard deviation and correlation with powers
         p <- pot[cmin]                  # Power from optimization
         S <- S^((1-p)/p)
         W0 <- (sng*(C^(p/(1-p))))*S
@@ -223,10 +224,12 @@ CorrXY <- function(X, Y) {
     X <- X - tcrossprod(rep(1, n), cx)
 
     sdX <- std(X, cx, n)
-    sdX[sdX < .Machine$double.eps] <- 0
+    inds <- which(sdX < .Machine$double.eps, arr.ind)
+    sdX[inds] <- 1
 
     ccxy <- crossprod(X, Y) / (n * tcrossprod(sdX, std(Y, cy, n)))
-    ccxy[!is.finite(ccxy)] <- 0
+    sdX[inds] <- 0
+    ccxy[inds,] <- 0
     CS <- list(C = ccxy, S = sdX)
 }
 
