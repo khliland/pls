@@ -30,7 +30,7 @@ cpplsr <- function(..., Y.sec, method = c("cppls", "model.frame"))
     cl[[1]] <- as.name("mvr")
     res <- eval(cl, parent.frame())
     ## Fix call component
-    res$call[[1]] <- as.name("cpplsr")
+    if (cl$method != "model.frame") res$call[[1]] <- as.name("cpplsr")
     if (missing(method)) res$call$method <- NULL
     res
 }
