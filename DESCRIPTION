@@ -5,6 +5,9 @@ Title: Partial Least Squares Regression (PLSR) and Principal Component Regressio
 Author: Ron Wehrens and Bjørn-Helge Mevik
 Maintainer: Bjørn-Helge Mevik <pls@mevik.net>
 Encoding: latin1
+LazyLoad: yes
+LazyData: yes
+ZipData: yes
 Description: Multivariate regression by partial least squares
 	regression (PLSR) and principal component regression (PCR).
 License: GPL-2

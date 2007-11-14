@@ -10,7 +10,7 @@
   samples.  The first five oils are Greek, the next five are Italian and
   the last six are Spanish.
 }
-\usage{data(oliveoil)}
+\usage{oliveoil}
 \format{A data frame with 16 observations on the following 2 variables.
   \describe{
     \item{\code{sensory}}{a matrix with 6 columns.  Scores for

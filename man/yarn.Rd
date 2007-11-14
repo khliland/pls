@@ -9,7 +9,7 @@
   268 wavelengths, and 21 corresponding densities.  A test set of 7
   samples is also provided.  Many thanks to Erik Swierenga.
 }
-\usage{data(yarn)}
+\usage{yarn}
 \format{A data frame with components
   \describe{
     \item{NIR}{Numeric matrix of NIR measurements}
