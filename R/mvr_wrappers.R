@@ -9,7 +9,7 @@ plsr <- function(..., method = pls.options()$plsralg)
     cl[[1]] <- as.name("mvr")
     res <- eval(cl, parent.frame())
     ## Fix call component
-    res$call[[1]] <- as.name("plsr")
+    if (cl$method != "model.frame") res$call[[1]] <- as.name("plsr")
     if (missing(method)) res$call$method <- NULL
     res
 }
@@ -21,7 +21,7 @@ pcr <- function(..., method = pls.options()$pcralg)
     cl[[1]] <- as.name("mvr")
     res <- eval(cl, parent.frame())
     ## Fix call component
-    res$call[[1]] <- as.name("pcr")
+    if (cl$method != "model.frame") res$call[[1]] <- as.name("pcr")
     if (missing(method)) res$call$method <- NULL
     res
 }
