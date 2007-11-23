@@ -481,8 +481,8 @@ predplotXy <- function(x, y, line = FALSE, labels, type = "p",
 coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
                      separate = FALSE, se.whiskers = FALSE,
                      nCols, nRows, labels,
-                     type = "l", lty = 1:nLines, lwd = NULL,
-                     pch = 1:nLines, cex = NULL, col = 1:nLines, legendpos,
+                     type = "l", lty, lwd = NULL,
+                     pch, cex = NULL, col, legendpos,
                      xlab = "variable", ylab = "regression coefficient",
                      main, pretty.xlabels = TRUE, xlim, ylim, ...)
 {
@@ -503,8 +503,8 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
         mXlab <- xlab
         mYlab <- ylab
         xlab <- ylab <- ""
-        if(missing(nCols)) nCols <- min(c(3, dims[1]))
-        if(missing(nRows))
+        if (missing(nCols)) nCols <- min(c(3, dims[1]))
+        if (missing(nRows))
             nRows <- min(c(3, ceiling(prod(dims[1:2], na.rm = TRUE) / nCols)))
         opar <- par(no.readonly = TRUE)
         on.exit(par(opar))
@@ -515,6 +515,9 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
     } else {
         nCols <- nRows <- 1
     }
+    if (missing(col)) col <- if (separate) par("col") else 1:nLines
+    if (missing(pch)) pch <- if (separate) par("pch") else 1:nLines
+    if (missing(lty)) lty <- if (separate) par("lty") else 1:nLines
     if (length(lty) > nLines) lty <- lty[1:nLines] # otherwise legend chokes
     if (length(type) != 1 || is.na(nchar(type, "c")) || nchar(type, "c") != 1)
         stop("Invalid plot type.")

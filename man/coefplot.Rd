@@ -9,10 +9,9 @@
 \usage{
 coefplot(object, ncomp = object$ncomp, comps, intercept = FALSE,
          separate = FALSE, se.whiskers = FALSE, nCols, nRows, labels,
-         type = "l", lty = 1:nLines, lwd = NULL, pch = 1:nLines,
-         cex = NULL, col = 1:nLines, legendpos, xlab = "variable",
-         ylab = "regression coefficient", main, pretty.xlabels = TRUE,
-         xlim, ylim, \dots)
+         type = "l", lty, lwd = NULL, pch, cex = NULL, col, legendpos,
+         xlab = "variable", ylab = "regression coefficient", main,
+         pretty.xlabels = TRUE, xlim, ylim, \dots)
 }
 \arguments{
   \item{object}{an \code{mvr} object.  The fitted model.}
@@ -101,6 +100,12 @@ coefplot(object, ncomp = object$ncomp, comps, intercept = FALSE,
   \code{"numbers"}, it also uses the numerical values of the labels for
   horisontal spacing.  If one has excluded parts of the spectral
   region, one might therefore want to use \code{pretty.xlabels = FALSE}.
+
+  When \code{separate} is \code{TRUE}, the arguments \code{lty},
+  \code{col}, and \code{pch} default to their \code{par()} setting.
+  Otherwise, the default for all of them is \code{1:nLines}, where
+  \code{nLines} is the number of model sizes specified, i.e., the length
+  of \code{ncomp} or \code{comps}.
 
   The function can also be called through the \code{mvr} plot method by
   specifying \code{plottype = "coefficients"}.
