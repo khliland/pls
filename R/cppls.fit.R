@@ -5,7 +5,7 @@
 ### Implements the CPPLS algorithm as described in FIXME
 
 cppls.fit <- function(X, Y, ncomp, Y2 = NULL, stripped = FALSE,
-                      lower = 0.5, upper = 0.5, wt, ...)
+                      lower = 0.5, upper = 0.5, wt = NULL, ...)
 {
     ## X     - the data matrix
     ## Y     - the primary response matrix
@@ -22,8 +22,7 @@ cppls.fit <- function(X, Y, ncomp, Y2 = NULL, stripped = FALSE,
     npred <- dim(X)[2]
     nresp <- dim(Yprim)[2]
 
-    if(missing(wt)){
-        wt <- rep(1,nobj)
+    if(is.null(wt)){
         Xmeans <- colMeans(X)
         X <- X - rep(Xmeans, each = nobj)
     } else {
@@ -31,10 +30,7 @@ cppls.fit <- function(X, Y, ncomp, Y2 = NULL, stripped = FALSE,
         X <- X - rep(Xmeans, each = nobj)
     }
 
-    ## FIXME: Center Y?
     Ymeans = colMeans(Yprim)
-    Yprim <- Yprim - rep(Ymeans,each=nobj)
-    Y <- Y - rep(colMeans(Y),each=nobj)
 
     if(!stripped) {
         ## Save dimnames:
@@ -49,10 +45,11 @@ cppls.fit <- function(X, Y, ncomp, Y2 = NULL, stripped = FALSE,
     P   <- matrix(0,npred,ncomp)    # P-loadings
     Q   <- matrix(0,nresp,ncomp)    # Q-loadings
     cc  <- numeric(ncomp)
-    pot <- numeric(ncomp)         	# Powers used to construct the w-s in R
+    pot <- numeric(ncomp)             # Powers used to construct the w-s in R
     B   <- array(0, c(npred, nresp, ncomp))
+    smallNorm <- numeric()
     if(!stripped){
-        U <- TT     				# U-scores
+        U <- TT                         # U-scores
         tsqs <- rep.int(1, ncomp)   # t't
         fitted <- array(0, c(nobj, nresp, ncomp))
     }
@@ -73,11 +70,24 @@ cppls.fit <- function(X, Y, ncomp, Y2 = NULL, stripped = FALSE,
         q.a <- crossprod(Yprim,t.a) / tsq
         X   <- X - tcrossprod(t.a,p.a)             # Deflation
 
+        ## Check and compensate for small norms
+        mm <- apply(abs(X),2,sum)
+        r <- which(mm < 10^-12)
+        if(length(r)>0){
+            for(i in 1:length(r)){
+                if(sum(smallNorm==r[i]) == 0){
+                    ## Add new short small to list
+                    smallNorm[length(smallNorm)+1] <- r[i]
+                }
+            }
+        }
+        X[,smallNorm] <- 0 # Remove collumns having small norms
+
         W[,a]  <- w.a
         TT[,a] <- t.a
         P[,a]  <- p.a
         Q[,a]  <- q.a
-        B[,,a] <- tcrossprod(W[,1:a, drop=FALSE], Q[,1:a, drop=FALSE])
+        B[,,a] <- W[,1:a, drop=FALSE]%*%tcrossprod(solve(crossprod(P[,1:a, drop=FALSE],W[,1:a, drop=FALSE])),Q[,1:a, drop=FALSE])
 
         if (!stripped) {
             tsqs[a] <- tsq
@@ -90,7 +100,7 @@ cppls.fit <- function(X, Y, ncomp, Y2 = NULL, stripped = FALSE,
     }
     if (stripped) {
         ## Return as quickly as possible
-        list(coefficients = B, Xmeans = Xmeans, Ymeans = Ymeans)
+        list(coefficients = B, Xmeans = Xmeans, Ymeans = Ymeans, gammas = pot)
     } else {
         residuals <- - fitted + c(Yprim)
         fitted <- fitted + rep(Ymeans, each = nobj) # Add mean
@@ -116,13 +126,14 @@ cppls.fit <- function(X, Y, ncomp, Y2 = NULL, stripped = FALSE,
              scores = TT, loadings = P,
              loading.weights = W,
              Yscores = U, Yloadings = Q,
-             ## projection = R,
+             projection = W %*% solve(crossprod(P,W)),
              Xmeans = Xmeans, Ymeans = Ymeans,
              fitted.values = fitted, residuals = residuals,
              Xvar = colSums(P * P) * tsqs,
              Xtotvar = sum(X * X),
              gammas = pot,
-             canonical.correlations = cc)
+             canonical.correlations = cc,
+             smallNorm = smallNorm)
     }
 }
 
@@ -130,8 +141,7 @@ cppls.fit <- function(X, Y, ncomp, Y2 = NULL, stripped = FALSE,
 ################
 ## Rcal function
 Rcal <- function(X, Y, Yprim, wt, lower, upper) {
-    CS <- CorrXY(X, Y)        # Matrix of corr(Xj,Yg) and vector of std(Xj)
-
+    CS <- CorrXY(X, Y)              # Matrix of corr(Xj,Yg) and vector of std(Xj)
     sng <- sign(CS$C)               # Signs of C {-1,0,1}
     C <- abs(CS$C)                  # Correlation without signs
     mS <- max(CS$S); S <- CS$S / mS # Divide by largest value
@@ -161,7 +171,6 @@ lw_bestpar <- function(X, S, C, sng, Yprim, wt, lower, upper) {
             W0 <- (sng*(C^(p/(1-p))))*S
         }
         Z <- X %*% W0  # Transform X into W0
-        Z[abs(Z) < .Machine$double.eps] <- 0
         -(cancorr(Z, Yprim, wt))^2
     }
 
@@ -177,7 +186,7 @@ lw_bestpar <- function(X, S, C, sng, Yprim, wt, lower, upper) {
         pot[1+(i-1)*3] <- lower[i]
         if (lower[i] != upper[i]) {
             Pc <- optimize(f = f, interval = c(lower[i], upper[i]),
-                           tol = .Machine$double.eps^0.25, maximum = FALSE,
+                           tol = 10^-4, maximum = FALSE,
                            X = X, S = S, C = C, sng = sng, Yprim = Yprim,
                            wt = wt)
             pot[2+(i-1)*3] <- Pc[[1]]; ca[2+(i-1)*3] <- Pc[[2]]
@@ -204,7 +213,6 @@ lw_bestpar <- function(X, S, C, sng, Yprim, wt, lower, upper) {
         W0 <- (sng*(C^(p/(1-p))))*S
 
         Z <- X %*% W0                   # Transform X into W
-        Z[abs(Z) < .Machine$double.eps] <- 0
         Ar <- cancorr(Z, Yprim, wt, FALSE) # Computes canonical correlations between columns in XW and Y with rows weighted according to wt
         w <- W0 %*% Ar[,1, drop=FALSE]  # Optimal loadings
     }
@@ -223,32 +231,14 @@ CorrXY <- function(X, Y) {
     Y <- Y - tcrossprod(rep(1, n), cy)
     X <- X - tcrossprod(rep(1, n), cx)
 
-    sdX <- std(X, cx, n)
-    inds <- which(sdX < .Machine$double.eps, arr.ind)
+    sdX <- sqrt(apply(X^2,2,mean))
+    inds <- which(sdX == 0, arr.ind=FALSE)
     sdX[inds] <- 1
 
-    ccxy <- crossprod(X, Y) / (n * tcrossprod(sdX, std(Y, cy, n)))
+    ccxy <- crossprod(X, Y) / (n * tcrossprod(sdX, sqrt(apply(Y^2,2,mean))))
     sdX[inds] <- 0
     ccxy[inds,] <- 0
     CS <- list(C = ccxy, S = sdX)
-}
-
-
-################
-## Weighted centering
-Center <- function(X, wt){
-    ## Centering of the data matrix X by subtracting the weighted column means
-    ## according to the nonegative weights wt
-    np <- dim(X)
-
-    ## Calculation of column means:
-    if (missing(wt))
-        mX <- colMeans(X)
-    else
-        mX <- crossprod(wt, X) / sum(wt)
-
-    ## Centering of X, similar to: #X = X-ones(n,1)*mX;
-    X <- X - rep(mX, each = nobj)
 }
 
 
@@ -260,44 +250,17 @@ norm <- function(vec) {
 
 
 ################
-## function std (n-vektet)
-std <- function(X, m, n) {
-    r <- numeric(length(m))
-    for(i in 1:length(m)){
-        r[i] <- sqrt(crossprod((X[,i] - m[i]))[1] / n)
-    }
-    r
-}
-
-
-################
-## Machine precision of a number
-eps <- function(X){
-    .Machine$double.eps * 2^floor(log2(abs(X)))
-}
-
-################
-## Dummy representation of Y
-dummy <- function(Y) {
-    m <- unique(Y)
-    Yd <- matrix(0, length(Y), length(m))
-    for(i in 1:length(m)){
-        Yd[,i] <- 1*(Y == m[i])
-    }
-    Yd
-}
-
-
-################
 ## Stripped version of canonical correlation (cancor)
 cancorr <- function (x, y, wt, opt = TRUE) {
     nr <- nrow(x)
     ncx <- ncol(x)
     ncy <- ncol(y)
-    x <- x * wt
-    y <- y * wt
-    qx <- qr(x, tol = .Machine$double.eps)
-    qy <- qr(y, tol = .Machine$double.eps)
+    if (!is.null(wt)){
+        x <- x * wt
+        y <- y * wt
+    }
+    qx <- qr(x, tol = 1.4594*10^-14) # .Machine$double.eps)
+    qy <- qr(y, tol = 1.4594*10^-14) # .Machine$double.eps)
     dx <- qx$rank
     if (!dx)
         stop("'x' has rank 0")
@@ -318,4 +281,16 @@ cancorr <- function (x, y, wt, opt = TRUE) {
         }
     }
     ret
+}
+
+
+################
+## Dummy representation of Y
+dummy <- function(Y) {
+    m <- unique(Y)
+    Yd <- matrix(0, length(Y), length(m))
+    for(i in 1:length(m)){
+        Yd[,i] <- 1*(Y == m[i])
+    }
+    Yd
 }

@@ -1,4 +1,4 @@
-Package: pls
+Package: cppls
 Version: 2.1-0
 Date: 2007-10-17
 Title: Partial Least Squares Regression (PLSR) and Principal Component Regression (PCR)

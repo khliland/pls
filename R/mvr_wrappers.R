@@ -23,14 +23,14 @@ pcr <- function(..., method = pls.options()$pcralg)
 }
 
 ## FIXME: Perhaps use a pls.options()$cppls default?
-cpplsr <- function(..., Y.sec, method = c("cppls", "model.frame"))
+cppls <- function(..., Y.sec, method = c("cppls", "model.frame"))
 {
     cl <- match.call()
     cl$method <- match.arg(method)
     cl[[1]] <- as.name("mvr")
     res <- eval(cl, parent.frame())
     ## Fix call component
-    if (cl$method != "model.frame") res$call[[1]] <- as.name("cpplsr")
+    if (cl$method != "model.frame") res$call[[1]] <- as.name("cppls")
     if (missing(method)) res$call$method <- NULL
     res
 }

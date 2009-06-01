@@ -1,7 +1,7 @@
 ### mvrCv.R: The basic cross-validation function
 ### $Id$
 
-mvrCv <- function(X, Y, ncomp, Y2 = NULL,
+mvrCv <- function(X, Y, ncomp, Y2 = NULL, wt = NULL,
                   method = pls.options()$mvralg,
                   scale = FALSE, segments = 10,
                   segment.type = c("random", "consecutive", "interleaved"),
@@ -55,6 +55,7 @@ mvrCv <- function(X, Y, ncomp, Y2 = NULL,
     cvPred <- pred <- array(0, dim = c(nobj, nresp, ncomp))
     if (jackknife)
         cvCoef <- array(dim = c(npred, nresp, ncomp, length(segments)))
+    if (method == "cppls") gammas <- list()
 
     if (trace) cat("Segment: ")
     for (n.seg in 1:length(segments)) {
@@ -75,10 +76,14 @@ mvrCv <- function(X, Y, ncomp, Y2 = NULL,
         }
 
         ## Fit the model:
-        fit <- fitFunc(Xtrain, Y[-seg,], ncomp, Y2 = Y2[-seg,], stripped = TRUE, ...)
+        fit <- fitFunc(Xtrain, Y[-seg,], ncomp, Y2 = Y2[-seg,],
+                       stripped = TRUE, wt = wt[-seg], ...)
 
         ## Optionally collect coefficients:
         if (jackknife) cvCoef[,,,n.seg] <- fit$coefficients
+
+        ## Optionally collect gamma-values from CPPLS
+        if (method == "cppls") gammas[[n.seg]] <- fit$gammas
 
         ## Set up test data:
         Xtest <- X
@@ -114,6 +119,7 @@ mvrCv <- function(X, Y, ncomp, Y2 = NULL,
                                  paste("Seg", seq.int(along = segments)))
 
     list(method = "CV", pred = cvPred, coefficients = if (jackknife) cvCoef,
+         gammas = if (method == "cppls") gammas,
          PRESS0 = PRESS0, PRESS = PRESS, adj = adj / nobj^2,
          segments = segments, ncomp = ncomp)
 }
