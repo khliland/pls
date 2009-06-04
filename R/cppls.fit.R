@@ -29,7 +29,8 @@ cppls.fit <- function(X, Y, ncomp, Y2 = NULL, stripped = FALSE,
         Xmeans <- crossprod(weights,X)/sum(weights)
         X <- X - rep(Xmeans, each = nobj)
     }
-
+	
+	X.orig <- X
     Ymeans = colMeans(Yprim)
 
     if(!stripped) {
@@ -95,15 +96,15 @@ cppls.fit <- function(X, Y, ncomp, Y2 = NULL, stripped = FALSE,
             U[,a] <- Yprim %*% q.a / crossprod(q.a)[1] # Ok for nresp == 1 ??
             ## make u orth to previous X scores:
             if (a > 1) U[,a] <- U[,a] - TT %*% (crossprod(TT, U[,a]) / tsqs)
-            fitted[,,a] <- tcrossprod(TT[,1:a, drop=FALSE], Q[,1:a, drop=FALSE])
+            fitted[,,a] <- X.orig %*% B[,,a]
         }
     }
     if (stripped) {
         ## Return as quickly as possible
         list(coefficients = B, Xmeans = Xmeans, Ymeans = Ymeans, gammas = pot)
     } else {
-        residuals <- - fitted + c(Yprim)
         fitted <- fitted + rep(Ymeans, each = nobj) # Add mean
+        residuals <- - fitted + c(Yprim)
 
         ## Add dimnames:
         objnames <- dnX[[1]]
@@ -130,7 +131,7 @@ cppls.fit <- function(X, Y, ncomp, Y2 = NULL, stripped = FALSE,
              Xmeans = Xmeans, Ymeans = Ymeans,
              fitted.values = fitted, residuals = residuals,
              Xvar = colSums(P * P) * tsqs,
-             Xtotvar = sum(X * X),
+             Xtotvar = sum(X.orig * X.orig),
              gammas = pot,
              canonical.correlations = cc,
              smallNorm = smallNorm)

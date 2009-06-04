@@ -1,7 +1,7 @@
 %% $Id$
 \encoding{latin1}
 \name{cppls.fit}
-\alias{cppls}
+\alias{cppls.fit}
 \title{CPPLS (Indahl et al.)}
 \description{Fits a PLS model using the CPPLS algorithm.}
 \usage{cppls.fit(X, Y, ncomp, Y2 = NULL, stripped = FALSE, lower = 0.5, upper = 0.5, wt = NULL, \dots)}
@@ -20,7 +20,7 @@
     needed.  Defaults to \code{FALSE}.}
   \item{lower}{a vector of lower limits for power optimisation. Defaults to \code{0.5}.}
   \item{upper}{a vector of upper limits for power optimisation. Defaults to \code{0.5}.}
-  \item{wt}{a vector of individual weights for the observations. (Optional)}
+  \item{weight}{a vector of individual weights for the observations. (Optional)}
   \item{\dots}{other arguments.  Currently ignored.}
 }
 \details{This function should not be called directly, but through

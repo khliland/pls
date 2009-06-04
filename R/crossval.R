@@ -12,9 +12,9 @@ crossval <- function(object, segments = 10,
     if (is.null(data)) stop("`object' must be fit with a `data' argument.")
     ## Optionally get weights
     if (cppls <- (object$method == "cppls")) {
-        wt <- eval(fitCall$wt, parent.frame())
+        weights <- eval(fitCall$weights, parent.frame())
     }
-    else wt <- NULL
+    else weights <- NULL
 
     if (!is.null(fitCall$subset)) {
         ## Handle "subset" argument
@@ -72,7 +72,7 @@ crossval <- function(object, segments = 10,
     for (n.seg in 1:length(segments)) {
         if (n.seg == 1) trace.time <- proc.time()[3] # Can't use system.time!
         seg <- segments[[n.seg]]
-        fit <- update(object, data = data[-seg,], wt = wt[-seg])
+        fit <- update(object, data = data[-seg,], weights = weights[-seg])
         ## Optionally collect coefficients:
         if (jackknife) cvCoef[,,,n.seg] <- fit$coefficients
         ## Optionally collect gamma-values from CPPLS

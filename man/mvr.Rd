@@ -4,9 +4,11 @@
 \alias{mvr}
 \alias{pcr}
 \alias{plsr}
+\alias{cppls}
 \title{Partial Least Squares and Principal Component Regression}
 \description{
-  Functions to perform partial least squares regression (PLSR) or
+  Functions to perform partial least squares regression (PLSR),
+  canonical powered partial least squares (CPPLS) or
   principal component regression (PCR), with a formula interface.
   Cross-validation can be used.  Prediction, model extraction, plot,
   print and summary methods exist.
@@ -18,6 +20,7 @@ mvr(formula, ncomp, data, subset, na.action,
     scale = FALSE, validation = c("none", "CV", "LOO"),
     model = TRUE, x = FALSE, y = FALSE, \dots)
 plsr(\dots, method = pls.options()$plsralg)
+cppls(\dots, method = pls.options()$cpplsalg)
 pcr(\dots, method = pls.options()$pcralg)
 }
 \arguments{
@@ -46,19 +49,20 @@ pcr(\dots, method = pls.options()$pcralg)
     functions, and \code{mvrCv}.}
 }
 \details{
-  The functions fit PLSR or PCR models with 1, \eqn{\ldots},
+  The functions fit PLSR, CPPLS or PCR models with 1, \eqn{\ldots},
   \code{ncomp} number of components.  Multi-response models are fully
   supported.
 
   The type of model to fit is specified with the \code{method}
   argument. Four PLSR algorithms are available: the kernel algorithm
   (\code{"kernelpls"}), the wide kernel algorithm (\code{"widekernelpls"}),
-  SIMPLS (\code{"simpls"}) and the classical
-  orthogonal scores algorithm (\code{"oscorespls"}).  One PCR algorithm
+  SIMPLS (\code{"simpls"}) and the classical orthogonal scores algorithm
+  (\code{"oscorespls"}). One CPPLS algorithm is available (\code{"cppls"})
+  providing several extensions to PLS. One PCR algorithm
   is available: using the singular value decomposition (\code{"svdpc"}).
   If \code{method} is \code{"model.frame"}, the model frame is returned.
-  The functions \code{pcr} and \code{plsr} are wrappers for \code{mvr},
-  with different values for \code{method}.
+  The functions \code{pcr}, \code{plsr} and \code{cppls} are wrappers for
+  \code{mvr}, with different values for \code{method}.
 
   The \code{formula} argument should be a symbolic formula of the form
   \code{response ~ terms}, where \code{response} is the name of the
@@ -126,6 +130,7 @@ pcr(\dots, method = pls.options()$pcralg)
   \code{\link{widekernelpls.fit}},
   \code{\link{simpls.fit}},
   \code{\link{oscorespls.fit}},
+  \code{\link{cppls.fit}},
   \code{\link{svdpc.fit}},
   \code{\link{mvrCv}},
   \code{\link{crossval}},
@@ -141,8 +146,9 @@ pcr(\dots, method = pls.options()$pcralg)
 \examples{
 data(yarn)
 ## Default methods:
-yarn.pcr <- pcr(density ~ NIR, 6, data = yarn, validation = "CV")
-yarn.pls <- plsr(density ~ NIR, 6, data = yarn, validation = "CV")
+yarn.pcr   <- pcr(density ~ NIR, 6, data = yarn, validation = "CV")
+yarn.pls   <- plsr(density ~ NIR, 6, data = yarn, validation = "CV")
+yarn.cppls <- cppls(density ~ NIR, 6, data = yarn, validation = "CV")
 
 ## Alternative methods:
 yarn.oscorespls <- mvr(density ~ NIR, 6, data = yarn, validation = "CV",
@@ -153,6 +159,7 @@ yarn.simpls <- mvr(density ~ NIR, 6, data = yarn, validation = "CV",
 data(oliveoil)
 sens.pcr <- pcr(sensory ~ chemical, ncomp = 4, scale = TRUE, data = oliveoil)
 sens.pls <- plsr(sensory ~ chemical, ncomp = 4, scale = TRUE, data = oliveoil)
+sens.cppls <- cppls(sensory ~ chemical, ncomp = 4, scale = TRUE, data = oliveoil)
 }
 \keyword{regression}
 \keyword{multivariate}
