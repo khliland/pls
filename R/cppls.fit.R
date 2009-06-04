@@ -5,15 +5,15 @@
 ### Implements the CPPLS algorithm as described in FIXME
 
 cppls.fit <- function(X, Y, ncomp, Y2 = NULL, stripped = FALSE,
-                      lower = 0.5, upper = 0.5, wt = NULL, ...)
+                      lower = 0.5, upper = 0.5, weights = NULL, ...)
 {
-    ## X     - the data matrix
-    ## Y     - the primary response matrix
-    ## Y2 - the secondary response matrix (optional)
-    ## ncomp - number of components
-    ## lower - lower bounds for power algorithm (default=0.5)
-    ## upper - upper bounds for power algorithm (default=0.5)
-    ## wt    - prior weighting of observations (optional) - not implemented in cross-validation
+    ## X       - the data matrix
+    ## Y       - the primary response matrix
+    ## Y2      - the additional response matrix (optional)
+    ## ncomp   - number of components
+    ## lower   - lower bounds for power algorithm (default=0.5)
+    ## upper   - upper bounds for power algorithm (default=0.5)
+    ## weights - prior weighting of observations (optional) - not implemented in cross-validation
 
     Yprim <- as.matrix(Y)
     Y <- cbind(Yprim, Y2)
@@ -22,11 +22,11 @@ cppls.fit <- function(X, Y, ncomp, Y2 = NULL, stripped = FALSE,
     npred <- dim(X)[2]
     nresp <- dim(Yprim)[2]
 
-    if(is.null(wt)){
+    if(is.null(weights)){
         Xmeans <- colMeans(X)
         X <- X - rep(Xmeans, each = nobj)
     } else {
-        Xmeans <- crossprod(wt,X)/sum(wt)
+        Xmeans <- crossprod(weights,X)/sum(weights)
         X <- X - rep(Xmeans, each = nobj)
     }
 
@@ -55,7 +55,7 @@ cppls.fit <- function(X, Y, ncomp, Y2 = NULL, stripped = FALSE,
     }
 
     for(a in 1:ncomp){
-        Rlist <- Rcal(X, Y, Yprim, wt, lower, upper)
+        Rlist <- Rcal(X, Y, Yprim, weights, lower, upper)
         pot[a] <- Rlist$pot
         cc[a] <- Rlist$cc
 
@@ -140,7 +140,7 @@ cppls.fit <- function(X, Y, ncomp, Y2 = NULL, stripped = FALSE,
 
 ################
 ## Rcal function
-Rcal <- function(X, Y, Yprim, wt, lower, upper) {
+Rcal <- function(X, Y, Yprim, weights, lower, upper) {
     CS <- CorrXY(X, Y)              # Matrix of corr(Xj,Yg) and vector of std(Xj)
     sng <- sign(CS$C)               # Signs of C {-1,0,1}
     C <- abs(CS$C)                  # Correlation without signs
@@ -148,18 +148,18 @@ Rcal <- function(X, Y, Yprim, wt, lower, upper) {
     mC <- max(C); C <- C / mC       #  -------- || --------
 
     ## Computation of the best vector of loadings
-    lw <- lw_bestpar(X, S, C, sng, Yprim, wt, lower, upper)
+    lw <- lw_bestpar(X, S, C, sng, Yprim, weights, lower, upper)
 }
 
 
 ################
 ## lw_bestpar function
-lw_bestpar <- function(X, S, C, sng, Yprim, wt, lower, upper) {
+lw_bestpar <- function(X, S, C, sng, Yprim, weights, lower, upper) {
 
     #########################
     # Optimization function #
     #########################
-    f <- function(p, X, S, C, sng, Yprim, wt) {
+    f <- function(p, X, S, C, sng, Yprim, weights) {
         if(p == 0){         # Variable selection from standard deviation
             S[S < max(S)] <- 0
             W0 <- S
@@ -171,7 +171,7 @@ lw_bestpar <- function(X, S, C, sng, Yprim, wt, lower, upper) {
             W0 <- (sng*(C^(p/(1-p))))*S
         }
         Z <- X %*% W0  # Transform X into W0
-        -(cancorr(Z, Yprim, wt))^2
+        -(cancorr(Z, Yprim, weights))^2
     }
 
     #####################################
@@ -182,16 +182,16 @@ lw_bestpar <- function(X, S, C, sng, Yprim, wt, lower, upper) {
     ca   <- numeric(3*nOpt)
 
     for (i in 1:nOpt){
-        ca[1+(i-1)*3]  <- f(lower[i], X, S, C, sng, Yprim, wt)
+        ca[1+(i-1)*3]  <- f(lower[i], X, S, C, sng, Yprim, weights)
         pot[1+(i-1)*3] <- lower[i]
         if (lower[i] != upper[i]) {
             Pc <- optimize(f = f, interval = c(lower[i], upper[i]),
                            tol = 10^-4, maximum = FALSE,
                            X = X, S = S, C = C, sng = sng, Yprim = Yprim,
-                           wt = wt)
+                           weights = weights)
             pot[2+(i-1)*3] <- Pc[[1]]; ca[2+(i-1)*3] <- Pc[[2]]
         }
-        ca[3+(i-1)*3]  <- f(upper[i], X, S, C, sng, Yprim, wt)
+        ca[3+(i-1)*3]  <- f(upper[i], X, S, C, sng, Yprim, weights)
         pot[3+(i-1)*3] <- upper[i]
     }
 
@@ -213,7 +213,7 @@ lw_bestpar <- function(X, S, C, sng, Yprim, wt, lower, upper) {
         W0 <- (sng*(C^(p/(1-p))))*S
 
         Z <- X %*% W0                   # Transform X into W
-        Ar <- cancorr(Z, Yprim, wt, FALSE) # Computes canonical correlations between columns in XW and Y with rows weighted according to wt
+        Ar <- cancorr(Z, Yprim, weights, FALSE) # Computes canonical correlations between columns in XW and Y with rows weighted according to 'weights'
         w <- W0 %*% Ar[,1, drop=FALSE]  # Optimal loadings
     }
     pot <- pot[cmin]
@@ -251,13 +251,13 @@ norm <- function(vec) {
 
 ################
 ## Stripped version of canonical correlation (cancor)
-cancorr <- function (x, y, wt, opt = TRUE) {
+cancorr <- function (x, y, weights, opt = TRUE) {
     nr <- nrow(x)
     ncx <- ncol(x)
     ncy <- ncol(y)
-    if (!is.null(wt)){
-        x <- x * wt
-        y <- y * wt
+    if (!is.null(weights)){
+        x <- x * weights
+        y <- y * weights
     }
     qx <- qr(x, tol = 1.4594*10^-14) # .Machine$double.eps)
     qy <- qr(y, tol = 1.4594*10^-14) # .Machine$double.eps)
@@ -281,16 +281,4 @@ cancorr <- function (x, y, wt, opt = TRUE) {
         }
     }
     ret
-}
-
-
-################
-## Dummy representation of Y
-dummy <- function(Y) {
-    m <- unique(Y)
-    Yd <- matrix(0, length(Y), length(m))
-    for(i in 1:length(m)){
-        Yd[,i] <- 1*(Y == m[i])
-    }
-    Yd
 }

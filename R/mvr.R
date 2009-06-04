@@ -6,7 +6,7 @@
 ### correct fit function to do the work.
 ### The function borrows heavily from lm().
 
-mvr <- function(formula, ncomp, Y.sec, data, subset, na.action,
+mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
                 method = pls.options()$mvralg,
                 scale = FALSE, validation = c("none", "CV", "LOO"),
                 model = TRUE, x = FALSE, y = FALSE, ...)
@@ -37,10 +37,10 @@ mvr <- function(formula, ncomp, Y.sec, data, subset, na.action,
     }
     X <- delete.intercept(model.matrix(mt, mf))
     ## The secondary response matrix (only used with cppls):
-    if (missing(Y.sec)) {
+    if (missing(Y.add)) {
         Y2 <- NULL
     } else {
-        Y2name <- as.character(substitute(Y.sec))
+        Y2name <- as.character(substitute(Y.add))
         Y2 <- data[,Y2name]
         if (is.null(Y2)) stop("The variable `", Y2name,
                               "' does not exist in `data'.", sep = "")

@@ -84,7 +84,7 @@
   squares - a unified PLS approach to classification and regression problems.
   \emph{Journal of Chemometrics}, In press.
 }
-\author{Ron Wehrens and Bjørn-Helge Mevik}
+\author{Kristian Hovde Liland}
 \seealso{
   \code{\link{mvr}}
   \code{\link{plsr}}

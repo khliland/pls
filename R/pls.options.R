@@ -7,7 +7,7 @@
 
 ## The list of initial options:
 .pls.Options <-
-    list(mvralg = "kernelpls", plsralg = "kernelpls", pcralg = "svdpc")
+    list(mvralg = "kernelpls", plsralg = "kernelpls", cpplsalg = "cppls", pcralg = "svdpc")
 
 
 pls.options <- function(...) {
