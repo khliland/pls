@@ -28,6 +28,8 @@ cppls <- function(..., Y.add, method = pls.options()$cpplsalg)
     cl$method <- match.arg(method, c("cppls", "model.frame"))
     cl[[1]] <- as.name("mvr")
     res <- eval(cl, parent.frame())
-    res$call <- match.call()
+    ## Fix call component
+    if (cl$method != "model.frame") res$call[[1]] <- as.name("cppls")
+    if (missing(method)) res$call$method <- NULL
     res
 }
