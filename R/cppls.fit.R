@@ -29,8 +29,8 @@ cppls.fit <- function(X, Y, ncomp, Y2 = NULL, stripped = FALSE,
         Xmeans <- crossprod(weights,X)/sum(weights)
         X <- X - rep(Xmeans, each = nobj)
     }
-	
-	X.orig <- X
+
+    X.orig <- X
     Ymeans = colMeans(Yprim)
 
     if(!stripped) {
@@ -239,7 +239,7 @@ CorrXY <- function(X, Y) {
     ccxy <- crossprod(X, Y) / (n * tcrossprod(sdX, sqrt(apply(Y^2,2,mean))))
     sdX[inds] <- 0
     ccxy[inds,] <- 0
-    CS <- list(C = ccxy, S = sdX)
+    list(C = ccxy, S = sdX)
 }
 
 
