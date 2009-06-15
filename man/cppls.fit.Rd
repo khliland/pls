@@ -4,7 +4,7 @@
 \alias{cppls.fit}
 \title{CPPLS (Indahl et al.)}
 \description{Fits a PLS model using the CPPLS algorithm.}
-\usage{cppls.fit(X, Y, ncomp, Y2 = NULL, stripped = FALSE, lower = 0.5, upper = 0.5, wt = NULL, \dots)}
+\usage{cppls.fit(X, Y, ncomp, Y.add = NULL, stripped = FALSE, lower = 0.5, upper = 0.5, wt = NULL, \dots)}
 \arguments{
   \item{X}{a matrix of observations.  \code{NA}s and \code{Inf}s are not
     allowed.} 
@@ -12,7 +12,7 @@
     are not allowed.} 
   \item{ncomp}{the number of components to be used in the
     modelling.}
-  \item{Y2}{a vector or matrix of additional responses containing
+  \item{Y.add}{a vector or matrix of additional responses containing
     relevant information about the observations.}
   \item{stripped}{logical.  If \code{TRUE} the calculations are stripped
     as much as possible for speed; this is meant for use with

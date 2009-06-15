@@ -38,11 +38,11 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
     X <- delete.intercept(model.matrix(mt, mf))
     ## The secondary response matrix (only used with cppls):
     if (missing(Y.add)) {
-        Y2 <- NULL
+        Y.add <- NULL
     } else {
-        Y2name <- as.character(substitute(Y.add))
-        Y2 <- data[,Y2name]
-        if (is.null(Y2)) stop("The variable `", Y2name,
+        Y.addname <- as.character(substitute(Y.add))
+        Y.add <- data[,Y.addname]
+        if (is.null(Y.add)) stop("The variable `", Y.addname,
                               "' does not exist in `data'.", sep = "")
     }
 
@@ -76,12 +76,12 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
     ## Optionally, perform validation:
     switch(match.arg(validation),
            CV = {
-               val <- mvrCv(X, Y, ncomp, Y2 = Y2, method = method, scale = sdscale, ...)
+               val <- mvrCv(X, Y, ncomp, Y.add = Y.add, method = method, scale = sdscale, ...)
            },
            LOO = {
                segments <- as.list(1:nobj)
                attr(segments, "type") <- "leave-one-out"
-               val <- mvrCv(X, Y, ncomp, Y2 = Y2, method = method, scale = sdscale,
+               val <- mvrCv(X, Y, ncomp, Y.add = Y.add, method = method, scale = sdscale,
                             segments = segments, ...)
            },
            none = {
@@ -115,7 +115,7 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
     }
 
     ## Fit the model:
-    z <- fitFunc(X, Y, ncomp, Y2 = Y2, ...)
+    z <- fitFunc(X, Y, ncomp, Y.add = Y.add, ...)
 
     ## Build and return the object:
     class(z) <- "mvr"

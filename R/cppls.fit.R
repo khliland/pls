@@ -4,19 +4,19 @@
 ###
 ### Implements the CPPLS algorithm as described in FIXME
 
-cppls.fit <- function(X, Y, ncomp, Y2 = NULL, stripped = FALSE,
+cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
                       lower = 0.5, upper = 0.5, weights = NULL, ...)
 {
     ## X       - the data matrix
     ## Y       - the primary response matrix
-    ## Y2      - the additional response matrix (optional)
+    ## Y.add   - the additional response matrix (optional)
     ## ncomp   - number of components
     ## lower   - lower bounds for power algorithm (default=0.5)
     ## upper   - upper bounds for power algorithm (default=0.5)
     ## weights - prior weighting of observations (optional) - not implemented in cross-validation
 
     Yprim <- as.matrix(Y)
-    Y <- cbind(Yprim, Y2)
+    Y <- cbind(Yprim, Y.add)
 
     nobj <- dim(X)[1]
     npred <- dim(X)[2]
