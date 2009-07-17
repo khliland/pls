@@ -11,6 +11,10 @@
 
 
 pls.options <- function(...) {
+    ## Use modified version, if exists.  (Needed due to Namespace.)
+    if (exists(".pls.Options", where = .GlobalEnv)) {
+        .pls.Options <- get(".pls.Options", pos = .GlobalEnv)
+    }
     if (nargs() == 0) return(.pls.Options)
     current <- .pls.Options
     temp <- list(...)

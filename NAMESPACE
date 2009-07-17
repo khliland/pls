@@ -1,0 +1,80 @@
+## Exported functions:
+export(
+       MSEP,
+       R2,
+       RMSEP,
+       Yloadings,
+       Yscores,
+       coefplot,
+       compnames,
+       corrplot,
+       crossval,
+       cvsegments,
+       explvar,
+       jack.test,
+       kernelpls.fit,
+       loading.weights,
+       loadingplot,
+       loadings,
+       msc,
+       mvr,
+       mvrValstats,            # because called with eval(cl, parent.frame())
+       oscorespls.fit,
+       pcr,
+       pls.options,
+       plsr,
+       prednames,
+       predplot,
+       respnames,
+       scoreplot,
+       scores,
+       simpls.fit,
+       stdize,                          # Because model.frame uses eval()
+       svdpc.fit,
+       validationplot,
+       var.jack,
+       widekernelpls.fit
+       )
+
+## Imports:
+## FIXME: maybe more?
+importFrom(stats, biplot, coef, fitted, makepredictcall, model.frame,
+           model.matrix, predict, residuals)
+importFrom(graphics, plot)
+
+## S3 Methods:
+S3method(MSEP, mvr)
+S3method(RMSEP, mvr)
+S3method(biplot, mvr)
+S3method(coef, mvr)
+S3method(fitted, mvr)
+S3method(loadingplot, default)
+S3method(loadings, default)
+S3method(makepredictcall, msc)
+S3method(makepredictcall, stdized)
+S3method(model.frame, mvr)
+S3method(model.matrix, mvr)
+S3method(plot, loadings)
+S3method(plot, mvr)
+S3method(plot, mvrVal)
+S3method(plot, scores)
+S3method(predict, msc)
+S3method(predict, mvr)
+S3method(predict, stdized)
+S3method(predplot, default)
+S3method(predplot, mvr)
+S3method(print, jacktest)
+S3method(print, mvr)
+S3method(print, mvrVal)
+S3method(residuals, mvr)
+S3method(scoreplot, default)
+S3method(scores, default)
+S3method(summary, mvr)
+
+
+## Documented, but not exported:
+## -------
+## delete.intercept
+## mvrCv
+## naExcludeMvr
+## predplotXy
