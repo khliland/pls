@@ -6,6 +6,7 @@
 \alias{RMSEP}
 \alias{RMSEP.mvr}
 \alias{R2}
+\alias{R2.mvr}
 \alias{mvrValstats}
 \title{MSEP, RMSEP and R2 of PLSR and PCR models}
 \description{
@@ -23,7 +24,8 @@ MSEP(object, ...)
 RMSEP(object, ...)
 \method{RMSEP}{mvr}(object, ...)
 
-R2(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
+R2(object, ...)
+\method{R2}{mvr}(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
    intercept = cumulative, se = FALSE, \dots)
 
 mvrValstats(object, estimate, newdata, ncomp = 1:object$ncomp, comps,

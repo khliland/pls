@@ -97,7 +97,8 @@ mvrValstats <- function(object, estimate,
 
 
 ## R2: Return R^2
-R2 <- function(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
+R2 <- function(object, ...) UseMethod("R2")
+R2.mvr <- function(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
                intercept = cumulative, se = FALSE, ...) {
     ## Makes the code slightly simpler:  FIXME: maybe remove
     cumulative <- missing(comps) || is.null(comps)
