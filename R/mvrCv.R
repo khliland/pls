@@ -1,7 +1,7 @@
 ### mvrCv.R: The basic cross-validation function
 ### $Id$
 
-mvrCv <- function(X, Y, ncomp, Y.add = NULL, wt = NULL,
+mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
                   method = pls.options()$mvralg,
                   scale = FALSE, segments = 10,
                   segment.type = c("random", "consecutive", "interleaved"),
@@ -77,7 +77,7 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, wt = NULL,
 
         ## Fit the model:
         fit <- fitFunc(Xtrain, Y[-seg,], ncomp, Y.add = Y.add[-seg,],
-                       stripped = TRUE, wt = wt[-seg], ...)
+                       stripped = TRUE, weights = weights[-seg], ...)
 
         ## Optionally collect coefficients:
         if (jackknife) cvCoef[,,,n.seg] <- fit$coefficients

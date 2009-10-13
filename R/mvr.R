@@ -44,6 +44,9 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
         Y.add <- data[,Y.addname]
         if (is.null(Y.add)) stop("The variable `", Y.addname,
                               "' does not exist in `data'.", sep = "")
+		if(!missing(subset)){
+			Y.add <- Y.add[data[,as.character(substitute(subset))],]
+		}
     }
 
     nobj <- dim(X)[1]

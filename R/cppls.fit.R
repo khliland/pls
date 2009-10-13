@@ -56,11 +56,14 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
     }
 
     for(a in 1:ncomp){
-        Rlist <- Rcal(X, Y, Yprim, weights, lower, upper)
-        pot[a] <- Rlist$pot
-        cc[a] <- Rlist$cc
+        if( length(lower)==1 && lower==0.5 && length(upper)==1 && upper==0.5 ) {
+			Rlist <- Rcal(X, Y, Yprim, weights)} 			   # Default CPLS algorithm
+		else {
+			Rlist <- RcalP(X, Y, Yprim, weights, lower, upper) # Alternate CPPLS algorithm
+			pot[a] <- Rlist$pot
+			cc[a] <- Rlist$cc }
 
-        w.a <- Rlist$w/max(abs(Rlist$w)) # Stabilization
+        w.a <- Rlist$w
         ## Make new vectors orthogonal to old ones?
         ## w.a <- w.a - W[,1:(a-1)]%*%crossprod(W[,1:(a-1)], w.a)
         w.a[abs(w.a) < .Machine$double.eps] <- 0   # Removes insignificant values
@@ -139,10 +142,20 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
 }
 
 
-################
-## Rcal function
-Rcal <- function(X, Y, Yprim, weights, lower, upper) {
-    CS <- CorrXY(X, Y)              # Matrix of corr(Xj,Yg) and vector of std(Xj)
+#######################
+## Rcal function (CPLS)
+Rcal <- function(X, Y, Yprim, weights) {
+	W0 <- crossprod(X,Y)
+	Ar <- cancorr(X%*%W0, Yprim, weights, FALSE) # Computes canonical correlations between columns in XW and Y with rows weighted according to 'weights'
+	w  <- W0 %*% Ar[,1, drop=FALSE]  # Optimal loadings
+	list(w=w)
+}
+
+
+#########################
+## RcalP function (CPPLS)
+RcalP <- function(X, Y, Yprim, weights, lower, upper) {
+    CS <- CorrXY(X, Y, weights)     # Matrix of corr(Xj,Yg) and vector of std(Xj)
     sng <- sign(CS$C)               # Signs of C {-1,0,1}
     C <- abs(CS$C)                  # Correlation without signs
     mS <- max(CS$S); S <- CS$S / mS # Divide by largest value
@@ -224,13 +237,22 @@ lw_bestpar <- function(X, S, C, sng, Yprim, weights, lower, upper) {
 
 ################
 ## CorrXY function
-CorrXY <- function(X, Y) {
+CorrXY <- function(X, Y, weights) {
     ##  Computation of correlations between the columns of X and Y
-    n <- dim(X)[1]
-    cy <- colMeans(Y)
-    cx <- colMeans(X)
-    Y <- Y - tcrossprod(rep(1, n), cy)
-    X <- X - tcrossprod(rep(1, n), cx)
+    n  <- dim(X)[1]
+	if(is.null(weights)){
+		cx <- colMeans(X)
+		cy <- colMeans(Y)
+		X <- X - rep(cx, each = n)
+		Y <- Y - rep(cy, each = n)
+	} else {
+		cx <- crossprod(weights,X)/sum(weights)
+		cy <- crossprod(weights,Y)/sum(weights)
+		X  <- X - rep(cx, each = n)
+		Y  <- Y - rep(cy, each = n)
+		X  <- X * wt
+		Y  <- Y * wt
+	}
 
     sdX <- sqrt(apply(X^2,2,mean))
     inds <- which(sdX == 0, arr.ind=FALSE)
@@ -262,6 +284,8 @@ cancorr <- function (x, y, weights, opt = TRUE) {
     }
     qx <- qr(x, tol = 1.4594*10^-14) # .Machine$double.eps)
     qy <- qr(y, tol = 1.4594*10^-14) # .Machine$double.eps)
+#    qx <- qr(x, LAPACK = TRUE) # .Machine$double.eps)
+#    qy <- qr(y, LAPACK = TRUE) # .Machine$double.eps)
     dx <- qx$rank
     if (!dx)
         stop("'x' has rank 0")
@@ -273,6 +297,8 @@ cancorr <- function (x, y, weights, opt = TRUE) {
                  nu = 0, nv = 0)
         ret <- z$d[1]
     } else {
+#        z <- La.svd2(qr.qty(qx, qr.qy(qy, diag(1, nr, dy)))[1:dx,, drop = FALSE],
+#                 nu = dx, nv = 0)
         z <- svd(qr.qty(qx, qr.qy(qy, diag(1, nr, dy)))[1:dx,, drop = FALSE],
                  nu = dx, nv = 0)
         ret <- backsolve((qx$qr)[1:dx,1:dx, drop = FALSE], z$u)
