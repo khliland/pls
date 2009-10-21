@@ -1,0 +1,2 @@
+exportPattern("^[^\\.]") # Export all except .functions
+export(.pls.Options)	 # ... and the only .function (for testing purposes)
