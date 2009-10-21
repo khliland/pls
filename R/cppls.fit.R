@@ -2,7 +2,10 @@
 ###
 ### $Id$
 ###
-### Implements the CPPLS algorithm as described in FIXME
+### Implements the CPPLS algorithm as described in
+### Indahl, U.G., Liland, K.H., Næs, T. (2009).
+### Canonical partial least squares - a unified PLS approach to classification and regression problems,
+### Journal of Chemometrics 23, pp. 495-504
 
 cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
                       lower = 0.5, upper = 0.5, weights = NULL, ...)
@@ -13,7 +16,7 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
     ## ncomp   - number of components
     ## lower   - lower bounds for power algorithm (default=0.5)
     ## upper   - upper bounds for power algorithm (default=0.5)
-    ## weights - prior weighting of observations (optional) - not implemented in cross-validation
+    ## weights - prior weighting of observations (optional)
 
     Yprim <- as.matrix(Y)
     Y <- cbind(Yprim, Y.add)
@@ -46,11 +49,11 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
     P   <- matrix(0,npred,ncomp)    # P-loadings
     Q   <- matrix(0,nresp,ncomp)    # Q-loadings
     cc  <- numeric(ncomp)
-    pot <- numeric(ncomp)             # Powers used to construct the w-s in R
+    pot <- rep(0.5,ncomp)           # Powers used to construct the w-s in R
     B   <- array(0, c(npred, nresp, ncomp))
     smallNorm <- numeric()
     if(!stripped){
-        U <- TT                         # U-scores
+        U <- TT                     # U-scores
         tsqs <- rep.int(1, ncomp)   # t't
         fitted <- array(0, c(nobj, nresp, ncomp))
     }
@@ -60,13 +63,13 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
 			Rlist <- Rcal(X, Y, Yprim, weights)} 			   # Default CPLS algorithm
 		else {
 			Rlist <- RcalP(X, Y, Yprim, weights, lower, upper) # Alternate CPPLS algorithm
-			pot[a] <- Rlist$pot
-			cc[a] <- Rlist$cc }
-
+			pot[a] <- Rlist$pot }
+		cc[a] <- Rlist$cc
         w.a <- Rlist$w
+
         ## Make new vectors orthogonal to old ones?
         ## w.a <- w.a - W[,1:(a-1)]%*%crossprod(W[,1:(a-1)], w.a)
-        w.a[abs(w.a) < .Machine$double.eps] <- 0   # Removes insignificant values
+        w.a[abs(w.a) < pls.options()$w.tol] <- 0   # Removes insignificant values
         w.a <- w.a / norm(w.a)                     # Normalization
         t.a <- X %*% w.a                           # Score vectors
         tsq <- crossprod(t.a)[1]
@@ -76,7 +79,7 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
 
         ## Check and compensate for small norms
         mm <- apply(abs(X),2,sum)
-        r <- which(mm < 10^-12)
+        r <- which(mm < pls.options()$X.tol)
         if(length(r)>0){
             for(i in 1:length(r)){
                 if(sum(smallNorm==r[i]) == 0){
@@ -147,8 +150,8 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
 Rcal <- function(X, Y, Yprim, weights) {
 	W0 <- crossprod(X,Y)
 	Ar <- cancorr(X%*%W0, Yprim, weights, FALSE) # Computes canonical correlations between columns in XW and Y with rows weighted according to 'weights'
-	w  <- W0 %*% Ar[,1, drop=FALSE]  # Optimal loadings
-	list(w=w)
+	w  <- W0 %*% Ar$A[,1, drop=FALSE]  # Optimal loadings
+	list(w=w,cc=Ar$r^2)
 }
 
 
@@ -228,7 +231,7 @@ lw_bestpar <- function(X, S, C, sng, Yprim, weights, lower, upper) {
 
         Z <- X %*% W0                   # Transform X into W
         Ar <- cancorr(Z, Yprim, weights, FALSE) # Computes canonical correlations between columns in XW and Y with rows weighted according to 'weights'
-        w <- W0 %*% Ar[,1, drop=FALSE]  # Optimal loadings
+        w <- W0 %*% Ar$A[,1, drop=FALSE]  # Optimal loadings
     }
     pot <- pot[cmin]
     list(w = w, pot = pot, cc = cc)
@@ -275,37 +278,39 @@ norm <- function(vec) {
 ################
 ## Stripped version of canonical correlation (cancor)
 cancorr <- function (x, y, weights, opt = TRUE) {
-    nr <- nrow(x)
+    nr  <- nrow(x)
     ncx <- ncol(x)
     ncy <- ncol(y)
     if (!is.null(weights)){
         x <- x * weights
         y <- y * weights
     }
-    qx <- qr(x, tol = 1.4594*10^-14) # .Machine$double.eps)
-    qy <- qr(y, tol = 1.4594*10^-14) # .Machine$double.eps)
-#    qx <- qr(x, LAPACK = TRUE) # .Machine$double.eps)
-#    qy <- qr(y, LAPACK = TRUE) # .Machine$double.eps)
-    dx <- qx$rank
+    qx <- qr(x, LAPACK = TRUE)
+    qy <- qr(y, LAPACK = TRUE)
+	qxR <- qr.R(qx)
+	# Compute rank like MATLAB does
+	dx <- sum(abs(diag(qxR)) > .Machine$double.eps*2^floor(log2(abs(qxR[1])))*max(nr,ncx))
     if (!dx)
         stop("'x' has rank 0")
-    dy <- qy$rank
+	qyR <- qr.R(qy)
+	# Compute rank like MATLAB does
+	dy <- sum(abs(diag(qyR)) > .Machine$double.eps*2^floor(log2(abs(qyR[1])))*max(nr,ncy))
     if (!dy)
         stop("'y' has rank 0")
+	dxy <- min(dx,dy)
     if(opt) {
         z <- svd(qr.qty(qx, qr.qy(qy, diag(1, nr, dy)))[1:dx,, drop = FALSE],
                  nu = 0, nv = 0)
-        ret <- z$d[1]
+        ret <- max(min(z$d[1],1),0)
     } else {
-#        z <- La.svd2(qr.qty(qx, qr.qy(qy, diag(1, nr, dy)))[1:dx,, drop = FALSE],
-#                 nu = dx, nv = 0)
         z <- svd(qr.qty(qx, qr.qy(qy, diag(1, nr, dy)))[1:dx,, drop = FALSE],
-                 nu = dx, nv = 0)
-        ret <- backsolve((qx$qr)[1:dx,1:dx, drop = FALSE], z$u)
-        if((ncx - nrow(ret)) > 0) {
-            ret <- rbind(ret, matrix(0, ncx - nrow(ret), dx))
-            ret[qx$pivot,] <- ret
+                 nu = dxy, nv = 0)
+        A <- backsolve((qx$qr)[1:dx,1:dx, drop = FALSE], z$u)*sqrt(nr-1)
+        if((ncx - nrow(A)) > 0) {
+            A <- rbind(A, matrix(0, ncx - nrow(A), dxy))
         }
+        A[qx$pivot,] <- A
+		ret <- list(A=A, r=max(min(z$d[1],1),0))
     }
     ret
 }
