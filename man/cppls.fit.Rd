@@ -80,9 +80,12 @@
   Indahl, U. (2005) A twist to partial least squares regression.
   \emph{Journal of Chemometrics}, \bold{19}, 32--44.
   
+  Liland, K.H and Indahl, U.G (2009) Powered partial least squares
+  discriminant analysis, \emph{Journal of Chemometrics}, \bold{23}, 7--18.
+
   Indahl, U.G., Liland, K.H. and Næs, T. (2009) Canonical partial least
   squares - a unified PLS approach to classification and regression problems.
-  \emph{Journal of Chemometrics}, In press.
+  \emph{Journal of Chemometrics}, \bold{23}, 495--504.
 }
 \author{Kristian Hovde Liland}
 \seealso{

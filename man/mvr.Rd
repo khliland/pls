@@ -159,7 +159,22 @@ yarn.simpls <- mvr(density ~ NIR, 6, data = yarn, validation = "CV",
 data(oliveoil)
 sens.pcr <- pcr(sensory ~ chemical, ncomp = 4, scale = TRUE, data = oliveoil)
 sens.pls <- plsr(sensory ~ chemical, ncomp = 4, scale = TRUE, data = oliveoil)
-sens.cppls <- cppls(sensory ~ chemical, ncomp = 4, scale = TRUE, data = oliveoil)
+
+## Classification
+data(mayonnaise)
+mayonnaise$dummy <- matrix(0,162,6) # Create dummy response
+mayonnaise$dummy[(mayonnaise$oil.type-1)*162+1:162] <- 1
+may.cppls <- cppls(dummy ~ NIR, 10, data = mayonnaise, subset = train, Y.add=design)
+library(MASS)
+may.lda   <- lda(oil.type ~ NIR.score, data = data.frame( 
+               oil.type = mayonnaise$oil.type[mayonnaise$train], NIR.score = I(may.cppls$scores)))
+score.val <- (mayonnaise$NIR[!mayonnaise$train,] - rep(colMeans(mayonnaise$NIR[mayonnaise$train,]),each = 42)) \%*\% may.cppls$projection
+oil.type  <- mayonnaise$oil.type
+correct   <- matrix(ncol=10,nrow=2); colnames(correct) <- 1:10; rownames(correct) <- c('Calibration','Validation')
+for( i in 1:10 ){      # Proportion correctly classified by LDA
+  correct[1,i] <- sum(oil.type[mayonnaise$train]  == predict(may.lda, dimen = i)$class)/120*100
+  correct[2,i] <- sum(oil.type[!mayonnaise$train] == predict(may.lda, dimen = i, newdata = data.frame(NIR.score = I(score.val)))$class)/42*100
+}
 }
 \keyword{regression}
 \keyword{multivariate}
