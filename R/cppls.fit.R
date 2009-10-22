@@ -31,6 +31,7 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
     } else {
         Xmeans <- crossprod(weights,X)/sum(weights)
         X <- X - rep(Xmeans, each = nobj)
+		weights <- sqrt(weights) # Prepare weights for cca
     }
 
     X.orig <- X
@@ -253,8 +254,8 @@ CorrXY <- function(X, Y, weights) {
 		cy <- crossprod(weights,Y)/sum(weights)
 		X  <- X - rep(cx, each = n)
 		Y  <- Y - rep(cy, each = n)
-		X  <- X * wt
-		Y  <- Y * wt
+		X  <- X * weights
+		Y  <- Y * weights
 	}
 
     sdX <- sqrt(apply(X^2,2,mean))
