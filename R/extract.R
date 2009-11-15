@@ -82,7 +82,8 @@ naExcludeMvr <- function(omit, x, ...) {
 loadings <- function(object, ...) UseMethod("loadings")
 loadings.default <- function(object, ...) {
     L <- if (inherits(object, "prcomp")) object$rotation else object$loadings
-    if (!inherits(L, "loadings")) class(L) <- "loadings"
+    if (!(inherits(L, "loadings") || inherits(L, "list")))
+        class(L) <- "loadings"
     attr(L, "explvar") <- explvar(object)
     L
 }
@@ -91,7 +92,8 @@ loadings.default <- function(object, ...) {
 scores <- function(object, ...) UseMethod("scores")
 scores.default <- function(object, ...) {
     S <- if (inherits(object, "prcomp")) object$x else object$scores
-    if (!inherits(S, "scores")) class(S) <- "scores"
+    if (!(inherits(S, "scores") || inherits(S, "list")))
+        class(S) <- "scores"
     attr(S, "explvar") <- explvar(object)
     S
 }
