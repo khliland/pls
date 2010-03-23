@@ -9,6 +9,7 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
 {
     ## Initialise:
     Y <- as.matrix(Y)
+	Y.add <- as.matrix(Y.add)
     ## Save dimnames:
     dnX <- dimnames(X)
     dnY <- dimnames(Y)
