@@ -4,7 +4,7 @@
 \alias{cppls.fit}
 \title{CPPLS (Indahl et al.)}
 \description{Fits a PLS model using the CPPLS algorithm.}
-\usage{cppls.fit(X, Y, ncomp, Y.add = NULL, stripped = FALSE, lower = 0.5, upper = 0.5, wt = NULL, \dots)}
+\usage{cppls.fit(X, Y, ncomp, Y.add = NULL, stripped = FALSE, lower = 0.5, upper = 0.5, weights = NULL, \dots)}
 \arguments{
   \item{X}{a matrix of observations.  \code{NA}s and \code{Inf}s are not
     allowed.} 
@@ -20,7 +20,7 @@
     needed.  Defaults to \code{FALSE}.}
   \item{lower}{a vector of lower limits for power optimisation. Defaults to \code{0.5}.}
   \item{upper}{a vector of upper limits for power optimisation. Defaults to \code{0.5}.}
-  \item{weight}{a vector of individual weights for the observations. (Optional)}
+  \item{weights}{a vector of individual weights for the observations. (Optional)}
   \item{\dots}{other arguments.  Currently ignored.}
 }
 \details{This function should not be called directly, but through
@@ -32,12 +32,12 @@
   focus on groups of variables. Depending on the input to \code{cppls} it
   can produce the following special cases:
   \itemize{
-  \item{PLS}{uni-response continuous \code{Y}}
-  \item{PPLS}{uni-response continuous \code{Y}, \code{(lower || upper) != 0.5}}
-  \item{PLS-DA (using correlation maximisation - B/W)}{dummy-coded descrete response \code{Y}}
-  \item{PPLS-DA}{dummy-coded descrete response \code{Y}, \code{(lower || upper) != 0.5}}
-  \item{CPLS}{multi-response \code{Y} (continuous, discrete or combination)}
-  \item{CPPLS}{multi-response \code{Y} (continuous, discrete or combination), \code{(lower || upper) != 0.5}}
+  \item PLS: uni-response continuous \code{Y}
+  \item PPLS: uni-response continuous \code{Y}, \code{(lower || upper) != 0.5}
+  \item PLS-DA (using correlation maximisation - B/W): dummy-coded descrete response \code{Y}
+  \item PPLS-DA: dummy-coded descrete response \code{Y}, \code{(lower || upper) != 0.5}
+  \item CPLS: multi-response \code{Y} (continuous, discrete or combination)
+  \item CPPLS: multi-response \code{Y} (continuous, discrete or combination), \code{(lower || upper) != 0.5}
   }
   The name "canonical" comes from canonical correlation analysis which
   is used when calculating vectors of loading weights, while "powered"
