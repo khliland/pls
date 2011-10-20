@@ -1,5 +1,38 @@
 $Id$
 
+Changes in 2.2-0
+================
+
+New features:
+-------------
+- coefplot() can now plot whiskers at +/-1 SE.
+
+User-visible changes:
+---------------------
+- Defaults for lty, pch and col in coefplot() when separate = TRUE has been
+  changed.
+
+Bug fixes:
+----------
+- The PRESS0 component returned by crossval() could be missing names
+  (typically for uni-response models).
+
+- scores.default and loadings.default wold set the class of the scores
+  or components even if they were a list.
+
+- Small bugfixes in the call component of wrappers pcr() and plsr().
+
+Internal changes:
+-----------------
+- The package now has a name space.
+
+- DESCRIPTION now has LazyLoad, LazyData and ZipData directives.
+
+- predplotXy() now has arguments "labels" and "type".
+
+- R2 is now generic.
+
+
 Changes in 2.1-0
 ================
 
