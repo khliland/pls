@@ -10,7 +10,7 @@
 mvrCv(X, Y, ncomp,
       method = pls.options()$mvralg, scale = FALSE,
       segments = 10, segment.type = c("random", "consecutive", "interleaved"),
-      length.seg, jackknife = FALSE, trace = FALSE, \dots)
+      length.seg, jackknife = FALSE, trace = FALSE, SMP = NULL, \dots)
 }
 \arguments{
   \item{X}{a matrix of observations.  \code{NA}s and \code{Inf}s are not
@@ -34,6 +34,8 @@ mvrCv(X, Y, ncomp,
     coefficients should be performed.}
   \item{trace}{logical; if \code{TRUE}, the segment number is printed
     for each segment.}
+  \item{SMP}{a two element vector with name of doXX package for
+    \code{foreach} parallelization and number of workers, e.g. cores x threads.}
   \item{\dots}{additional arguments, sent to the underlying fit function.}
 }
 \details{
@@ -71,6 +73,12 @@ mvrCv(X, Y, ncomp,
   number of observations and \eqn{l} is the length of the longest
   segment.  The (possibly reduced) number of components is returned as
   the component \code{ncomp}.
+  
+  Parallelized cross-validation is supported through the \code{foreach} wrapper
+  packages doSMP, doMC, doSNOW, doMPI, and doRedis. The \code{SMP} argument using
+  doSMP on a dual core i5 processor would be \code{c("doSMP", 4)}, as there are
+  2 cores with 2 threads each. Because of overhead in the parallelization, cross-
+  validation on small data sets with few components will not result in a speed-up.
 }
 \value{
   A list with the following components:

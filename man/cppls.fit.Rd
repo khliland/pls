@@ -21,6 +21,7 @@
   \item{lower}{a vector of lower limits for power optimisation. Defaults to \code{0.5}.}
   \item{upper}{a vector of upper limits for power optimisation. Defaults to \code{0.5}.}
   \item{weights}{a vector of individual weights for the observations. (Optional)}
+  \item{trunc.pow}{logical . If \code{TRUE} an experimental alternative power algorithm is used. (Optional)}
   \item{\dots}{other arguments.  Currently ignored.}
 }
 \details{This function should not be called directly, but through

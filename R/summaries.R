@@ -5,32 +5,36 @@
 print.mvr <- function(x, ...) {
     switch(x$method,
            kernelpls = {
-               regr = "Partial least squares"
+               ana = "Partial least squares regression"
                alg = "kernel"
            },
            widekernelpls = {
-               regr = "Partial least squares"
+               ana = "Partial least squares regression"
                alg = "wide kernel"
            },
            simpls = {
-               regr = "Partial least squares"
+               ana = "Partial least squares regression"
                alg = "simpls"
            },
            oscorespls = {
-               regr = "Partial least squares"
+               ana = "Partial least squares regression"
                alg = "orthogonal scores"
            },
            cppls = {
-               regr = "Canonical powered partial least squares"
+               ana = "Canonical powered partial least squares"
                alg = "cppls"
            },
+           plsda = {
+               regr = "Partial least squares discriminant analysis"
+               alg = "plsda"
+           },
            svdpc = {
-               regr = "Principal component"
+               ana = "Principal component regression"
                alg = "singular value decomposition"
            },
            stop("Unknown fit method.")
            )
-    cat(regr, "regression, fitted with the", alg, "algorithm.")
+    cat(ana, ", fitted with the", alg, "algorithm.")
     if (!is.null(x$validation))
         cat("\nCross-validated using", length(x$validation$segments),
             attr(x$validation$segments, "type"), "segments.")

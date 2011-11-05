@@ -6,10 +6,10 @@
 ### correct fit function to do the work.
 ### The function borrows heavily from lm().
 
-mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
+mvr <- function(formula, ncomp, Y.add, weights, data, subset, na.action,
                 method = pls.options()$mvralg,
                 scale = FALSE, validation = c("none", "CV", "LOO"),
-                model = TRUE, x = FALSE, y = FALSE, ...)
+                model = TRUE, x = FALSE, y = FALSE, SMP = NULL, ...)
 {
     ret.x <- x                          # More useful names
     ret.y <- y
@@ -21,13 +21,21 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
     mf[[1]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
     method <- match.arg(method, c("kernelpls", "widekernelpls", "simpls",
-                                  "oscorespls", "cppls", "svdpc", "model.frame"))
+                                  "oscorespls", "cppls", "plsda", "svdpc", "model.frame"))
     if (method == "model.frame") return(mf)
     ## Get the terms
     mt <- attr(mf, "terms")        # This is to include the `predvars'
                                    # attribute of the terms
     ## Get the data matrices
-    Y <- model.response(mf, "numeric")
+    Y <- model.response(mf, "any")
+    modeltype <- "prediction"
+    ## Prepare for classification if Y is factor
+    if(is.factor(Y)){
+        Ycl <- Y
+        modeltype <- "classification"
+        Y <- model.matrix(~ Y - 1)
+        mostattributes(Y) <- list(dim = dim(Y))
+    }
     if (is.matrix(Y)) {
         if (is.null(colnames(Y)))
             colnames(Y) <- paste("Y", 1:dim(Y)[2], sep = "")
@@ -48,6 +56,9 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
 			Y.add <- Y.add[data[,as.character(substitute(subset))],]
 		}
     }
+    ## Weights for cppls:
+    if(missing(weights))
+        weights <- NULL
 
     nobj <- dim(X)[1]
     npred <- dim(X)[2]
@@ -79,13 +90,13 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
     ## Optionally, perform validation:
     switch(match.arg(validation),
            CV = {
-               val <- mvrCv(X, Y, ncomp, Y.add = Y.add, method = method, scale = sdscale, ...)
+               val <- mvrCv(X, Y, ncomp, Y.add = Y.add, weights = weights, modeltype = modeltype, method = method, scale = sdscale, SMP = SMP, ...)
            },
            LOO = {
                segments <- as.list(1:nobj)
                attr(segments, "type") <- "leave-one-out"
-               val <- mvrCv(X, Y, ncomp, Y.add = Y.add, method = method, scale = sdscale,
-                            segments = segments, ...)
+               val <- mvrCv(X, Y, ncomp, Y.add = Y.add, weights = weights, modeltype = modeltype, method = method, scale = sdscale,
+                            segments = segments, SMP = SMP, ...)
            },
            none = {
                val <- NULL
@@ -105,6 +116,7 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
                       simpls = simpls.fit,
                       oscorespls = oscorespls.fit,
                       cppls = cppls.fit,
+                      plsda = plsda.fit,
                       svdpc = svdpc.fit)
 
     ## Perform any scaling by sd:
@@ -127,6 +139,7 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
     z$method <- method
     if (is.numeric(scale)) z$scale <- scale
     z$validation <- val
+    z$modeltype <- modeltype
     z$call <- match.call()
     z$terms <- mt
     if (model) z$model <- mf

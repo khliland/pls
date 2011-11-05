@@ -8,7 +8,7 @@
 ### Journal of Chemometrics 23, pp. 495-504
 
 cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
-                      lower = 0.5, upper = 0.5, weights = NULL, ...)
+                      lower = 0.5, upper = 0.5, trunc.pow = FALSE, weights = NULL, ...)
 {
     ## X       - the data matrix
     ## Y       - the primary response matrix
@@ -31,7 +31,6 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
     } else {
         Xmeans <- crossprod(weights,X)/sum(weights)
         X <- X - rep(Xmeans, each = nobj)
-		weights <- sqrt(weights) # Prepare weights for cca
     }
 
     X.orig <- X
@@ -49,6 +48,7 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
     TT  <- matrix(0,nobj,ncomp)     # T-scores
     P   <- matrix(0,npred,ncomp)    # P-loadings
     Q   <- matrix(0,nresp,ncomp)    # Q-loadings
+    A   <- matrix(0,dim(Y)[2],ncomp)# Column weights for W0 (from CCA)
     cc  <- numeric(ncomp)
     pot <- rep(0.5,ncomp)           # Powers used to construct the w-s in R
     B   <- array(0, c(npred, nresp, ncomp))
@@ -63,10 +63,12 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
         if( length(lower)==1 && lower==0.5 && length(upper)==1 && upper==0.5 ) {
 			Rlist <- Rcal(X, Y, Yprim, weights)} 			   # Default CPLS algorithm
 		else {
-			Rlist <- RcalP(X, Y, Yprim, weights, lower, upper) # Alternate CPPLS algorithm
+			Rlist <- RcalP(X, Y, Yprim, weights, lower, upper, trunc.pow) # Alternate CPPLS algorithm
 			pot[a] <- Rlist$pot }
 		cc[a] <- Rlist$cc
         w.a <- Rlist$w
+        ifelse(!is.null(Rlist$a), aa <- Rlist$a, aa <- NA)
+        A[,a] <- aa
 
         ## Make new vectors orthogonal to old ones?
         ## w.a <- w.a - W[,1:(a-1)]%*%crossprod(W[,1:(a-1)], w.a)
@@ -127,6 +129,7 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
         dimnames(B) <- list(prednames, respnames, nCompnames)
         dimnames(fitted) <- dimnames(residuals) <-
             list(objnames, respnames, nCompnames)
+        colnames(A) <- compnames
         class(TT) <- "scores"
         class(P) <- class(W) <- class(Q) <- "loadings"
 
@@ -141,7 +144,8 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
              Xtotvar = sum(X.orig * X.orig),
              gammas = pot,
              canonical.correlations = cc,
-             smallNorm = smallNorm)
+             smallNorm = smallNorm,
+             A = A, trunc.pow = trunc.pow)
     }
 }
 
@@ -152,13 +156,14 @@ Rcal <- function(X, Y, Yprim, weights) {
 	W0 <- crossprod(X,Y)
 	Ar <- cancorr(X%*%W0, Yprim, weights, FALSE) # Computes canonical correlations between columns in XW and Y with rows weighted according to 'weights'
 	w  <- W0 %*% Ar$A[,1, drop=FALSE]  # Optimal loadings
-	list(w=w,cc=Ar$r^2)
+	ifelse(exists('Ar'), a <- Ar$A[,1], a <- NA)
+	list(w = w, cc = Ar$r^2, a = a)
 }
 
 
 #########################
 ## RcalP function (CPPLS)
-RcalP <- function(X, Y, Yprim, weights, lower, upper) {
+RcalP <- function(X, Y, Yprim, weights, lower, upper, trunc.pow) {
     CS <- CorrXY(X, Y, weights)     # Matrix of corr(Xj,Yg) and vector of std(Xj)
     sng <- sign(CS$C)               # Signs of C {-1,0,1}
     C <- abs(CS$C)                  # Correlation without signs
@@ -166,18 +171,29 @@ RcalP <- function(X, Y, Yprim, weights, lower, upper) {
     mC <- max(C); C <- C / mC       #  -------- || --------
 
     ## Computation of the best vector of loadings
-    lw <- lw_bestpar(X, S, C, sng, Yprim, weights, lower, upper)
+    lw <- lw_bestpar(X, S, C, sng, Yprim, weights, lower, upper, trunc.pow)
 }
 
 
 ################
 ## lw_bestpar function
-lw_bestpar <- function(X, S, C, sng, Yprim, weights, lower, upper) {
+lw_bestpar <- function(X, S, C, sng, Yprim, weights, lower, upper, trunc.pow) {
+	if(!is.null(weights))
+		weights <- sqrt(weights) # Prepare weights for cca
+	# Compute for S and each columns of C the distance from the median scaled to [0,1]
+	if(trunc.pow){
+		medC <- t(abs(t(sng*C)-apply(sng*C,2,median)))
+		medC <- t(t(medC)/apply(medC,2,max))
+		medS <- abs(S-median(S))
+		medS <- medS/max(medS)
+	} else {
+		medS <- medC <- NULL
+	}
 
     #########################
     # Optimization function #
     #########################
-    f <- function(p, X, S, C, sng, Yprim, weights) {
+    f <- function(p, X, S, C, sng, Yprim, weights, trunc.pow, medS, medC) {
         if(p == 0){         # Variable selection from standard deviation
             S[S < max(S)] <- 0
             W0 <- S
@@ -185,8 +201,24 @@ lw_bestpar <- function(X, S, C, sng, Yprim, weights, lower, upper) {
             C[C < max(C)] <- 0
             W0 <- rowSums(C)
         } else {            # Standard deviation and correlation with powers
-            S <- S^((1-p)/p)
-            W0 <- (sng*(C^(p/(1-p))))*S
+			if(trunc.pow){
+				ps <- (1-p)/p
+				if(ps<1){
+					S <- S^ps
+				} else {
+					S[medS<(1-2*p)] <- 0
+				}
+				pc <- p/(1-p)
+				if(pc<1){
+					W0 <- (sng*(C^pc))*S
+				} else {
+					C[medC<(2*p-1)] <- 0
+					W0 <- (sng*C)*S
+				}
+			} else {
+				S <- S^((1-p)/p)
+				W0 <- (sng*(C^(p/(1-p))))*S
+			}
         }
         Z <- X %*% W0  # Transform X into W0
         -(cancorr(Z, Yprim, weights))^2
@@ -200,16 +232,16 @@ lw_bestpar <- function(X, S, C, sng, Yprim, weights, lower, upper) {
     ca   <- numeric(3*nOpt)
 
     for (i in 1:nOpt){
-        ca[1+(i-1)*3]  <- f(lower[i], X, S, C, sng, Yprim, weights)
+        ca[1+(i-1)*3]  <- f(lower[i], X, S, C, sng, Yprim, weights, trunc.pow, medS, medC)
         pot[1+(i-1)*3] <- lower[i]
         if (lower[i] != upper[i]) {
             Pc <- optimize(f = f, interval = c(lower[i], upper[i]),
                            tol = 10^-4, maximum = FALSE,
                            X = X, S = S, C = C, sng = sng, Yprim = Yprim,
-                           weights = weights)
+                           weights = weights, trunc.pow = trunc.pow, medS, medC)
             pot[2+(i-1)*3] <- Pc[[1]]; ca[2+(i-1)*3] <- Pc[[2]]
         }
-        ca[3+(i-1)*3]  <- f(upper[i], X, S, C, sng, Yprim, weights)
+        ca[3+(i-1)*3]  <- f(upper[i], X, S, C, sng, Yprim, weights, trunc.pow, medS, medC)
         pot[3+(i-1)*3] <- upper[i]
     }
 
@@ -227,15 +259,32 @@ lw_bestpar <- function(X, S, C, sng, Yprim, weights, lower, upper) {
         w <- rowSums(C)
     } else {                     # Standard deviation and correlation with powers
         p <- pot[cmin]                  # Power from optimization
-        S <- S^((1-p)/p)
-        W0 <- (sng*(C^(p/(1-p))))*S
+		if(trunc.pow){ # New power algorithm
+			ps <- (1-p)/p
+			if(ps<1){
+				S <- S^ps
+			} else {
+				S[medS<(1-2*p)] <- 0
+			}
+			pc <- p/(1-p)
+			if(pc<1){
+				W0 <- (sng*(C^pc))*S
+			} else {
+				C[medC<(2*p-1)] <- 0
+				W0 <- (sng*C)*S
+			}
+		} else {
+			S <- S^((1-p)/p)
+			W0 <- (sng*(C^(p/(1-p))))*S
+		}
 
         Z <- X %*% W0                   # Transform X into W
         Ar <- cancorr(Z, Yprim, weights, FALSE) # Computes canonical correlations between columns in XW and Y with rows weighted according to 'weights'
         w <- W0 %*% Ar$A[,1, drop=FALSE]  # Optimal loadings
     }
     pot <- pot[cmin]
-    list(w = w, pot = pot, cc = cc)
+    ifelse(exists('Ar'), a <- Ar$A[,1], a <- NA)
+    list(w = w, pot = pot, cc = cc, a = a)
 }
 
 
