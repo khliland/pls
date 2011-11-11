@@ -4,26 +4,36 @@
 \alias{mvr}
 \alias{pcr}
 \alias{plsr}
-\title{Partial Least Squares and Principal Component Regression}
+\alias{cppls}
+\alias{plsda}
+\title{Partial Least Squares and Principal Component Regression and Discriminant Analysis}
 \description{
-  Functions to perform partial least squares regression (PLSR) or
+  Functions to perform partial least squares regression (PLSR),
+  partial least squares discriminant analysis (PLS-DA),
+  canonical powered partial least squares (CPPLS) or
   principal component regression (PCR), with a formula interface.
   Cross-validation can be used.  Prediction, model extraction, plot,
   print and summary methods exist.
 }
 %% FIXME: Maybe use a \synopsis section, and show typical uses in \usage:
 \usage{
-mvr(formula, ncomp, data, subset, na.action,
+mvr(formula, ncomp, Y.add, weights, data, subset, na.action,
     method = pls.options()$mvralg,
     scale = FALSE, validation = c("none", "CV", "LOO"),
     model = TRUE, x = FALSE, y = FALSE, \dots)
 plsr(\dots, method = pls.options()$plsralg)
+cppls(\dots, Y.add, method = pls.options()$cpplsalg)
+plsda(\dots, method = pls.options()$plsdaalg)
 pcr(\dots, method = pls.options()$pcralg)
 }
 \arguments{
   \item{formula}{a model formula.  Most of the \code{lm} formula
     constructs are supported.  See below.}
   \item{ncomp}{the number of components to include in the model (see below).}
+  \item{Y.add}{a vector or matrix of additional responses containing
+    relevant information about the observations.  Only used for \code{cppls}.}
+  \item{weights}{a vector of individual weights for the observations.
+    Only used for \code{cppls}.  (Optional)}
   \item{data}{an optional data frame with the data to fit the model from.}
   \item{subset}{an optional vector specifying a subset of observations
     to be used in the fitting process.}
@@ -51,19 +61,21 @@ pcr(\dots, method = pls.options()$pcralg)
     functions, and \code{mvrCv}.}
 }
 \details{
-  The functions fit PLSR or PCR models with 1, \eqn{\ldots},
+  The functions fit PLSR, CPPLS, PLS-DA or PCR models with 1, \eqn{\ldots},
   \code{ncomp} number of components.  Multi-response models are fully
   supported.
 
   The type of model to fit is specified with the \code{method}
   argument. Four PLSR algorithms are available: the kernel algorithm
   (\code{"kernelpls"}), the wide kernel algorithm (\code{"widekernelpls"}),
-  SIMPLS (\code{"simpls"}) and the classical
-  orthogonal scores algorithm (\code{"oscorespls"}).  One PCR algorithm
+  SIMPLS (\code{"simpls"}) and the classical orthogonal scores algorithm
+  (\code{"oscorespls"}). One CPPLS algorithm is available (\code{"cppls"})
+  providing several extensions to PLS. One PLS-DA algorithm is available
+  (\code{"plsda"}). One PCR algorithm
   is available: using the singular value decomposition (\code{"svdpc"}).
   If \code{method} is \code{"model.frame"}, the model frame is returned.
-  The functions \code{pcr} and \code{plsr} are wrappers for \code{mvr},
-  with different values for \code{method}.
+  The functions \code{pcr}, \code{plsr},  \code{cppls} and \code{plsda}
+  are wrappers for \code{mvr}, with different values for \code{method}.
 
   The \code{formula} argument should be a symbolic formula of the form
   \code{response ~ terms}, where \code{response} is the name of the
@@ -131,6 +143,8 @@ pcr(\dots, method = pls.options()$pcralg)
   \code{\link{widekernelpls.fit}},
   \code{\link{simpls.fit}},
   \code{\link{oscorespls.fit}},
+  \code{\link{cppls.fit}},
+  \code{\link{plsda.fit}},
   \code{\link{svdpc.fit}},
   \code{\link{mvrCv}},
   \code{\link{crossval}},
@@ -148,6 +162,7 @@ data(yarn)
 ## Default methods:
 yarn.pcr <- pcr(density ~ NIR, 6, data = yarn, validation = "CV")
 yarn.pls <- plsr(density ~ NIR, 6, data = yarn, validation = "CV")
+yarn.cppls <- cppls(density ~ NIR, 6, data = yarn, validation = "CV")
 
 ## Alternative methods:
 yarn.oscorespls <- mvr(density ~ NIR, 6, data = yarn, validation = "CV",
@@ -158,6 +173,22 @@ yarn.simpls <- mvr(density ~ NIR, 6, data = yarn, validation = "CV",
 data(oliveoil)
 sens.pcr <- pcr(sensory ~ chemical, ncomp = 4, scale = TRUE, data = oliveoil)
 sens.pls <- plsr(sensory ~ chemical, ncomp = 4, scale = TRUE, data = oliveoil)
+
+## Classification
+data(mayonnaise)
+mayonnaise$dummy <- matrix(0,162,6) # Create dummy response
+mayonnaise$dummy[(mayonnaise$oil.type-1)*162+1:162] <- 1
+may.cppls <- cppls(dummy ~ NIR, 10, data = mayonnaise, subset = train, Y.add=design)
+library(MASS)
+may.lda   <- lda(oil.type ~ NIR.score, data = data.frame( 
+               oil.type = mayonnaise$oil.type[mayonnaise$train], NIR.score = I(may.cppls$scores)))
+score.val <- (mayonnaise$NIR[!mayonnaise$train,] - rep(colMeans(mayonnaise$NIR[mayonnaise$train,]),each = 42)) \%*\% may.cppls$projection
+oil.type  <- mayonnaise$oil.type
+correct   <- matrix(ncol=10,nrow=2); colnames(correct) <- 1:10; rownames(correct) <- c('Calibration','Validation')
+for( i in 1:10 ){      # Proportion correctly classified by LDA
+  correct[1,i] <- sum(oil.type[mayonnaise$train]  == predict(may.lda, dimen = i)$class)/120*100
+  correct[2,i] <- sum(oil.type[!mayonnaise$train] == predict(may.lda, dimen = i, newdata = data.frame(NIR.score = I(score.val)))$class)/42*100
+}
 }
 \keyword{regression}
 \keyword{multivariate}

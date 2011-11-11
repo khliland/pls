@@ -1,7 +1,7 @@
 ### mvrCv.R: The basic cross-validation function
 ### $Id$
 
-mvrCv <- function(X, Y, ncomp,
+mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
                   method = pls.options()$mvralg,
                   scale = FALSE, segments = 10,
                   segment.type = c("random", "consecutive", "interleaved"),
@@ -9,6 +9,8 @@ mvrCv <- function(X, Y, ncomp,
 {
     ## Initialise:
     Y <- as.matrix(Y)
+    if(!(missing(Y.add) || is.null(Y.add)))
+        Y.add <- as.matrix(Y.add)
     ## Save dimnames:
     dnX <- dimnames(X)
     dnY <- dimnames(Y)
@@ -41,12 +43,14 @@ mvrCv <- function(X, Y, ncomp,
     ncomp <- min(ncomp, nobj - max(sapply(segments, length)) - 1)
 
     ## Select fit function:
-    method <- match.arg(method,c("kernelpls", "widekernelpls", "simpls", "oscorespls", "svdpc"))
+    method <- match.arg(method,c("kernelpls", "widekernelpls", "simpls", "oscorespls", "cppls", "plsda", "svdpc"))
     fitFunc <- switch(method,
                       kernelpls = kernelpls.fit,
                       widekernelpls = widekernelpls.fit,
                       simpls = simpls.fit,
                       oscorespls = oscorespls.fit,
+                      cppls = cppls.fit,
+                      plsda = plsda.fit,
                       svdpc = svdpc.fit)
 
     ## Variables to save CV results in:
@@ -54,6 +58,7 @@ mvrCv <- function(X, Y, ncomp,
     cvPred <- pred <- array(0, dim = c(nobj, nresp, ncomp))
     if (jackknife)
         cvCoef <- array(dim = c(npred, nresp, ncomp, length(segments)))
+    if (method == "cppls") gammas <- list()
 
     if (trace) cat("Segment: ")
     for (n.seg in 1:length(segments)) {
@@ -74,10 +79,13 @@ mvrCv <- function(X, Y, ncomp,
         }
 
         ## Fit the model:
-        fit <- fitFunc(Xtrain, Y[-seg,], ncomp, stripped = TRUE, ...)
+        fit <- fitFunc(Xtrain, Y[-seg,], ncomp, Y.add = Y.add[-seg,], stripped = TRUE, weights = weights[-seg], ...)
 
         ## Optionally collect coefficients:
         if (jackknife) cvCoef[,,,n.seg] <- fit$coefficients
+
+        ## Optionally collect gamma-values from CPPLS
+        if (method == "cppls") gammas[[n.seg]] <- fit$gammas
 
         ## Set up test data:
         Xtest <- X
@@ -113,6 +121,7 @@ mvrCv <- function(X, Y, ncomp,
                                  paste("Seg", seq.int(along = segments)))
 
     list(method = "CV", pred = cvPred, coefficients = if (jackknife) cvCoef,
+         gammas = if (method == "cppls") gammas,
          PRESS0 = PRESS0, PRESS = PRESS, adj = adj / nobj^2,
          segments = segments, ncomp = ncomp)
 }

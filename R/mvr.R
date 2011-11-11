@@ -6,7 +6,7 @@
 ### correct fit function to do the work.
 ### The function borrows heavily from lm().
 
-mvr <- function(formula, ncomp, data, subset, na.action,
+mvr <- function(formula, ncomp, Y.add, weights, data, subset, na.action,
                 method = pls.options()$mvralg,
                 scale = FALSE, validation = c("none", "CV", "LOO"),
                 model = TRUE, x = FALSE, y = FALSE, ...)
@@ -21,7 +21,7 @@ mvr <- function(formula, ncomp, data, subset, na.action,
     mf[[1]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
     method <- match.arg(method, c("kernelpls", "widekernelpls", "simpls",
-                                  "oscorespls", "svdpc", "model.frame"))
+                                  "oscorespls", "cppls", "plsda", "svdpc", "model.frame"))
     if (method == "model.frame") return(mf)
     ## Get the terms
     mt <- attr(mf, "terms")        # This is to include the `predvars'
@@ -36,6 +36,21 @@ mvr <- function(formula, ncomp, data, subset, na.action,
         colnames(Y) <- deparse(formula[[2]])
     }
     X <- delete.intercept(model.matrix(mt, mf))
+    ## The secondary response matrix (only used with cppls):
+    if (missing(Y.add)) {
+        Y.add <- NULL
+    } else {
+        Y.addname <- as.character(substitute(Y.add))
+        Y.add <- data[,Y.addname]
+        if (is.null(Y.add)) stop("The variable `", Y.addname,
+                              "' does not exist in `data'.", sep = "")
+		if(!missing(subset)){
+			Y.add <- Y.add[data[,as.character(substitute(subset))],]
+		}
+    }
+    ## Weights for cppls:
+    if(missing(weights))
+        weights <- NULL
 
     nobj <- dim(X)[1]
     npred <- dim(X)[2]
@@ -67,12 +82,12 @@ mvr <- function(formula, ncomp, data, subset, na.action,
     ## Optionally, perform validation:
     switch(match.arg(validation),
            CV = {
-               val <- mvrCv(X, Y, ncomp, method = method, scale = sdscale, ...)
+               val <- mvrCv(X, Y, ncomp, Y.add = Y.add, weights = weights, method = method, scale = sdscale, ...)
            },
            LOO = {
                segments <- as.list(1:nobj)
                attr(segments, "type") <- "leave-one-out"
-               val <- mvrCv(X, Y, ncomp, method = method, scale = sdscale,
+               val <- mvrCv(X, Y, ncomp, Y.add = Y.add, weights = weights, method = method, scale = sdscale,
                             segments = segments, ...)
            },
            none = {
@@ -92,6 +107,8 @@ mvr <- function(formula, ncomp, data, subset, na.action,
                       widekernelpls = widekernelpls.fit,
                       simpls = simpls.fit,
                       oscorespls = oscorespls.fit,
+                      cppls = cppls.fit,
+                      plsda = plsda.fit,
                       svdpc = svdpc.fit)
 
     ## Perform any scaling by sd:
@@ -105,7 +122,7 @@ mvr <- function(formula, ncomp, data, subset, na.action,
     }
 
     ## Fit the model:
-    z <- fitFunc(X, Y, ncomp, ...)
+    z <- fitFunc(X, Y, ncomp, Y.add = Y.add, weights = weights, ...)
 
     ## Build and return the object:
     class(z) <- "mvr"

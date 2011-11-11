@@ -72,6 +72,8 @@ crossval(object, segments = 10,
     corrected MSEP.  \code{MSEP} uses this.}
   \item{segments}{the list of segments used in the cross-validation.}
   \item{ncomp}{the number of components.}
+  \item{gammas}{if method \code{cppls} is used, gamma values for the
+    powers of each CV segment are returned.}
 }
 \references{
   Mevik, B.-H., Cederkvist, H. R. (2004) Mean Squared Error of

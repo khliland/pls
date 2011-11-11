@@ -7,7 +7,7 @@
   Performs the cross-validation calculations for \code{mvr}.
 }
 \usage{
-mvrCv(X, Y, ncomp,
+mvrCv(X, Y, ncomp, Y.add = NULL, weights = NULL,
       method = pls.options()$mvralg, scale = FALSE,
       segments = 10, segment.type = c("random", "consecutive", "interleaved"),
       length.seg, jackknife = FALSE, trace = FALSE, \dots)
@@ -19,6 +19,10 @@ mvrCv(X, Y, ncomp,
     are not allowed.}
   \item{ncomp}{the number of components to be used in the
     modelling.}
+  \item{Y.add}{a vector or matrix of additional responses containing
+    relevant information about the observations.  Only used for \code{cppls}.}
+  \item{weights}{a vector of individual weights for the observations.
+    Only used for \code{cppls}.  (Optional)}
   \item{method}{the multivariate regression method to be used.}
   \item{scale}{logical.  If \code{TRUE}, the learning \eqn{X} data for each
     segment is scaled by dividing each variable by its sample standard
@@ -38,9 +42,10 @@ mvrCv(X, Y, ncomp,
 }
 \details{
   This function is not meant to be called directly, but through
-  the generic functions \code{pcr}, \code{plsr} or \code{mvr} with the
-  argument \code{validation} set to \code{"CV"} or \code{"LOO"}.  All
-  arguments to \code{mvrCv} can be specified in the generic function call.
+  the generic functions \code{pcr}, \code{plsr}, \code{cppls}, \code{plsda}
+  or \code{mvr} with the argument \code{validation} set to \code{"CV"} or
+  \code{"LOO"}.  All arguments to \code{mvrCv} can be specified in the
+  generic function call.
 
   If \code{segments} is a list, the arguments \code{segment.type} and
   \code{length.seg} are ignored.  The elements of the list should be
@@ -88,6 +93,8 @@ mvrCv(X, Y, ncomp,
     corrected MSEP.  \code{MSEP} uses this.}
   \item{segments}{the list of segments used in the cross-validation.}
   \item{ncomp}{the actual number of components used.}
+  \item{gamma}{if method \code{cppls} is used, gamma values for the
+    powers of each CV segment are returned.}
 }
 \references{
   Mevik, B.-H., Cederkvist, H. R. (2004) Mean Squared Error of

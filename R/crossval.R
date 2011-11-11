@@ -10,6 +10,11 @@ crossval <- function(object, segments = 10,
     fitCall <- object$call
     data <- eval(fitCall$data, parent.frame())
     if (is.null(data)) stop("`object' must be fit with a `data' argument.")
+    ## Optionally get weights
+    if (cppls <- (object$method == "cppls")) {
+        weights <- eval(fitCall$weights, parent.frame())
+    }
+    else weights <- NULL
 
     if (!is.null(fitCall$subset)) {
         ## Handle "subset" argument
@@ -61,14 +66,17 @@ crossval <- function(object, segments = 10,
     adj <- matrix(0, nrow = nresp, ncol = ncomp)
     if (jackknife <- isTRUE(jackknife))
         cvCoef <- array(dim = c(npred, nresp, ncomp, length(segments)))
+    if (cppls) gammas <- list()
 
     ## Run cv, using update and predict
     for (n.seg in 1:length(segments)) {
         if (n.seg == 1) trace.time <- proc.time()[3] # Can't use system.time!
         seg <- segments[[n.seg]]
-        fit <- update(object, data = data[-seg,])
+        fit <- update(object, data = data[-seg,], weights = weights[-seg])
         ## Optionally collect coefficients:
         if (jackknife) cvCoef[,,,n.seg] <- fit$coefficients
+        ## Optionally collect gamma-values from CPPLS
+        if (cppls) gammas[[n.seg]] <- fit$gammas
         pred <- predict(fit, newdata = data)
         ## Update the adjMSEP adjustment:
         adj <- adj + length(seg) * colSums((pred - c(Y))^2)
@@ -102,6 +110,7 @@ crossval <- function(object, segments = 10,
     ## Return the original object, with a component `validation' added
     object$validation <- list(method = "CV", pred = cvPred,
                               coefficients = if (jackknife) cvCoef,
+                              gammas = if (cppls) gammas,
                               PRESS0 = PRESS0, PRESS = PRESS,
                               adj = adj / nobj^2,
                               segments = segments, ncomp = ncomp)

@@ -57,6 +57,8 @@
   \code{\link{mvr}}
   \code{\link{plsr}}
   \code{\link{pcr}}
+  \code{\link{cppls}}
+  \code{\link{plsda}}
 }
 \keyword{regression}
 \keyword{multivariate}

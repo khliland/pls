@@ -1,11 +1,12 @@
 %% $Id$
 \encoding{latin1}
-\name{widekernelpls.fit}
-\alias{widekernelpls.fit}
-\title{Wide Kernel PLS (Rännar et al.)}
-\description{Fits a PLSR model with the wide kernel algorithm.}
-\usage{widekernelpls.fit(X, Y, ncomp, stripped = FALSE,
-                  tol = .Machine$double.eps^0.5, maxit = 100, \dots)}
+\name{plsda.fit}
+\alias{plsda.fit}
+\title{PLS discriminant analysis}
+\description{Fits a PLS-DA model with maximisation of the between
+groups sum of squares and cross products matrix.}
+\usage{plsda.fit(X, Y, ncomp, stripped = FALSE,
+               weights = NULL, \dots)}
 \arguments{
   \item{X}{a matrix of observations.  \code{NA}s and \code{Inf}s are not
     allowed.} 
@@ -17,21 +18,13 @@
     as much as possible for speed; this is meant for use with
     cross-validation or simulations when only the coefficients are
     needed.  Defaults to \code{FALSE}.}
-  \item{tol}{numeric.  The tolerance used for determining convergence in
-    the algorithm.}
-  \item{maxit}{positive integer.  The maximal number of iterations used
-    in the internal Eigenvector calculation.}
+  \item{weights}{a vector of individual weights for the observations. (Optional)}
   \item{\dots}{other arguments.  Currently ignored.}
 }
 \details{This function should not be called directly, but through
-  the generic functions \code{plsr} or \code{mvr} with the argument
-  \code{method="widekernelpls"}.  The wide kernel PLS algorithm is
-  efficient when the number of variables is (much) larger
-  than the number of observations.  For very wide \code{X}, for instance
-  12x18000, it can be twice as fast as \code{\link{kernelpls.fit}} and
-  \code{\link{simpls.fit}}.  For other matrices, however, it can be much
-  slower.  The results are equal to the results of the NIPALS algorithm.
-}
+  the generic functions \code{plsda} or \code{mvr} with the argument
+  \code{method="plsda"}.  It implements the ordinary PLS-DA algorithm
+  with possible observation weights described in \cite{Indahl, Martens and Næs (2007)}.}
 \value{A list containing the following components is returned:
   \item{coefficients}{an array of regression coefficients for 1, \ldots,
     \code{ncomp} components.  The dimensions of \code{coefficients} are
@@ -59,36 +52,21 @@
   If \code{stripped} is \code{TRUE}, only the components
   \code{coefficients}, \code{Xmeans} and \code{Ymeans} are returned.
 }
-\note{
-  The current implementation has not undergone extensive testing yet,
-  and should perhaps be regarded as experimental.  Specifically, the
-  internal Eigenvector calculation does not always converge in extreme
-  cases where the Eigenvalue is close to zero.  However, when it does
-  converge, it always converges to the same results as
-  \code{\link{kernelpls.fit}}, up to numerical inacurracies.
-
-  The algorithm also has a bit of overhead, so when the number of
-  observations is moderately high, \code{\link{kernelpls.fit}} can be
-  faster even if the number of predictors is much higher.  The relative
-  speed of the algorithms can also depend greatly on which BLAS and/or
-  LAPACK library \R is linked against.
-}
 \references{
-  Rännar, S., Lindgren, F., Geladi, P. and Wold, S. (1994) A PLS
-  Kernel Algorithm for Data Sets with Many Variables and Fewer
-  Objects.  Part 1: Theory and Algorithm.
-  \emph{Journal of Chemometrics}, \bold{8}, 111--125.
+  Indahl, U.G., Martens, H., Næs, T. 2007. From dummy regression to 
+  prior probabilities in PLS-DA. Journal of Chemometrics, Vol 21, 12, pp 529-536.
 }
-\author{Bjørn-Helge Mevik}
+\author{Kristian Hovde Liland and Bjørn-Helge Mevik}
 \seealso{
   \code{\link{mvr}}
-  \code{\link{plsr}}
-  \code{\link{cppls}}
   \code{\link{plsda}}
+  \code{\link{cppls}}
+  \code{\link{plsr}}
   \code{\link{pcr}}
   \code{\link{kernelpls.fit}}
-  \code{\link{simpls.fit}}
+  \code{\link{widekernelpls.fit}}
   \code{\link{oscorespls.fit}}
+  \code{\link{simpls.fit}}
 }
 \keyword{regression}
 \keyword{multivariate}
