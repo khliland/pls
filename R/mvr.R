@@ -16,6 +16,11 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
 
     ## Get the model frame
     mf <- match.call(expand.dots = FALSE)
+    if (!missing(Y.add)) {
+        ## Temporarily add Y.add to the formula
+        Y.addname <- as.character(substitute(Y.add))
+        mf$formula <- update(formula, paste("~ . +", Y.addname))
+    }
     m <- match(c("formula", "data", "subset", "na.action"), names(mf), 0)
     mf <- mf[c(1, m)]                # Retain only the named arguments
     mf[[1]] <- as.name("model.frame")
@@ -35,19 +40,15 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
         Y <- as.matrix(Y)
         colnames(Y) <- deparse(formula[[2]])
     }
-    X <- delete.intercept(model.matrix(mt, mf))
-    ## The secondary response matrix (only used with cppls):
     if (missing(Y.add)) {
         Y.add <- NULL
     } else {
-        Y.addname <- as.character(substitute(Y.add))
-        Y.add <- data[,Y.addname]
-        if (is.null(Y.add)) stop("The variable `", Y.addname,
-                              "' does not exist in `data'.", sep = "")
-		if(!missing(subset)){
-			Y.add <- Y.add[data[,as.character(substitute(subset))],]
-		}
+        Y.add <- mf[,Y.addname]
+        ## Remove Y.add from the formula again
+        mt <- drop.terms(mt, which(attr(mt, "term.labels") == Y.addname),
+                         keep.response = TRUE)
     }
+    X <- delete.intercept(model.matrix(mt, mf))
 
     nobj <- dim(X)[1]
     npred <- dim(X)[2]
