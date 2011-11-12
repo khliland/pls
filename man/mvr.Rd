@@ -17,12 +17,12 @@
 }
 %% FIXME: Maybe use a \synopsis section, and show typical uses in \usage:
 \usage{
-mvr(formula, ncomp, Y.add, weights, data, subset, na.action,
+mvr(formula, ncomp, Y.add, data, subset, na.action,
     method = pls.options()$mvralg,
     scale = FALSE, validation = c("none", "CV", "LOO"),
     model = TRUE, x = FALSE, y = FALSE, \dots)
 plsr(\dots, method = pls.options()$plsralg)
-cppls(\dots, Y.add, method = pls.options()$cpplsalg)
+cppls(\dots, Y.add, weights, method = pls.options()$cpplsalg)
 plsda(\dots, method = pls.options()$plsdaalg)
 pcr(\dots, method = pls.options()$pcralg)
 }
@@ -32,8 +32,6 @@ pcr(\dots, method = pls.options()$pcralg)
   \item{ncomp}{the number of components to include in the model (see below).}
   \item{Y.add}{a vector or matrix of additional responses containing
     relevant information about the observations.  Only used for \code{cppls}.}
-  \item{weights}{a vector of individual weights for the observations.
-    Only used for \code{cppls}.  (Optional)}
   \item{data}{an optional data frame with the data to fit the model from.}
   \item{subset}{an optional vector specifying a subset of observations
     to be used in the fitting process.}
@@ -57,6 +55,8 @@ pcr(\dots, method = pls.options()$pcralg)
   \item{model}{a logical.  If \code{TRUE}, the model frame is returned.}
   \item{x}{a logical.  If \code{TRUE}, the model matrix is returned.}
   \item{y}{a logical.  If \code{TRUE}, the response is returned.}
+  \item{weights}{a vector of individual weights for the observations.
+    Only used for \code{cppls}.  (Optional)}
   \item{\dots}{additional arguments, passed to the underlying fit
     functions, and \code{mvrCv}.}
 }

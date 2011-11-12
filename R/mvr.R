@@ -6,7 +6,7 @@
 ### correct fit function to do the work.
 ### The function borrows heavily from lm().
 
-mvr <- function(formula, ncomp, Y.add, weights, data, subset, na.action,
+mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
                 method = pls.options()$mvralg,
                 scale = FALSE, validation = c("none", "CV", "LOO"),
                 model = TRUE, x = FALSE, y = FALSE, ...)
@@ -48,9 +48,6 @@ mvr <- function(formula, ncomp, Y.add, weights, data, subset, na.action,
 			Y.add <- Y.add[data[,as.character(substitute(subset))],]
 		}
     }
-    ## Weights for cppls:
-    if(missing(weights))
-        weights <- NULL
 
     nobj <- dim(X)[1]
     npred <- dim(X)[2]
@@ -82,12 +79,12 @@ mvr <- function(formula, ncomp, Y.add, weights, data, subset, na.action,
     ## Optionally, perform validation:
     switch(match.arg(validation),
            CV = {
-               val <- mvrCv(X, Y, ncomp, Y.add = Y.add, weights = weights, method = method, scale = sdscale, ...)
+               val <- mvrCv(X, Y, ncomp, Y.add = Y.add, method = method, scale = sdscale, ...)
            },
            LOO = {
                segments <- as.list(1:nobj)
                attr(segments, "type") <- "leave-one-out"
-               val <- mvrCv(X, Y, ncomp, Y.add = Y.add, weights = weights, method = method, scale = sdscale,
+               val <- mvrCv(X, Y, ncomp, Y.add = Y.add, method = method, scale = sdscale,
                             segments = segments, ...)
            },
            none = {
@@ -122,7 +119,7 @@ mvr <- function(formula, ncomp, Y.add, weights, data, subset, na.action,
     }
 
     ## Fit the model:
-    z <- fitFunc(X, Y, ncomp, Y.add = Y.add, weights = weights, ...)
+    z <- fitFunc(X, Y, ncomp, Y.add = Y.add, ...)
 
     ## Build and return the object:
     class(z) <- "mvr"

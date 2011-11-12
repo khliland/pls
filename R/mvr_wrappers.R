@@ -26,7 +26,7 @@ pcr <- function(..., method = pls.options()$pcralg)
     res
 }
 
-cppls <- function(..., Y.add, method = pls.options()$cpplsalg)
+cppls <- function(..., Y.add, weights, method = pls.options()$cpplsalg)
 {
     cl <- match.call()
     cl$method <- match.arg(method, c("cppls", "model.frame"))
