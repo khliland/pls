@@ -33,7 +33,8 @@ predict.mvr <- function(object, newdata, ncomp = 1:object$ncomp, comps,
             dPred <- dim(B)
             dPred[1] <- dim(newX)[1]
             dnPred <- dimnames(B)
-            dnPred[1] <- dimnames(newX)[1]
+            dnPred[1] <-
+                if(is.null(dimnames(newX))) list(NULL) else dimnames(newX)[1]
             pred <- array(dim = dPred, dimnames = dnPred)
             for (i in seq(along = ncomp))
                 pred[,,i] <- newX %*% B[-1,,i] + rep(B[1,,i], each = nobs)
