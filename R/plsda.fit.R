@@ -41,7 +41,7 @@ plsda.fit <- function(X, Y, ncomp, stripped = FALSE, weights = NULL, ...)
     W   <- matrix(0, npred, ncomp)    # W-loadings
     TT  <- matrix(0, nobj, ncomp)     # T-scores
     P   <- matrix(0, npred, ncomp)    # P-loadings
-    D   <- diag(sqrt(Pi) / nresp)     # Weighting matrix
+    D   <- diag(sqrt(Pi) / nresp, ncol = nresp) # Weighting matrix
     tsqs <- rep.int(1, ncomp)         # t't
     Q   <- matrix(0, nresp, ncomp)    # Q-loadings
     B   <- array(0, c(npred, nresp, ncomp))

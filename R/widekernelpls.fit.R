@@ -86,7 +86,7 @@ widekernelpls.fit <- function(X, Y, ncomp, stripped = FALSE,
     W <- crossprod(X, U)
     W <- W / rep(sqrt(colSums(W * W)), each = npred)
 
-    TTtTinv <- TT %*% diag(1 / colSums(TT * TT))
+    TTtTinv <- TT %*% diag(1 / colSums(TT * TT), ncol = ncol(TT))
     P <- crossprod(X, TTtTinv)
     Q <- crossprod(Y, TTtTinv)
 
