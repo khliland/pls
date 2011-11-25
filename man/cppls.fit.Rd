@@ -67,13 +67,13 @@
     dimensions as \code{fitted.values}.}
   \item{Xvar}{a vector with the amount of X-variance explained by each
     number of components.}
-  \item{Xtotvar}{Total variance in \code{X}.}
+  \item{Xtotvar}{total variance in \code{X}.}
   \item{gammas}{gamma-values obtained in power optimisation.}
   \item{canonical.correlations}{Canonical correlation values from the
     calculations of loading weights.}
   \item{A}{matrix containing vectors of weights \code{a} from
     canonical correlation (\code{cor(Za,Yb)}).}
-  \item{smallNorms}{Vector of indices of explanatory variables
+  \item{smallNorms}{vector of indices of explanatory variables
     of length close to or equal to 0.}
 
   If \code{stripped} is \code{TRUE}, only the components
@@ -99,6 +99,33 @@
   \code{\link{widekernelpls.fit}}
   \code{\link{simpls.fit}}
   \code{\link{oscorespls.fit}}
+}
+\examples{
+data(mayonnaise)
+# Create dummy response
+mayonnaise$dummy <- I(model.matrix(~y-1, data.frame(y=factor(mayonnaise$oil.type))))
+
+# Predict CPLS scores for test data
+may.cpls <- cppls(dummy ~ NIR, 10, data = mayonnaise, subset = train)
+may.test <- predict(may.cpls, newdata = mayonnaise[!mayonnaise$train,], type = "score")
+
+# Predict CPLS scores for test data (experimental used design as additional Y information)
+may.cpls.yadd <- cppls(dummy ~ NIR, 10, data = mayonnaise, subset = train, Y.add=design)
+may.test.yadd <- predict(may.cpls.yadd, newdata = mayonnaise[!mayonnaise$train,], type = "score")
+
+# Classification by linear discriminant analysis (LDA)
+library(MASS)
+error <- matrix(ncol = 10,nrow = 2)
+dimnames(error) <- list(Model=c('CPLS','CPLS (Y.add)'), ncomp=1:10)
+for(i in 1:10){
+  error[1,i] <- ( 42 - sum(predict(lda(oil.type ~ NIR.score,
+    data = data.frame(oil.type = mayonnaise$oil.type[ mayonnaise$train ], NIR.score = I(may.cpls$scores[,1:i,drop=FALSE]))),
+    newdata = data.frame(NIR.score = I(may.test[,1:i,drop=FALSE])))$class == mayonnaise$oil.type[!mayonnaise$train])) / 42
+  error[2,i] <- ( 42 - sum(predict(lda(oil.type ~ NIR.score,
+    data = data.frame(oil.type = mayonnaise$oil.type[mayonnaise$train], NIR.score = I(may.cpls.yadd$scores[,1:i,drop=FALSE]))),
+    newdata = data.frame(NIR.score = I(may.test.yadd[,1:i,drop=FALSE])))$class == mayonnaise$oil.type[!mayonnaise$train])) / 42
+}
+round(error,2)
 }
 \keyword{regression}
 \keyword{classification}
