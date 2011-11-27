@@ -67,7 +67,6 @@
 \seealso{
   \code{\link{mvr}}
   \code{\link{plsr}}
-  \code{\link{plsda}}
   \code{\link{cppls}}
   \code{\link{pcr}}
   \code{\link{widekernelpls.fit}}

@@ -5,11 +5,9 @@
 \alias{pcr}
 \alias{plsr}
 \alias{cppls}
-\alias{plsda}
-\title{Partial Least Squares and Principal Component Regression and Discriminant Analysis}
+\title{Partial Least Squares and Principal Component Regression}
 \description{
   Functions to perform partial least squares regression (PLSR),
-  partial least squares discriminant analysis (PLS-DA),
   canonical powered partial least squares (CPPLS) or
   principal component regression (PCR), with a formula interface.
   Cross-validation can be used.  Prediction, model extraction, plot,
@@ -23,7 +21,6 @@ mvr(formula, ncomp, Y.add, data, subset, na.action,
     model = TRUE, x = FALSE, y = FALSE, \dots)
 plsr(\dots, method = pls.options()$plsralg)
 cppls(\dots, Y.add, weights, method = pls.options()$cpplsalg)
-plsda(\dots, method = pls.options()$plsdaalg)
 pcr(\dots, method = pls.options()$pcralg)
 }
 \arguments{
@@ -61,7 +58,7 @@ pcr(\dots, method = pls.options()$pcralg)
     functions, and \code{mvrCv}.}
 }
 \details{
-  The functions fit PLSR, CPPLS, PLS-DA or PCR models with 1, \eqn{\ldots},
+  The functions fit PLSR, CPPLS or PCR models with 1, \eqn{\ldots},
   \code{ncomp} number of components.  Multi-response models are fully
   supported.
 
@@ -70,11 +67,10 @@ pcr(\dots, method = pls.options()$pcralg)
   (\code{"kernelpls"}), the wide kernel algorithm (\code{"widekernelpls"}),
   SIMPLS (\code{"simpls"}) and the classical orthogonal scores algorithm
   (\code{"oscorespls"}). One CPPLS algorithm is available (\code{"cppls"})
-  providing several extensions to PLS. One PLS-DA algorithm is available
-  (\code{"plsda"}). One PCR algorithm
+  providing several extensions to PLS. One PCR algorithm
   is available: using the singular value decomposition (\code{"svdpc"}).
   If \code{method} is \code{"model.frame"}, the model frame is returned.
-  The functions \code{pcr}, \code{plsr},  \code{cppls} and \code{plsda}
+  The functions \code{pcr}, \code{plsr} and \code{cppls}
   are wrappers for \code{mvr}, with different values for \code{method}.
 
   The \code{formula} argument should be a symbolic formula of the form
@@ -144,7 +140,6 @@ pcr(\dots, method = pls.options()$pcralg)
   \code{\link{simpls.fit}},
   \code{\link{oscorespls.fit}},
   \code{\link{cppls.fit}},
-  \code{\link{plsda.fit}},
   \code{\link{svdpc.fit}},
   \code{\link{mvrCv}},
   \code{\link{crossval}},

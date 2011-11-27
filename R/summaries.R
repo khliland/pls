@@ -24,10 +24,6 @@ print.mvr <- function(x, ...) {
                ana = "Canonical powered partial least squares"
                alg = "cppls"
            },
-           plsda = {
-               regr = "Partial least squares discriminant analysis"
-               alg = "plsda"
-           },
            svdpc = {
                ana = "Principal component regression"
                alg = "singular value decomposition"

@@ -23,7 +23,6 @@ export(
        oscorespls.fit,
        pcr,
        pls.options,
-       plsda,
        plsr,
        prednames,
        predplot,

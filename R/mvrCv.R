@@ -43,14 +43,13 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
     ncomp <- min(ncomp, nobj - max(sapply(segments, length)) - 1)
 
     ## Select fit function:
-    method <- match.arg(method,c("kernelpls", "widekernelpls", "simpls", "oscorespls", "cppls", "plsda", "svdpc"))
+    method <- match.arg(method,c("kernelpls", "widekernelpls", "simpls", "oscorespls", "cppls", "svdpc"))
     fitFunc <- switch(method,
                       kernelpls = kernelpls.fit,
                       widekernelpls = widekernelpls.fit,
                       simpls = simpls.fit,
                       oscorespls = oscorespls.fit,
                       cppls = cppls.fit,
-                      plsda = plsda.fit,
                       svdpc = svdpc.fit)
 
     ## Variables to save CV results in:

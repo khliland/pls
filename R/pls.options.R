@@ -7,7 +7,7 @@
 
 ## The list of initial options:
 .pls.Options <-
-    list(mvralg = "kernelpls", plsralg = "kernelpls", cpplsalg = "cppls", plsdaalg = "plsda", pcralg = "svdpc",
+    list(mvralg = "kernelpls", plsralg = "kernelpls", cpplsalg = "cppls", pcralg = "svdpc",
 		 w.tol = .Machine$double.eps, X.tol = 10^-12)
 
 

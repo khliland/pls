@@ -84,7 +84,6 @@
   \code{\link{mvr}}
   \code{\link{plsr}}
   \code{\link{cppls}}
-  \code{\link{plsda}}
   \code{\link{pcr}}
   \code{\link{kernelpls.fit}}
   \code{\link{simpls.fit}}

@@ -42,7 +42,7 @@ mvrCv(X, Y, ncomp, Y.add = NULL, weights = NULL,
 }
 \details{
   This function is not meant to be called directly, but through
-  the generic functions \code{pcr}, \code{plsr}, \code{cppls}, \code{plsda}
+  the generic functions \code{pcr}, \code{plsr}, \code{cppls}
   or \code{mvr} with the argument \code{validation} set to \code{"CV"} or
   \code{"LOO"}.  All arguments to \code{mvrCv} can be specified in the
   generic function call.

@@ -26,7 +26,7 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
     mf[[1]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
     method <- match.arg(method, c("kernelpls", "widekernelpls", "simpls",
-                                  "oscorespls", "cppls", "plsda", "svdpc", "model.frame"))
+                                  "oscorespls", "cppls", "svdpc", "model.frame"))
     if (method == "model.frame") return(mf)
     ## Get the terms
     mt <- attr(mf, "terms")        # This is to include the `predvars'
@@ -106,7 +106,6 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
                       simpls = simpls.fit,
                       oscorespls = oscorespls.fit,
                       cppls = cppls.fit,
-                      plsda = plsda.fit,
                       svdpc = svdpc.fit)
 
     ## Perform any scaling by sd:
