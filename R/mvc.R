@@ -7,13 +7,16 @@
 ### The function borrows heavily from mvr().
 
 mvc <- function(formula, ncomp, Y.add, data, subset, na.action,
-                 ## FIXME:
-                 regression = c("kernelpls", "widekernelpls", "simpls",
-                                  "oscorespls", "cppls", "plsda", "svdpc", "model.frame")
-                 classX = c("scores", "response"),
-                 classifier = c("lda", "qda"),
-                 scale = FALSE, validation = c("none", "CV", "LOO"),
-                 model = TRUE, x = FALSE, y = FALSE, ...)
+                ## FIXME:
+                regression = c("kernelpls", "widekernelpls", "simpls",
+                               "oscorespls", "cppls", "plsda", "svdpc",
+                               "model.frame"),
+                ## FIXME: Perhaps default, and allowed values, of classX
+                ## should be decided from the value of classifier?
+                classX = c("scores", "response"),
+                classifier = c("lda", "qda", "max"),
+                scale = FALSE, validation = c("none", "CV", "LOO"),
+                model = TRUE, x = FALSE, y = FALSE, ...)
 {
     ret.x <- x                          # More useful names
     ret.y <- y
@@ -33,6 +36,9 @@ mvc <- function(formula, ncomp, Y.add, data, subset, na.action,
     regression <- match.arg(regression)
     classX <- match.arg(classX)
     classifier <- match.arg(classifier)
+    ## FIXME: Dirty hack:
+    if (classifier == "max" && classX != "response")
+        stop("Classifier 'max' can only be used with classX 'response'")
     if (regression == "model.frame") return(mf)
     ## Get the terms
     mt <- attr(mf, "terms")        # This is to include the `predvars'
@@ -126,7 +132,9 @@ mvc <- function(formula, ncomp, Y.add, data, subset, na.action,
     ## FIXME: These should probably be wrappers, to ensure similar interface:
     classFunc <- switch(classifier,
                         lda = lda,
-                        qda = qda
+                        qda = qda,
+                        max = NULL,
+                        stop("This cannot happen")
                         )
 
     ## Perform any scaling by sd:
@@ -154,7 +162,9 @@ mvc <- function(formula, ncomp, Y.add, data, subset, na.action,
         else
             as.matrix(z$fitted.values[,-nresp,nc, drop=TRUE])
         print(dim(X.class))
-        z$classfit[[nc]] <- classFunc(X.class, cl, ...)
+        if (!is.null(classFunc))        # Not all "classifiers" have a fit
+                                        # function
+            z$classfit[[nc]] <- classFunc(X.class, cl, ...)
     }
 
     ## Build and return the object:

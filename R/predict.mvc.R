@@ -40,7 +40,8 @@ predict.mvc <- function(object, newdata, ncomp = 1:object$ncomp, comps,
     if (object$classX == "scores") {
         pls.pred <- as.matrix(pls.pred) # in case ncomp == 1
     } else {
-        pls.pred <- pls.pred[,-dim(pls.pred)[2],, drop=FALSE] # remove last response
+        if (object$classifier != "max") # max needs all responses
+            pls.pred <- pls.pred[,-dim(pls.pred)[2],, drop=FALSE] # remove last response
     }
     print(dim(pls.pred))                # debug
     pred <- list()
@@ -50,8 +51,18 @@ predict.mvc <- function(object, newdata, ncomp = 1:object$ncomp, comps,
             pls.pred[,1:nc, drop=FALSE]
         else
             as.matrix(pls.pred[,,nc, drop=TRUE])
-        ## FIXME: This will depend on the class method:
-        pred[[as.character(nc)]] <- predict(object$classfit[[nc]], X.class, ...)[[type]]
+        if (object$classifier == "max") { # max treated specially
+            if (type == "class") {
+                pred[[as.character(nc)]] <-
+                    factor(colnames(X.class)[apply(X.class, 1, which.max)])
+            } else {
+                pred[[as.character(nc)]] <-
+                    t(apply(X.class, 1, function(x) exp(x)/sum(exp(x))))
+            }
+        } else {
+            ## FIXME: This will depend on the class method:
+            pred[[as.character(nc)]] <- predict(object$classfit[[nc]], X.class, ...)[[type]]
+        }
     }
     return(pred)
 }
