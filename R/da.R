@@ -1,5 +1,5 @@
 ### da.R: Discriminant analysis functions
-### $Id: da.R 75 2006-07-17 21:05:34Z bhm $
+### $Id$
 
 ## Efficient quadratic discriminant analysis (LDA)
 .lda <- function(X, Y, Xnew, Prior, posterior=FALSE){
