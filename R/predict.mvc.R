@@ -32,12 +32,12 @@ predict.mvc <- function(object, newdata, ncomp = 1:object$ncomp, comps,
         stop("This cannot happen")
     }
     ## We have type "class" or "posterior"
-    predcall$type <- object$classX      # "scores" or "response"
+    predcall$type <- object$pred.class    # "scores" or "response"
     predcall$ncomp <- seq_len(max(ncomp)) # to make it easier to subscript later
     print(predcall)                     # debug
     pls.pred <- eval(predcall, parent.frame())
     print(dim(pls.pred))                # debug
-    if (object$classX == "scores") {
+    if (object$pred.class == "scores") {
         pls.pred <- as.matrix(pls.pred) # in case ncomp == 1
     } else {
         if (object$classifier != "max") # max needs all responses
@@ -47,7 +47,7 @@ predict.mvc <- function(object, newdata, ncomp = 1:object$ncomp, comps,
     pred <- list()
     for (nc in ncomp) {
         print(nc)                       # debug
-        X.class <- if (object$classX == "scores")
+        X.class <- if (object$pred.class == "scores")
             pls.pred[,1:nc, drop=FALSE]
         else
             as.matrix(pls.pred[,,nc, drop=TRUE])
