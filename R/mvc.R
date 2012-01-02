@@ -11,12 +11,15 @@ mvc <- function(formula, ncomp, Y.add, data, subset, na.action,
                 regression = c("kernelpls", "widekernelpls", "simpls",
                                "oscorespls", "cppls", "plsda", "svdpc",
                                "model.frame"),
-                ## FIXME: Perhaps default, and allowed values, of classX
+                ## FIXME: Perhaps default, and allowed values, of pred.class
                 ## should be decided from the value of classifier?
-                classX = c("scores", "response"),
+                pred.class = c("scores", "response"),
                 classifier = c("lda", "qda", "max"),
+                prior,
                 scale = FALSE, validation = c("none", "CV", "LOO"),
-                model = TRUE, x = FALSE, y = FALSE, ...)
+                model = TRUE, x = FALSE, y = FALSE,
+                args.reg = list(), args.class = list(),
+                ...)
 {
     ret.x <- x                          # More useful names
     ret.y <- y
@@ -34,27 +37,27 @@ mvc <- function(formula, ncomp, Y.add, data, subset, na.action,
     mf <- eval(mf, parent.frame())
     ## FIXME:
     regression <- match.arg(regression)
-    classX <- match.arg(classX)
+    pred.class <- match.arg(pred.class)
     classifier <- match.arg(classifier)
     ## FIXME: Dirty hack:
-    if (classifier == "max" && classX != "response")
-        stop("Classifier 'max' can only be used with classX 'response'")
+    if (classifier == "max" && pred.class != "response")
+        stop("Classifier 'max' can only be used with pred.class 'response'")
     if (regression == "model.frame") return(mf)
     ## Get the terms
     mt <- attr(mf, "terms")        # This is to include the `predvars'
                                    # attribute of the terms
     ## Get the data matrices
-    cl <- model.response(mf)
-    if (is.factor(cl))
-        Y <- class.ind(cl)
-    else if (is.matrix(cl)) {
-        Y <- cl
+    group <- model.response(mf)
+    if (is.factor(group))
+        Y <- class.ind(group)
+    else if (is.matrix(group)) {
+        Y <- group
         if (!all(rowSums(Y) == 1) || !(sum(Y == 1) == nrow(Y)))
             stop("The rows of the response matrix must be 0/1 and sum to 1")
         if (is.null(colnames(Y)))
             colnames(Y) <- paste("Y", 1:dim(Y)[2], sep = "")
         levels <- colnames(Y)
-        cl <- factor(levels[apply(Y, 1, which.max)])
+        group <- factor(levels[apply(Y, 1, which.max)])
     } else {
         stop("The response must be a factor or a matrix")
     }
@@ -87,6 +90,31 @@ mvc <- function(formula, ncomp, Y.add, data, subset, na.action,
         if (ncomp < 1 || ncomp > min(nobj - 1, npred))
             stop("Invalid number of components, ncomp")
         ncompWarn <- TRUE
+    }
+
+    ## Handle any 'prior' argument.  The allowable values are "proportions",
+    ## a numeric vector, and NULL.  The heuristics are:
+    ## If missing or NULL, no priors are used for regression, and the default
+    ## (often "proportions") is used for the classifier.  If "proportions",
+    ## proportions are used for regression, and the default for classifier.
+    ## Otherwise it is used for both regression and classification, but can
+    ## be overridden by the classifier's own argument.
+    reg.prior <- FALSE
+    if (missing(prior) || is.null(NULL)) {
+        ## do nothing
+    } else if (is.character(prior) &&
+               pmatch(prior, "proportions", nomatch = FALSE)) {
+        ## use proportions for reg
+        reg.prior <- "proportions"
+    } else {
+        ## check that value is ok and use for both reg and class (unless
+        ## overridden in args.class)
+        if (!is.numeric(prior) || length(prior) != nresp ||
+           any(prior < 0) || !isTRUE(all.equal(sum(prior), 1)))
+            stop("Invalid value of 'prior'") # FIXME: separate messages!
+        reg.prior <- "prior"
+        if (! "prior" %in% names(args.class))
+            args.class <- c(list(prior = prior), args.class)
     }
 
     ## Handle any fixed scaling before the the validation
@@ -147,8 +175,35 @@ mvc <- function(formula, ncomp, Y.add, data, subset, na.action,
         X <- X / rep(scale, each = nobj)
     }
 
+    ## Optionally use priors for the regression:
+    if (reg.prior != FALSE) {
+        if (reg.prior == "proportions") prior <- colMeans(Y)
+        respWeights <- sqrt(prior) / colSums(Y)
+        Y.orig <- Y
+        Y <- sweep(Y.orig, 2, respWeights, "*")
+    }
+
     ## Fit the regression model:
-    z <- regFunc(X, Y, ncomp, Y.add = Y.add, ...)
+    z <- do.call(regFunc, c(list(X, Y, ncomp, Y.add = Y.add), args.reg))
+
+    ## Optionally back-transform the model (so predict, etc. works):
+    if (reg.prior) {
+        z$Yloadings <- z$Yloadings / respWeights
+        z$Ymeans <- z$Ymeans / respWeights
+        ## FIXME: there might be faster ways:
+        z$coefficients <- sweep(z$coefficients, 2, respWeights, "/")
+        z$fitted.values <- sweep(z$fitted.values, 2, respWeights, "/")
+        z$residuals <- sweep(z$residuals, 2, respWeights, "/")
+        ## FIXME: this is ugly!  Can we skip it?
+        TT <- z$scores
+        tsqs <- colSums(TT*TT)
+        Q <- z$Yloadings
+        U <- Y.orig %*% Q %*% diag(1/colSums(Q*Q), ncol = ncol(Q))
+        for (a in seq_len(ncol(U))[-1]) {
+            U[,a] <- U[,a] - TT[,1:(a-1)] %*% (crossprod(TT[,1:(a-1), drop=FALSE], U[,a]) / tsqs[1:(a-1)])
+        }
+        Y <- Y.orig                     # for the return value
+    }
 
     ## Fit the classifier model:
     ## FIXME: This is very brute-force.
@@ -157,14 +212,14 @@ mvc <- function(formula, ncomp, Y.add, data, subset, na.action,
     z$classfit <- list()
     ## FIXME: for "response", use nresp:ncomp instead of 1:ncomp
     for (nc in 1:ncomp) {
-        X.class <- if (classX == "scores")
+        X.class <- if (pred.class == "scores")
             z$scores[,1:nc, drop=FALSE]
         else
             as.matrix(z$fitted.values[,-nresp,nc, drop=TRUE])
         print(dim(X.class))
         if (!is.null(classFunc))        # Not all "classifiers" have a fit
                                         # function
-            z$classfit[[nc]] <- classFunc(X.class, cl, ...)
+            z$classfit[[nc]] <- do.call(classFunc, c(list(X.class, group), args.class))
     }
 
     ## Build and return the object:
@@ -172,7 +227,7 @@ mvc <- function(formula, ncomp, Y.add, data, subset, na.action,
     z$na.action <- attr(mf, "na.action")
     z$ncomp <- ncomp
     z$regression <- regression
-    z$classX <- classX
+    z$pred.class <- pred.class
     z$classifier <- classifier
     if (is.numeric(scale)) z$scale <- scale
     z$validation <- val
@@ -187,11 +242,11 @@ mvc <- function(formula, ncomp, Y.add, data, subset, na.action,
 
 ### Temporary help functions:
 ## from nnet.formula, via caret:
-class.ind <- function(cl)
+class.ind <- function(group)
 {
-    n <- length(cl)
-    x <- matrix(0, n, length(levels(cl)))
-    x[(1:n) + n * (as.vector(unclass(cl)) - 1)] <- 1
-    dimnames(x) <- list(names(cl), levels(cl))
+    n <- length(group)
+    x <- matrix(0, n, length(levels(group)))
+    x[(1:n) + n * (as.vector(unclass(group)) - 1)] <- 1
+    dimnames(x) <- list(names(group), levels(group))
     x
 }
