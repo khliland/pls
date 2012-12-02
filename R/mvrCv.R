@@ -65,7 +65,7 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
 
         ## Set up train data:
         seg <- segments[[n.seg]]
-        Xtrain <- X[-seg,]
+        Xtrain <- X[-seg,, drop=FALSE]
         if (scale) {
             ntrain <- nrow(Xtrain)
             ## This is faster than sd(X), but cannot handle missing values:
@@ -78,7 +78,9 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
         }
 
         ## Fit the model:
-        fit <- fitFunc(Xtrain, Y[-seg,], ncomp, Y.add = Y.add[-seg,], stripped = TRUE, weights = weights[-seg], ...)
+        fit <- fitFunc(Xtrain, Y[-seg,, drop=FALSE], ncomp,
+                       Y.add = Y.add[-seg,, drop=FALSE], stripped = TRUE,
+                       weights = weights[-seg], ...)
 
         ## Optionally collect coefficients:
         if (jackknife) cvCoef[,,,n.seg] <- fit$coefficients
