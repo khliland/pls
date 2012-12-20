@@ -122,7 +122,6 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
     ##   => cl <- eval(...), parLapply(cl, ...), stopCluster(cl)
 
     ## Things to test/do
-    ## - Test MPI
     ## - Test PSOCK and MPI on several hosts
     ## - Test using user-created cluster object
     ## - Create logic in pls.options and mvrCv to handle all cases
@@ -131,6 +130,7 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
     #cat("Using lapply...\n")
     #results <- lapply(seq_along(segments), mvrCvOne, X, Y, Y.add, ncomp,
     #                    segments, scale, weights, method, ...)
+    require(snow)                       # Workaround for MPI bug
     require(parallel)
     #cat("Using mclapply...\n")
     #results <- mclapply(seq_along(segments), mvrCvOne, X, Y, Y.add, ncomp,
@@ -140,8 +140,13 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
     #results <- parLapply(cl, seq_along(segments), mvrCvOne, X, Y, Y.add, ncomp,
     #                     segments, scale, weights, method, ...)
     #stopCluster(cl)
-    cat("Using parLapply, PSOCK...\n")
-    cl <- makeCluster(2, "PSOCK")
+    #cat("Using parLapply, PSOCK...\n")
+    #cl <- makeCluster(2, "PSOCK")
+    #results <- parLapply(cl, seq_along(segments), mvrCvOne, X, Y, Y.add, ncomp,
+    #                     segments, scale, weights, method, ...)
+    #stopCluster(cl)
+    cat("Using parLapply, MPI...\n")
+    cl <- makeCluster(2, "MPI")
     results <- parLapply(cl, seq_along(segments), mvrCvOne, X, Y, Y.add, ncomp,
                          segments, scale, weights, method, ...)
     stopCluster(cl)
