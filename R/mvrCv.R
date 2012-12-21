@@ -11,13 +11,16 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
     Y <- as.matrix(Y)
     if(!(missing(Y.add) || is.null(Y.add)))
         Y.add <- as.matrix(Y.add)
+
     ## Save dimnames:
     dnX <- dimnames(X)
     dnY <- dimnames(Y)
+
     ## Remove dimnames for performance (doesn't seem to matter; in fact,
     ## as far as it has any effect, it hurts a tiny bit in most situations).
     ## dimnames(X) <- dimnames(Y) <- NULL
 
+    ## Save dimensions:
     nobj <- dim(X)[1]
     npred <- dim(X)[2]
     nresp <- dim(Y)[2]
@@ -59,13 +62,10 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
         cvCoef <- array(dim = c(npred, nresp, ncomp, length(segments)))
     if (method == "cppls") gammas <- list()
 
-    mvrCvOne <- function(n.seg, X, Y, Y.add, ncomp, segments, scale, weights,
-                         method, ...) {
+    ## Helper function to perform the cross-validatoin for one segment.
+    ## Defined inside mvrCv to be able to access local variables:
+    mvrCvSeg <- function(n.seg) {
         if (trace) cat(n.seg, "")
-
-        nobj <- dim(X)[1]
-        npred <- dim(X)[2]
-        nresp <- dim(Y)[2]
 
         ## Set up train data:
         seg <- segments[[n.seg]]
@@ -86,12 +86,6 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
                        Y.add = Y.add[-seg,, drop=FALSE], stripped = TRUE,
                        weights = weights[-seg], ...)
 
-        ## Optionally collect coefficients:
-        #FIXME if (jackknife) cvCoef[,,,n.seg] <- fit$coefficients
-
-        ## Optionally collect gamma-values from CPPLS
-        #FIXME if (method == "cppls") gammas[[n.seg]] <- fit$gammas
-
         ## Set up test data:
         Xtest <- X
         if (scale) Xtest <- Xtest / rep(sdtrain, each = nobj)
@@ -103,10 +97,6 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
         for (a in 1:ncomp)
             pred[,,a] <- Xtest %*% fit$coefficients[,,a] + Ymeansrep
 
-        ## Save the cross-validated predictions:
-        #FIXME cvPred[seg,,] <- pred[seg,,, drop=FALSE]
-        #FIXME adj <- adj + length(seg) * colSums((pred - c(Y))^2)
-
         return(list(adj = length(seg) * colSums((pred - c(Y))^2),
                     cvPred = pred[seg,,, drop=FALSE],
                     gammas = if (method == "cppls") fit$gammas else NULL,
@@ -114,52 +104,50 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
                     ))
     }
 
-    ## Idea for specification:
-    ## not set, or 1: lapply(...)
-    ## number > 1 => mclappy(..., number)
-    ## cluster object => parLapply(cl, ...) (i.e., no stopCluster)
-    ## quote(makeCluster(...)) (?)
-    ##   => cl <- eval(...), parLapply(cl, ...), stopCluster(cl)
-
-    ## Things to test/do
-    ## - Test PSOCK and MPI on several hosts
-    ## - Test using user-created cluster object
-    ## - Create logic in pls.options and mvrCv to handle all cases
-
     if (trace) cat("Segment: ")
-    #cat("Using lapply...\n")
-    #results <- lapply(seq_along(segments), mvrCvOne, X, Y, Y.add, ncomp,
-    #                    segments, scale, weights, method, ...)
-    require(snow)                       # Workaround for MPI bug
-    require(parallel)
-    #cat("Using mclapply...\n")
-    #results <- mclapply(seq_along(segments), mvrCvOne, X, Y, Y.add, ncomp,
-    #                    segments, scale, weights, method, ...)
-    #cat("Using parLapply, FORK...\n")
-    #cl <- makeCluster(2, "FORK")
-    #results <- parLapply(cl, seq_along(segments), mvrCvOne, X, Y, Y.add, ncomp,
-    #                     segments, scale, weights, method, ...)
-    #stopCluster(cl)
-    #cat("Using parLapply, PSOCK...\n")
-    #cl <- makeCluster(2, "PSOCK")
-    #results <- parLapply(cl, seq_along(segments), mvrCvOne, X, Y, Y.add, ncomp,
-    #                     segments, scale, weights, method, ...)
-    #stopCluster(cl)
-    cat("Using parLapply, MPI...\n")
-    cl <- makeCluster(2, "MPI")
-    results <- parLapply(cl, seq_along(segments), mvrCvOne, X, Y, Y.add, ncomp,
-                         segments, scale, weights, method, ...)
-    stopCluster(cl)
+
+    ## Perform the cross-validation, optionally in parallel:
+    clspec <- pls.options()$parallel
+    if (is.null(clspec) || (is.numeric(clspec) && clspec == 1)) {
+        ## Serially
+        results <- lapply(seq_along(segments), mvrCvSeg)
+    } else {
+        ## Parallel
+        require(parallel, warn.conflicts = FALSE)
+        stop_cluster <- FALSE           # Whether to kill the workers afterwards
+
+        if (is.numeric(clspec) && clspec > 1) {
+            ## Number => number of workers with mclapply
+            results <- mclapply(seq_along(segments), mvrCvSeg,
+                                mc.cores = clspec)
+        } else {
+            if (is.call(clspec)) {
+                ## Unevaluated call => evaluate it to create the cluster:
+                clspec <- eval(clspec)
+                stop_cluster <- TRUE
+            }
+
+            if (inherits(clspec, "cluster")) {
+                results <- parLapply(clspec, seq_along(segments), mvrCvSeg)
+
+                if (stop_cluster) {
+                    stopCluster(clspec)
+                }
+            } else {
+                stop("Unknown cluster specification: '", clspec, "'")
+            }
+        }
+    }
 
     if (trace) cat("\n")
 
     ## Collect the results:
-    for (n.seg in 1:length(segments)) {
+    for (n.seg in seq_along(segments)) {
         res <- results[[n.seg]]
         adj <- adj + res$adj
         cvPred[segments[[n.seg]],,] <- res$cvPred
-        if (method == "cppls") gammas[[n.seg]] <- res$gammas
         if (jackknife) cvCoef[,,,n.seg] <- res$cvCoef
+        if (method == "cppls") gammas[[n.seg]] <- res$gammas
     }
 
     ## Calculate validation statistics:
