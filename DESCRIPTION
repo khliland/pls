@@ -14,4 +14,4 @@ Description: Multivariate regression methods
 License: GPL-2
 URL: http://mevik.net/work/software/pls.html
 Depends: R (>= 2.10)
-Suggests: MASS
+Suggests: MASS, parallel, snow, Rmpi
