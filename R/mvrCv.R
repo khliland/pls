@@ -55,13 +55,6 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
                       cppls = cppls.fit,
                       svdpc = svdpc.fit)
 
-    ## Variables to save CV results in:
-    adj <- matrix(0, nrow = nresp, ncol = ncomp)
-    cvPred <- pred <- array(0, dim = c(nobj, nresp, ncomp))
-    if (jackknife)
-        cvCoef <- array(dim = c(npred, nresp, ncomp, length(segments)))
-    if (method == "cppls") gammas <- list()
-
     ## Helper function to perform the cross-validatoin for one segment.
     ## Defined inside mvrCv to be able to access local variables:
     mvrCvSeg <- function(n.seg) {
@@ -140,6 +133,13 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
     }
 
     if (trace) cat("\n")
+
+    ## Variables to save CV results in:
+    adj <- matrix(0, nrow = nresp, ncol = ncomp)
+    cvPred <- pred <- array(0, dim = c(nobj, nresp, ncomp))
+    if (jackknife)
+        cvCoef <- array(dim = c(npred, nresp, ncomp, length(segments)))
+    if (method == "cppls") gammas <- list()
 
     ## Collect the results:
     for (n.seg in seq_along(segments)) {
