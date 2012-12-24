@@ -136,7 +136,7 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
 
     ## Variables to save CV results in:
     adj <- matrix(0, nrow = nresp, ncol = ncomp)
-    cvPred <- pred <- array(0, dim = c(nobj, nresp, ncomp))
+    cvPred <- array(0, dim = c(nobj, nresp, ncomp))
     if (jackknife)
         cvCoef <- array(dim = c(npred, nresp, ncomp, length(segments)))
     if (method == "cppls") gammas <- list()
