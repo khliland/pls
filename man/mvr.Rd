@@ -120,6 +120,8 @@ pcr(\dots, method = pls.options()$pcralg)
   function.  In addition, it contains the following components:
   \item{validation}{if validation was requested, the results of the
     cross-validation.  See \code{\link{mvrCv}} for details.}
+  \item{fit.time}{the elapsed time for the fit.  This is used by
+    \code{\link{crossval}} to decide whether to turn on tracing.}
   \item{na.action}{if observations with missing values were removed,
     \code{na.action} contains a vector with their indices.  The
     class of this vector is used by functions like \code{fitted} to

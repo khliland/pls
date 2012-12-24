@@ -57,41 +57,92 @@ crossval <- function(object, segments = 10,
         }
     }
 
+    jackknife <- isTRUE(jackknife)
     ncomp <- object$ncomp
     if (ncomp > nobj - max(sapply(segments, length)) - 1)
         stop("`ncomp' too large for cross-validation.",
              "\nPlease refit with `ncomp' less than ",
              nobj - max(sapply(segments, length)))
+
+    ## Optionally turn on tracing:
+    if (is.numeric(trace)) {
+        trace <- object$fit.time * length(segments) > trace
+    }
+
+    ## Helper function to perform the cross-validatoin for one segment.
+    ## Defined inside crossval to be able to access local variables:
+    crossvalSeg <- function(n.seg) {
+        if (trace) cat(n.seg, "")
+
+        ## Run cv, using update and predict
+        seg <- segments[[n.seg]]
+        fit <- update(object, data = data[-seg,], weights = weights[-seg])
+        pred <- predict(fit, newdata = data)
+
+        return(list(adj = length(seg) * colSums((pred - c(Y))^2),
+                    cvPred = pred[seg,,, drop=FALSE],
+                    gammas = if (cppls) fit$gammas else NULL,
+                    cvCoef = if (jackknife) fit$coefficients else NULL
+                    ))
+    }
+
+    if (trace) cat("Segment: ")
+
+    ## Perform the cross-validation, optionally in parallel:
+    clspec <- pls.options()$parallel
+    if (is.null(clspec) || (is.numeric(clspec) && clspec == 1)) {
+        ## Serially
+        results <- lapply(seq_along(segments), crossvalSeg)
+    } else {
+        ## Parallel
+        require(parallel, warn.conflicts = FALSE)
+        stop_cluster <- FALSE           # Whether to kill the workers afterwards
+
+        if (is.numeric(clspec) && clspec > 1) {
+            ## Number => number of workers with mclapply
+            results <- mclapply(seq_along(segments), crossvalSeg,
+                                mc.cores = clspec)
+        } else {
+            if (is.call(clspec)) {
+                ## Unevaluated call => evaluate it to create the cluster:
+                clspec <- eval(clspec)
+                stop_cluster <- TRUE
+            }
+
+            if (inherits(clspec, "cluster")) {
+                ## Run library(pls) on cluster if type != FORK
+                if (!inherits(clspec[[1]], "forknode")) {
+                    clusterCall(clspec, library, "pls", character.only = TRUE,
+                                warn.conflicts = FALSE)
+                }
+                results <- parLapply(clspec, seq_along(segments), crossvalSeg)
+
+                if (stop_cluster) {
+                    stopCluster(clspec)
+                }
+            } else {
+                stop("Unknown cluster specification: '", clspec, "'")
+            }
+        }
+    }
+
+    if (trace) cat("\n")
+
+    ## Variables to save CV results in:
     cvPred <- array(dim = c(nobj, nresp, ncomp))
     adj <- matrix(0, nrow = nresp, ncol = ncomp)
-    if (jackknife <- isTRUE(jackknife))
+    if (jackknife)
         cvCoef <- array(dim = c(npred, nresp, ncomp, length(segments)))
     if (cppls) gammas <- list()
 
-    ## Run cv, using update and predict
-    for (n.seg in 1:length(segments)) {
-        if (n.seg == 1) trace.time <- proc.time()[3] # Can't use system.time!
-        seg <- segments[[n.seg]]
-        fit <- update(object, data = data[-seg,], weights = weights[-seg])
-        ## Optionally collect coefficients:
-        if (jackknife) cvCoef[,,,n.seg] <- fit$coefficients
-        ## Optionally collect gamma-values from CPPLS
-        if (cppls) gammas[[n.seg]] <- fit$gammas
-        pred <- predict(fit, newdata = data)
-        ## Update the adjMSEP adjustment:
-        adj <- adj + length(seg) * colSums((pred - c(Y))^2)
-        ## Save the cross-validated predictions:
-        cvPred[seg,,] <- pred[seg,,]
-        if (n.seg == 1) {
-            if (is.numeric(trace)) {
-                trace.time <- proc.time()[3] - trace.time
-                trace <- trace.time * length(segments) > trace
-            }
-            if (trace) cat("Segment: ")
-        }
-        if (trace) cat(n.seg, "")
+    ## Collect the results:
+    for (n.seg in seq_along(segments)) {
+        res <- results[[n.seg]]
+        adj <- adj + res$adj
+        cvPred[segments[[n.seg]],,] <- res$cvPred
+        if (jackknife) cvCoef[,,,n.seg] <- res$cvCoef
+        if (cppls) gammas[[n.seg]] <- res$gammas
     }
-    if (trace) cat("\n")
 
     ## Calculate validation statistics:
     PRESS0 <- apply(Y, 2, var) * nobj^2 / (nobj - 1) # FIXME: Only correct for loocv!
