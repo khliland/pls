@@ -57,7 +57,7 @@ crossval(object, segments = 10,
 
   By default, the cross-validation will be performed serially.  However,
   it can be done in parallel using functionality in the
-  \code{parallel} package by setting the option \code{parallel} in
+  \code{\link{parallel}} package by setting the option \code{parallel} in
   \code{\link{pls.options}}.  See \code{\link{pls.options}} for the
   different ways to specify the parallelism.
 }
