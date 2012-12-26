@@ -53,6 +53,26 @@ pls.options(\dots)
       value should be one of the allowed methods.  Defaults to
       \code{"cppls"}.  Can be overridden with the argument
       \code{method} in \code{cppls}.}
+    \item{parallel}{Specification of how the cross-validation (CV) in
+      \code{\link{mvr}} should be performed.  If it is \code{NULL}
+      (default) or \code{1}, the CV is done serially.  Otherwise it is
+      done in parallel using functionality from the
+      \code{\link{parallel}} package.  If
+      it is an integer greater than 1, the CV is done in parallel with
+      the specified number of processes, using
+      \code{\link{mclapply}}.  If it is a cluster object
+      created by \code{\link{makeCluster}}, the CV is done in
+      parallel on that cluster, using \code{\link{parLapply}}.
+      The user should stop the cluster herself when it is no longer
+      needed, using \code{\link{stopCluster}}.
+      Finally, if it is an unevaluated call to
+      \code{\link{makeCluster}}, the call is evaluated, and
+      the CV is done in parallel on the resulting cluster, using
+      \code{\link{parLapply}}.  In this case, the cluster will
+      be stopped (with \code{\link{stopCluster}}) after the
+      CV.  Thus, in the final case, the cluster is created and
+      destroyed for each CV, just like when using
+      \code{\link{mclapply}}.}
     \item{w.tol}{The tolerance used for removing values close to 0
 	  in the vectors of loading weights in \code{\link{cppls}}.  Defaults to
       .Machine$double.eps.}

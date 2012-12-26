@@ -98,6 +98,12 @@ pcr(\dots, method = pls.options()$pcralg)
   is performed.  It is an error to specify the segments when
   \code{validation = "LOO"} is specified.
 
+  By default, the cross-validation will be performed serially.  However,
+  it can be done in parallel using functionality in the
+  \code{\link{parallel}} package by setting the option \code{parallel} in
+  \code{\link{pls.options}}.  See \code{\link{pls.options}} for the
+  differnt ways to specify the parallelism.
+
   Note that the cross-validation is optimised for speed, and some
   generality has been sacrificed.  Especially, the model matrix is
   calculated only once for the complete cross-validation, so models like
@@ -114,6 +120,8 @@ pcr(\dots, method = pls.options()$pcralg)
   function.  In addition, it contains the following components:
   \item{validation}{if validation was requested, the results of the
     cross-validation.  See \code{\link{mvrCv}} for details.}
+  \item{fit.time}{the elapsed time for the fit.  This is used by
+    \code{\link{crossval}} to decide whether to turn on tracing.}
   \item{na.action}{if observations with missing values were removed,
     \code{na.action} contains a vector with their indices.  The
     class of this vector is used by functions like \code{fitted} to
@@ -165,6 +173,39 @@ yarn.oscorespls <- mvr(density ~ NIR, 6, data = yarn, validation = "CV",
 yarn.simpls <- mvr(density ~ NIR, 6, data = yarn, validation = "CV",
                   method = "simpls")
 
+\dontrun{
+## Parallelised cross-validation, using transient cluster:
+pls.options(parallel = 4) # use mclapply
+pls.options(parallel = quote(makeCluster(4, type = "PSOCK"))) # use parLapply
+## A new cluster is created and stopped for each cross-validation:
+yarn.pls <- plsr(density ~ NIR, 6, data = yarn, validation = "CV")
+yarn.pcr <- pcr(density ~ NIR, 6, data = yarn, validation = "CV")
+
+## Parallelised cross-validation, using persistent cluster:
+library(parallel)
+## This creates the cluster:
+pls.options(parallel = makeCluster(4, type = "PSOCK"))
+## The cluster can be used several times:
+yarn.pls <- plsr(density ~ NIR, 6, data = yarn, validation = "CV")
+yarn.pcr <- pcr(density ~ NIR, 6, data = yarn, validation = "CV")
+## The cluster should be stopped manually afterwards:
+stopCluster(pls.options()$parallel)
+
+## Parallelised cross-validation, using persistent MPI cluster:
+## This requires the packages snow and Rmpi to be installed
+library(parallel)
+## This creates the cluster:
+pls.options(parallel = makeCluster(4, type = "MPI"))
+## The cluster can be used several times:
+yarn.pls <- plsr(density ~ NIR, 6, data = yarn, validation = "CV")
+yarn.pcr <- pcr(density ~ NIR, 6, data = yarn, validation = "CV")
+## The cluster should be stopped manually afterwards:
+stopCluster(pls.options()$parallel)
+## It is good practice to call mpi.exit() or mpi.quit() afterwards:
+mpi.exit()
+}
+
+## Multi-response models:
 data(oliveoil)
 sens.pcr <- pcr(sensory ~ chemical, ncomp = 4, scale = TRUE, data = oliveoil)
 sens.pls <- plsr(sensory ~ chemical, ncomp = 4, scale = TRUE, data = oliveoil)

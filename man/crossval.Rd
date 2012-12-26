@@ -54,6 +54,12 @@ crossval(object, segments = 10,
   (\code{\link{var.jack}}) or hypothesis testing (\code{\link{jack.test}}).
 
   When tracing is turned on, the segment number is printed for each segment.
+
+  By default, the cross-validation will be performed serially.  However,
+  it can be done in parallel using functionality in the
+  \code{\link{parallel}} package by setting the option \code{parallel} in
+  \code{\link{pls.options}}.  See \code{\link{pls.options}} for the
+  different ways to specify the parallelism.
 }
 \value{
   The supplied \code{object} is returned, with an additional component
@@ -104,6 +110,39 @@ data(yarn)
 yarn.pcr <- pcr(density ~ msc(NIR), 6, data = yarn)
 yarn.cv <- crossval(yarn.pcr, segments = 10)
 \dontrun{plot(MSEP(yarn.cv))}
+
+\dontrun{
+## Parallelised cross-validation, using transient cluster:
+pls.options(parallel = 4) # use mclapply (not available on Windows)
+pls.options(parallel = quote(makeCluster(4, type = "PSOCK"))) # use parLapply
+## A new cluster is created and stopped for each cross-validation:
+yarn.cv <- crossval(yarn.pcr)
+yarn.loocv <- crossval(yarn.pcr, length.seg = 1)
+
+## Parallelised cross-validation, using persistent cluster:
+library(parallel)
+## This creates the cluster:
+pls.options(parallel = makeCluster(4, type = "FORK")) # not available on Windows
+pls.options(parallel = makeCluster(4, type = "PSOCK"))
+## The cluster can be used several times:
+yarn.cv <- crossval(yarn.pcr)
+yarn.loocv <- crossval(yarn.pcr, length.seg = 1)
+## The cluster should be stopped manually afterwards:
+stopCluster(pls.options()$parallel)
+
+## Parallelised cross-validation, using persistent MPI cluster:
+## This requires the packages snow and Rmpi to be installed
+library(parallel)
+## This creates the cluster:
+pls.options(parallel = makeCluster(4, type = "MPI"))
+## The cluster can be used several times:
+yarn.cv <- crossval(yarn.pcr)
+yarn.loocv <- crossval(yarn.pcr, length.seg = 1)
+## The cluster should be stopped manually afterwards:
+stopCluster(pls.options()$parallel)
+## It is good practice to call mpi.exit() or mpi.quit() afterwards:
+mpi.exit()
+}
 }
 \keyword{regression}
 \keyword{multivariate}
