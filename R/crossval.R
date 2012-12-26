@@ -136,7 +136,7 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
     dimnames(cvPred) <- list(objnames, respnames, nCompnames)
     if (jackknife)
         dimnames(cvCoef) <- list(dnX[[2]], respnames, nCompnames,
-                                 paste("Seg", seq.int(along = segments)))
+                                 paste("Seg", seq_along(segments)))
 
     list(method = "CV", pred = cvPred, coefficients = if (jackknife) cvCoef,
          gammas = if (method == "cppls") gammas,
@@ -268,7 +268,7 @@ crossval <- function(object, segments = 10,
     dimnames(PRESS) <- dimnames(adj)
     if (jackknife)
         dimnames(cvCoef) <- c(dimnames(coef(object)),
-                              list(paste("Seg", seq.int(along = segments))))
+                              list(paste("Seg", seq_along(segments))))
 
     ## Return the original object, with a component `validation' added
     object$validation <- list(method = "CV", pred = cvPred,
