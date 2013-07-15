@@ -21,7 +21,7 @@ pls.options(\dots)
   If called with a character vector as the single argument, a list with
   the arguments named in the vector are returned.
 
-  If called with a non-empty list as the single arguments, the list
+  If called with a non-empty list as the single argument, the list
   elements should be named, and are treated as named arguments to the
   function.
 
@@ -54,18 +54,21 @@ pls.options(\dots)
       \code{"cppls"}.  Can be overridden with the argument
       \code{method} in \code{cppls}.}
     \item{parallel}{Specification of how the cross-validation (CV) in
-      \code{\link{mvr}} should be performed.  If it is \code{NULL}
-      (default) or \code{1}, the CV is done serially.  Otherwise it is
-      done in parallel using functionality from the
-      \code{\link{parallel}} package.  If
-      it is an integer greater than 1, the CV is done in parallel with
-      the specified number of processes, using
-      \code{\link{mclapply}}.  If it is a cluster object
-      created by \code{\link{makeCluster}}, the CV is done in
-      parallel on that cluster, using \code{\link{parLapply}}.
-      The user should stop the cluster herself when it is no longer
-      needed, using \code{\link{stopCluster}}.
-      Finally, if it is an unevaluated call to
+      \code{\link{mvr}} should be performed.  If the specification is
+      \code{NULL} (default) or \code{1}, the CV is done serially, otherwise
+      it is done in parallel using functionality from the
+      \code{\link{parallel}} package.
+
+      If it is an integer greater than 1, the CV is done in parallel
+      with the specified number of processes, using
+      \code{\link{mclapply}}.  
+
+      If it is a cluster object created by \code{\link{makeCluster}},
+      the CV is done in parallel on that cluster, using
+      \code{\link{parLapply}}.  The user should stop the cluster herself
+      when it is no longer needed, using \code{\link{stopCluster}}.
+
+      Finally, if the specification is an unevaluated call to
       \code{\link{makeCluster}}, the call is evaluated, and
       the CV is done in parallel on the resulting cluster, using
       \code{\link{parLapply}}.  In this case, the cluster will

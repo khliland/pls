@@ -59,7 +59,7 @@ crossval(object, segments = 10,
   it can be done in parallel using functionality in the
   \code{\link{parallel}} package by setting the option \code{parallel} in
   \code{\link{pls.options}}.  See \code{\link{pls.options}} for the
-  different ways to specify the parallelism.
+  different ways to specify the parallelism.  See also Examples below.
 }
 \value{
   The supplied \code{object} is returned, with an additional component

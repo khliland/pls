@@ -102,7 +102,7 @@ pcr(\dots, method = pls.options()$pcralg)
   it can be done in parallel using functionality in the
   \code{\link{parallel}} package by setting the option \code{parallel} in
   \code{\link{pls.options}}.  See \code{\link{pls.options}} for the
-  differnt ways to specify the parallelism.
+  differnt ways to specify the parallelism.  See also Examples below.
 
   Note that the cross-validation is optimised for speed, and some
   generality has been sacrificed.  Especially, the model matrix is
