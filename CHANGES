@@ -1,5 +1,20 @@
 $Id$
 
+Changes in 2.4-0
+================
+
+New features:
+-------------
+- Added a mechanism for running cross-validations in parallel using the
+  facilities of the 'parallel' package.
+
+Bug fixes:
+----------
+- 'drop=FALSE' was missing a couple of places.
+- Calling pls::plsr, pls::pcr or pls::cppls would fail if the package
+  was not attached.
+
+
 Changes in 2.3-0
 ================
 
