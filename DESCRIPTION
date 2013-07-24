@@ -1,6 +1,6 @@
 Package: pls
-Version: 2.4-0
-Date: 2013-07-15
+Version: 2.4-1
+Date: 2013-07-24
 Title: Partial Least Squares and Principal Component regression
 Author: Bjørn-Helge Mevik, Ron Wehrens and Kristian Hovde Liland
 Maintainer: Bjørn-Helge Mevik <pls@mevik.net>
