@@ -29,12 +29,6 @@ pls.options(\dots)
   arguments \var{name = value}.  For each argument, the option named
   \var{name} will be given the value \var{value}.
 
-  The options are saved in a variable \code{.pls.Options} in the global
-  environment, and remain in effect until the end of the session.  If
-  the environment is saved upon exit, they will be remembered in the
-  next session.  The `factory defaults' can be restored by removing
-  \code{.pls.Options} from the global environment.
-
   The recognised options are:
   \describe{
     \item{mvralg}{The fit method to use in \code{\link{mvr}} and
@@ -82,11 +76,6 @@ pls.options(\dots)
     \item{X.tol}{The tolerance used for removing predictor variables
       with L1 norms close to 0 in \code{\link{cppls}}.  Defaults to 10^-12.}
   }
-}
-\section{Side Effects}{
-  If any named argument (or list element) was provided,
-  \code{pls.options} updates the elements of the option list
-  \code{.pls.Options} in the global environment.
 }
 \value{
   A list with the (possibly changed) options.  If any named argument (or
