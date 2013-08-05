@@ -1,12 +1,19 @@
 $Id$
 
-Changes in 2.4-0
+Changes in 2.4-2
 ================
 
 New features:
 -------------
 - Added a mechanism for running cross-validations in parallel using the
   facilities of the 'parallel' package.
+
+User-visible changes:
+---------------------
+- In order to comply with current CRAN submission policies, 
+  pls.options() no longer stores the modified option list in the global 
+  environment.  This has the effect that the options will have to be set
+  every time R is started, even if the work space was saved an loaded.
 
 Bug fixes:
 ----------
