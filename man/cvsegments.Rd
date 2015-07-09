@@ -5,17 +5,21 @@
 \title{Generate segments for cross-validation}
 \description{
   The function generates a list of segments for cross-validation.
-  Random, consecutive and interleaved segments can be produced.
+  It can generate random, consecutive and interleaved segments, and
+  supports keeping replicates in the same segment.
 }
 \usage{
-cvsegments(N, k, length.seg = ceiling(N/k),
+cvsegments(N, k, length.seg = ceiling(N / k), nrep = 1,
            type = c("random", "consecutive", "interleaved"))
 }
 \arguments{
-  \item{N}{Integer.  The number of objects in the data set.}
+  \item{N}{Integer.  The number of rows in the data set.}
   \item{k}{Integer.  The number of segments to return.}
   \item{length.seg}{Integer.  The length of the segments.  If
     given, it overrides \code{k}.}
+  \item{nrep}{Integer.  The number of (consecutive) rows that are
+    replicates of the same object.  Replicates will always be kept in
+    the same segment.}
   \item{type}{One of \code{"random"}, \code{"consecutive"} and
     \code{"interleaved"}.  The type of segments to generate.  Default is
     \code{"random"}.}
@@ -33,6 +37,17 @@ cvsegments(N, k, length.seg = ceiling(N/k),
   If \code{type} is \code{"interleaved"}, the first segment will contain
   the indices \eqn{1, length.seg+1, 2*lenght.seg+1, \ldots,
     (k-1)*length.seg+1}, and so on.
+
+  If \eqn{nrep > }, it is assumed that each \code{nrep} consecutive rows
+  are replicates (repeated measurements) of the same object, and care is
+  taken that replicates are never put in different segments.
+
+  Warning: If \code{k} does not divide \code{N}, a specified
+  \code{length.seg} does not divide \code{N}, or \code{nrep} does not
+  divide \code{length.seg}, the number of segments and/or the segment
+  length will be adjusted as needed.  Warnings are printed for some of
+  these cases, and one should always inspect the resulting segments to
+  make sure they are as expected.
 }
 \value{
   A list of vectors.  Each vector contains the indices for one segment.
@@ -57,5 +72,10 @@ cvsegments(100, 100)
 ## Leave-one-out with variable/unknown data set size n:
 n <- 50
 cvsegments(n, length.seg = 1)
+
+## Data set with replicates
+cvsegments(100, 25, nrep = 2)
+## Note that rows 1 and 2 are in the same segment, rows 3 and 4 in the
+## same segment, and so on.
 }
 \keyword{models}
