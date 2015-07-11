@@ -1,0 +1,1222 @@
+%% $Id$
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage{a4wide}
+
+%% Setup for the vignette system:
+%\VignetteIndexEntry{Intruction to the pls Package}
+
+
+%%%
+%%% Local definitions:
+%%%
+%% Layout:
+%\setcounter{secnumdepth}{0}
+\pagestyle{headings}
+\renewcommand{\bfdefault}{b}
+
+\let\epsilon\varepsilon		% I prefer the \varepsilon variant.
+\newcommand\mat\mathrm          % Matrices
+%% Vectors: redefine \vec as bold italic instead of an arrow accent:
+\let\vec\relax\DeclareMathAlphabet{\vec}{OML}{cmm}{bx}{it}
+
+%% Ron's definitions:
+\newcommand{\bX}{\mbox{\boldmath{$X$}}}
+\newcommand{\bY}{\mbox{\boldmath{$Y$}}}
+\newcommand{\bB}{\mbox{\boldmath{$B$}}}
+\newcommand{\bT}{\mbox{\boldmath{$T$}}}
+\newcommand{\bP}{\mbox{\boldmath{$P$}}}
+\newcommand{\bU}{\mbox{\boldmath{$U$}}}
+\newcommand{\bD}{\mbox{\boldmath{$D$}}}
+\newcommand{\bV}{\mbox{\boldmath{$V$}}}
+\newcommand{\bA}{\mbox{\boldmath{$A$}}}
+\newcommand{\bE}{\mbox{\boldmath{$E$}}}
+\newcommand{\bF}{\mbox{\boldmath{$F$}}}
+\newcommand{\bQ}{\mbox{\boldmath{$Q$}}}
+\newcommand{\bS}{\mbox{\boldmath{$S$}}}
+\newcommand{\bW}{\mbox{\boldmath{$W$}}}
+\newcommand{\bR}{\mbox{\boldmath{$R$}}}
+
+%% From jss.cls (slightly modified):
+\let\code=\texttt
+\let\proglang=\textsf
+\newcommand{\pkg}[1]{{\normalfont\fontseries{b}\selectfont #1}}
+\newcommand{\email}[1]{{\normalfont\texttt{#1}}}
+
+
+%%%%%%%%%%%%%%%%
+\begin{document}
+
+%%%%%%%%%%%%%%%%
+\title{Introduction to the \pkg{pls} Package}
+\author{
+  Bjørn-Helge Mevik\\ %\thanks for footnotes
+  University Center for Information Technology, University of Oslo\\
+  Norway\\
+\and
+  Ron Wehrens\\
+  Biostatistics and Data Management\\
+  Center for Research and Innovation, Fondazione Edmund Mach\\
+  San Michele all'Adige (TN)\\
+  Italy\\
+}
+%\date{\today\ (\revision)} % FIXME
+\maketitle
+
+%% Setup of Sweave:
+\SweaveOpts{width=5,height=5,eps=FALSE} %FIXME: eps=FALSE needed?
+\setkeys{Gin}{width=5in}
+<<echo=FALSE,results=hide>>=
+ps.options(pointsize=10)
+options(digits = 4)
+@
+
+
+\begin{abstract}
+The \pkg{pls} package implements Principal Component Regression (PCR) and
+Partial Least Squares Regression (PLSR) in
+\proglang{R}, and is freely available from the
+CRAN website, licensed under the Gnu General Public License (GPL).
+
+The user interface is modelled after the traditional formula
+interface, as exemplified by \code{lm}.  This was done so that people
+used to \proglang{R} would not have to learn yet another interface, and also
+because we believe the formula interface is a good way of working
+interactively with models.  It thus has methods for generic functions like
+\code{predict}, \code{update} and \code{coef}.  It also has more specialised
+functions like \code{scores}, \code{loadings} and \code{RMSEP}, and a
+flexible cross-validation system.  Visual inspection and assessment is
+important in chemometrics, and the \pkg{pls} package has a number of plot
+functions for plotting scores, loadings, predictions, coefficients and RMSEP
+estimates.
+
+The package implements PCR and several algorithms for PLSR.  The design is
+modular, so that it should be easy to use the underlying algorithms in other
+functions.  It is our hope that the package will serve well both for
+interactive data analysis and as a building block for other functions or
+packages using PLSR or PCR.
+
+We will here describe the package and how it is used for data analysis, as
+well as how it can be used as a part of other packages.  Also included is a
+section about formulas and data frames, for people not used to the
+\proglang{R} modelling idioms.
+\end{abstract}
+
+
+\section{Introduction}\label{sec:introduction}
+%%%%%%%%%%%%%%%%
+This vignette is meant as an introduction to the \pkg{pls} package.  It is
+based on the paper `The pls Package: Principal Component and Partial Least
+Squares Regression in R', published in
+\emph{Journal of Statistical Software}~\cite{MevWeh:plsJSS}.
+
+The PLSR methodology is shortly described in Section~\ref{sec:theory}.
+Section~\ref{sec:example-session} presents an example session, to get an
+overview of the package.  In Section~\ref{sec:formula-data-frame} we
+describe formulas and data frames (as they are used in \pkg{pls}).  Users
+familiar with formulas and data frames in \proglang{R} can skip this section
+on first reading.  Fitting of models is described in
+Section~\ref{sec:fitting}, and cross-validatory choice of components is
+discussed in Section~\ref{sec:cross-validation}.  Next, inspecting and
+plotting models is described (Section~\ref{sec:inspecting}), followed by a
+section on predicting future observations (Section~\ref{sec:predicting}).
+Finally, Section~\ref{sec:advanced} covers more advanced topics such as
+parallel computing, setting options, using the underlying functions directly,
+and implementation details.
+
+
+\section{Theory}\label{sec:theory}
+%%%%%%%%%%%%%%%%
+Multivariate regression methods like Principal Component Regression
+(PCR) and Partial Least Squares Regression (PLSR) enjoy large
+popularity in a wide range of fields, including the natural
+sciences. The main reason is that they have been designed to confront
+the situation that there are many, possibly correlated, predictor
+variables, and relatively few samples---a situation that is common,
+especially in chemistry where developments in spectroscopy since the
+seventies have revolutionised chemical analysis. In fact, the origin
+of PLSR lies in chemistry (see, e.g.,~\cite{Wold2001,Martens2001}). The field
+of \emph{near-infrared} (NIR) spectroscopy,
+with its highly overlapping lines and difficult to interpret
+overtones, would not have existed but for a method to obtain
+quantitative information from the spectra.
+
+Also other fields have benefited greatly from multivariate regression
+methods like PLSR and PCR. In medicinal chemistry, for example, one
+likes to derive molecular properties from the molecular
+structure. Most of these Quantitative Structure-Activity Relations
+(QSAR, and also Quantitative Structure-Property Relations, QSPR), and
+in particular, Comparative Molecular
+Field Analysis (ComFA)~\cite{Cramer1988}, use PLSR. Other applications
+range from statistical process control~\cite{Kresta1991} to tumour
+classification~\cite{Nguyen2002} to spatial analysis in brain
+images~\cite{McIntosh1996} to marketing~\cite{Fornell1982}.
+
+In the usual multiple linear regression (MLR) context, the
+least-squares solution for
+\begin{equation}
+\bY = \bX\bB + \mathcal{E}
+\end{equation}
+is given by
+\begin{equation}
+\bB = (\bX^T \bX)^{-1} \bX^T \bY
+\label{eq:lsq}
+\end{equation}
+The problem often is that $\bX^T \bX$ is singular, either
+because the number of variables (columns) in $\bX$ exceeds the number
+of objects (rows), or because of collinearities. Both PCR and
+PLSR circumvent this by decomposing $\bX$ into orthogonal scores $\bT$ and
+loadings $\bP$
+\begin{equation}
+\bX = \bT \bP
+\end{equation}
+and regressing $\bY$ not on $\bX$ itself but on the first $a$ columns
+of the scores $\bT$. In PCR, the scores are given by the
+left singular vectors of $\bX$, multiplied with the corresponding
+singular values, and the loadings are the right singular vectors of
+$\bX$. This, however, only takes into account
+information about $\bX$, and therefore may be suboptimal for
+prediction purposes. PLSR aims to incorporate information on both $\bX$
+and $\bY$ in the definition of the scores and loadings. In fact, for
+one specific version of PLSR, called SIMPLS~\cite{Jong1993a}, it can be
+shown that the scores and loadings are chosen in such a way to
+describe as much as possible of the {\em covariance} between $\bX$ and
+$\bY$, where PCR concentrates on the {\em variance} of $\bX$. Other
+PLSR algorithms give identical results to SIMPLS in the case of one
+$\bY$ variable, but deviate slightly for the multivariate $\bY$ case;
+the differences are not likely to be important in practice.
+
+\subsection{Algorithms}
+In PCR, we approximate the $\bX$ matrix by the first $a$ Principal
+Components (PCs), usually obtained from the singular value
+decomposition (SVD):
+\[
+\bX = \tilde{\bX}_{(a)} + \mathcal{E}_X
+    = (\bU_{(a)} \bD_{(a)} ) \bV^T_{(a)} + \mathcal{E}_X
+    = \bT_{(a)} \bP_{(a)}^T + \mathcal{E}_X
+\]
+Next, we regress $\bY$ on the scores, which leads to regression
+coefficients
+\[
+\bB = \bP (\bT^T \bT)^{-1} \bT^T \bY
+    = \bV \bD^{-1} \bU^T \bY
+\]
+where the subscripts $a$ have been dropped for clarity.
+
+For PLSR, the components, called Latent Variables (LVs) in this
+context, are obtained iteratively. One starts with the
+SVD of the crossproduct matrix $\bS = \bX^T \bY$, thereby including
+information on variation in both $\bX$ and $\bY$, and on the
+correlation between them. The first left and right singular vectors,
+$w$ and $q$, are used as weight vectors for $\bX$ and $\bY$,
+respectively, to obtain scores $t$ and $u$:
+\begin{equation}
+t = \bX w = \bE w
+\end{equation}
+\begin{equation}
+u = \bY q = \bF q
+\end{equation}
+where $\bE$ and $\bF$ are initialised as $\bX$ and $\bY$,
+respectively. The X scores $t$ are often normalised:
+\begin{equation}
+t =  t / \sqrt{t^Tt}
+\end{equation}
+The Y scores $u$ are not actually necessary in the regression but are often
+saved for interpretation purposes. Next, X and Y loadings are
+obtained by regressing against the {\em same} vector $t$:
+\begin{equation}
+\label{eq:plspt}
+p = \bE^T t
+\end{equation}
+\begin{equation}
+\label{eq:plsqt}
+q = \bF^T t
+\end{equation}
+Finally, the data matrices are `deflated': the information related
+to this latent variable, in the form of the outer products $t p^T$ and
+$t q^T$, is subtracted from the (current) data matrices $\bE$ and $\bF$.
+\begin{equation}
+\bE_{n+1} = \bE_n - t p^T
+\end{equation}
+\begin{equation}
+\bF_{n+1} = \bF_n - t q^T
+\end{equation}
+
+The estimation of the next component then can start from the SVD of
+the crossproduct matrix $\bE_{n+1}^T\bF_{n+1}$. After every iteration,
+vectors $w$, $t$, $p$ and $q$ are saved as columns in matrices $\bW$,
+$\bT$, $\bP$ and $\bQ$, respectively. One complication is that columns
+of matrix $\bW$ can not be compared directly: they are derived from
+successively deflated matrices $\bE$ and $\bF$. It has been shown that
+an alternative way to represent the weights, in such a way that all
+columns relate to the original $\bX$ matrix, is given by
+\begin{equation}
+\bR = \bW (\bP^T \bW)^{-1}
+\end{equation}
+
+Now, we are in the same position as in the PCR case: instead of
+regressing $\bY$ on $\bX$, we use scores $\bT$ to calculate the
+regression coefficients, and later convert these back to the
+realm of the original variables by pre-multiplying with matrix $\bR$
+(since $\bT = \bX \bR$):
+\[
+\bB = \bR (\bT^T \bT)^{-1} \bT^T \bY
+    = \bR \bT^T \bY
+    = \bR \bQ^T
+\]
+Again, here, only the first $a$ components are used. How many
+components are optimal has to be determined, usually by
+cross-validation.
+
+Many alternative formulations can be found in literature. It has been
+shown, for instance, that only one of $\bX$ and $\bY$ needs to be
+deflated; alternatively, one can directly deflate the crossproduct
+matrix $\bS$ (as is done in SIMPLS, for example). Moreover, there are
+many equivalent ways of scaling. In the example above, the scores $t$
+have been normalised, but one can also choose to introduce
+normalisation at another point in the algorithm. Unfortunately, this
+can make it difficult to directly compare the scores and loadings of
+different PLSR implementations.
+
+\subsection{On the use of PLSR and PCR}
+In theory, PLSR should have an advantage over PCR. One could imagine a
+situation where a minor component in $\bX$ is highly correlated with
+$\bY$; not selecting enough components would then lead to very bad
+predictions. In PLSR, such a component would be automatically present
+in the first LV. In practice, however, there is hardly any difference
+between the use of PLSR and PCR; in most situations, the methods
+achieve similar prediction accuracies, although PLSR usually needs
+fewer latent variables than PCR. Put the other way around: with the
+same number of latent variables, PLSR will cover more of the variation
+in $\bY$ and PCR will cover more of $\bX$. In turn, both behave very
+similar to ridge regression~\cite{Frank1993}.
+
+It can also be shown that both PCR and PLSR behave
+as shrinkage methods~\cite{TESL}, although in some cases PLSR seems to
+increase the variance of individual regression coefficients, one possible
+explanation of why PLSR is not always better than PCR.
+
+
+\section{Example session}\label{sec:example-session}
+%%%%%%%%%%%%%%%%
+In this section we will walk through an example session, to get an overview
+of the package.
+
+To be able to use the package, one first has to load it:
+<<>>=
+library(pls)
+@
+This prints a message telling that the package has been attached, and that
+the package implements a function \code{loadings} that masks a function of
+the same name in package \pkg{stats}.  (The output of the commands have in
+some cases been suppressed to save space.)
+
+Three example data sets are included in \pkg{pls}:
+\begin{description}
+\item[\code{yarn}] A data set with 28 near-infrared spectra (\code{NIR}) of PET yarns,
+  measured at 268 wavelengths, as predictors, and density as response
+  (\code{density})~\cite{SwiWeiWijBuy_StrConRobMulCalMod}.  The data set also
+  includes a logical variable \code{train} which can be used to split the
+  data into a training data set of size 21 and test data set of size 7.  See
+  \code{?yarn} for details.
+\item[\code{oliveoil}] A data set with 5 quality measurements
+  (\code{chemical}) and 6 panel sensory panel variables (\code{sensory}) made
+  on 16 olive oil samples~\cite{Mas_etal_HandChemQualB}.  See
+  \code{?oliveoil} for details.
+\item[\code{gasoline}] A data set consisting of octane number
+  (\code{octane}) and NIR spectra (\code{NIR}) of 60 gasoline
+  samples~\cite{Kal:2DatNIR}.  Each NIR spectrum consists of 401 diffuse
+  reflectance measurements from 900 to 1700 nm.  See \code{?gasoline} for
+  details.
+\end{description}
+These will be used in the examples that follow.  To use the data sets, they
+must first be loaded:
+<<>>=
+data(yarn)
+data(oliveoil)
+data(gasoline)
+@
+For the rest of the paper, it will be assumed that the package and the data
+sets have been loaded as above.  Also, all examples are run with
+\code{options(digits = 4)}.
+
+\begin{figure}
+  \begin{center}
+<<fig=TRUE,echo=FALSE,height=1.5>>=
+par(mar = c(2, 4, 0, 1) + 0.1)
+matplot(t(gasoline$NIR), type = "l", lty = 1, ylab = "log(1/R)", xaxt = "n")
+ind <- pretty(seq(from = 900, to = 1700, by = 2))
+ind <- ind[ind >= 900 & ind <= 1700]
+ind <- (ind - 898) / 2
+axis(1, ind, colnames(gasoline$NIR)[ind])
+@
+  \caption{Gasoline NIR spectra}\label{fig:NIR}
+  \end{center}
+\end{figure}
+
+In this section, we will do a PLSR on the \code{gasoline} data to illustrate
+the use of \pkg{pls}.  The spectra are shown in Figure~\ref{fig:NIR}.  We
+first divide the data set into train and test data sets:
+<<>>=
+gasTrain <- gasoline[1:50,]
+gasTest <- gasoline[51:60,]
+@
+A typical way of fitting a PLSR model is
+<<>>=
+gas1 <- plsr(octane ~ NIR, ncomp = 10, data = gasTrain, validation = "LOO")
+@
+This fits a model with 10 components, and includes \emph{leave-one-out} (LOO)
+cross-validated predictions~\cite{LacMic:EstERRDA}.  We can get an overview
+of the fit and validation results with the \code{summary} method:
+<<>>=
+summary(gas1)
+@
+The validation results here are \emph{Root Mean Squared Error of Prediction}
+(RMSEP).  There are two cross-validation estimates: \code{CV} is the
+ordinary CV estimate, and \code{adjCV} is a bias-corrected CV
+estimate~\cite{MevCed:MSEPest}.  (For a LOO CV, there is virtually no
+difference).
+
+It is often simpler to judge the RMSEPs by plotting them:
+<<eval=FALSE>>=
+plot(RMSEP(gas1), legendpos = "topright")
+@
+%
+\begin{figure}
+  \begin{center}
+<<fig=TRUE,echo=FALSE,height=3>>=
+par(mar = c(4, 4, 2.5, 1) + 0.1)
+plot(RMSEP(gas1), legendpos = "topright")
+@
+  \caption{Cross-validated RMSEP curves for the \code{gasoline} data}\label{fig:RMSEPplsr}
+  \end{center}
+\end{figure}
+
+This plots the estimated RMSEPs as functions of the number of components
+(Figure~\ref{fig:RMSEPplsr}).  The \code{legendpos} argument adds a legend at
+the indicated position.  Two components seem to be enough.  This gives an
+RMSEP of
+\Sexpr{format(drop(RMSEP(gas1, "CV", ncomp = 2, intercept = FALSE)$val), digits = 3)}. %$
+As mentioned in the introduction, the main practical difference between PCR
+and PLSR is that PCR often needs more components than PLSR to achieve the
+same prediction error.  On this data set, PCR would need three components to
+achieve the same RMSEP.
+
+Once the number of components has been chosen, one can inspect different
+aspects of the fit by plotting predictions, scores, loadings, etc.
+The default plot is a prediction plot:
+<<eval=FALSE>>=
+plot(gas1, ncomp = 2, asp = 1, line = TRUE)
+@
+%
+\begin{figure}
+  \begin{center}
+\setkeys{Gin}{width=3.5in}
+<<fig=TRUE,echo=FALSE,width=3.5,height=3.7>>=
+par(mar = c(4, 4, 2.5, 1) + 0.1)
+plot(gas1, ncomp = 2, asp = 1, line = TRUE)
+@
+\setkeys{Gin}{width=5in}
+  \caption{Cross-validated predictions for the \code{gasoline}
+  data}\label{fig:cvpreds}
+  \end{center}
+\end{figure}
+
+This shows the cross-validated predictions with two components versus
+measured values (Figure~\ref{fig:cvpreds}).  We have chosen an aspect ratio
+of 1, and to draw a target line.  The points follow the target line quite
+nicely, and there is no indication of a curvature or other anomalies.
+
+Other plots can be selected with the argument \code{plottype}:
+<<eval=FALSE>>=
+plot(gas1, plottype = "scores", comps = 1:3)
+@
+%
+\begin{figure}
+  \begin{center}
+<<echo=FALSE,fig=TRUE>>=
+plot(gas1, plottype = "scores", comps = 1:3)
+@
+  \caption{Score plot for the \code{gasoline} data}\label{fig:scores}
+  \end{center}
+\end{figure}
+
+\begin{figure}
+\setkeys{Gin}{width=6in}
+  \begin{center}
+<<echo=FALSE,fig=TRUE,height=3,width=6>>=
+par(mar = c(4, 4, 0.3, 1) + 0.1)
+plot(gas1, "loadings", comps = 1:2, legendpos = "topleft",
+     labels = "numbers", xlab = "nm")
+abline(h = 0)
+@
+\setkeys{Gin}{width=5in}
+  \caption{Loading plot for the \code{gasoline} data}\label{fig:loadings}
+  \end{center}
+\end{figure}
+This gives a pairwise plot of the score values for the three first
+components (Figure~\ref{fig:scores}).  Score plots are often used to look for
+patterns, groups or outliers in the data.  (For instance, plotting the two
+first components for a model built on the \code{yarn} dataset clearly
+indicates the experimental design of that data.)  In this example, there is
+no clear indication of grouping or outliers.  The numbers in parentheses
+after the component labels are the relative amount of X variance
+explained by each component.  The explained variances can be extracted
+explicitly with
+<<>>=
+explvar(gas1)
+@
+
+The loading plot (Figure~\ref{fig:loadings}) is much
+used for interpretation purposes, for instance to look for known spectral
+peaks or profiles:
+<<eval=FALSE>>=
+plot(gas1, "loadings", comps = 1:2, legendpos = "topleft",
+     labels = "numbers", xlab = "nm")
+abline(h = 0)
+@
+%
+The \code{labels = "numbers"} argument makes the plot function try to
+interpret the variable names as numbers, and use them as $x$ axis labels.
+
+A fitted model is often used to predict the response values of new
+observations.  The following predicts the responses for the ten observations
+in \code{gasTest}, using two components:
+<<>>=
+predict(gas1, ncomp = 2, newdata = gasTest)
+@
+Because we know the true response values for these samples, we can calculate
+the test set RMSEP:
+<<>>=
+RMSEP(gas1, newdata = gasTest)
+@
+For two components, we get
+\Sexpr{format(drop(RMSEP(gas1, ncomp = 2, intercept = FALSE, newdata = gasTest)$val), digits = 3)}, %$
+which is quite close to the cross-validated estimate above
+(\Sexpr{format(drop(RMSEP(gas1, "CV", ncomp = 2, intercept = FALSE)$val), digits = 3)}). %$
+
+
+\goodbreak
+\section{Formulas and data frames}\label{sec:formula-data-frame}
+%%%%%%%%%%%%%%%%
+The \pkg{pls} package has a formula interface that works like the formula
+interface in \proglang{R}'s standard \code{lm} functions, in most ways.
+This section gives a short description of formulas and data frames as they
+apply to \pkg{pls}.  More information on formulas can be found in the
+\code{lm} help file, in Chapter~11 of `An Introduction to R', and in
+Chapter~2 of `The White Book'~\cite{R:Chambers+Hastie:1992}.  These are
+good reads for anyone wanting to understand how \proglang{R} works with formulas, and
+the user is strongly advised to read them.
+
+
+\subsection{Formulas}
+%%%%%%%%%%%%%%%%
+A \emph{formula} consists of a \emph{left hand side} (lhs), a tilde
+(\code{\textasciitilde}), and a \emph{right hand side} (rhs).  The lhs
+consists of a single term, representing the response(s).  The rhs consists of
+one or more terms separated by \code{+}, representing the regressor(s).  For
+instance, in the formula \code{a \textasciitilde\ b + c + d}, \code{a} is the
+response, and \code{b}, \code{c}, and \code{d} are the regressors.  The
+intercept is handled automatically, and need not be specified in the formula.
+
+Each term represents a matrix, a numeric vector or a factor (a
+factor should not be used as the response).  If the response term is a
+matrix, a multi-response model is fit.
+In \pkg{pls}, the right hand side quite often consists of a
+single term, representing a matrix regressor: \code{y \textasciitilde\ X}.
+
+It is also possible to specify transformations of the variables.  For
+instance, \code{log(y) \textasciitilde\ msc(Z)} specifies a regression of the
+logarithm of \code{y} onto \code{Z} after \code{Z} has been transformed by
+\emph{Multiplicative Scatter (or Signal) Correction} (MSC)~\cite{Geladi1985},
+a pre-treatment that is very common in infrared spectroscopy.  If the
+transformations contain symbols that are interpreted in the formula handling,
+e.g., \code{+}, \code{*} or \verb|^|, the terms should be protected with the
+\code{I()} function, like this: \code{y \textasciitilde\ x1 + I(x2 + x3)}.  This specifies
+\emph{two} regressors: \code{x1}, and the sum of \code{x2} and \code{x3}.
+
+
+\subsection{Data frames}
+%%%%%%%%%%%%%%%%
+The fit functions first look for the specified variables in a supplied
+data frame, and it is advisable to collect all variables there.  This
+makes it easier to know what data has been used for fitting, to keep
+different variants of the data around, and to predict new data.
+
+To create a data frame, one can use the \code{data.frame} function: if
+\code{v1}, \code{v2} and \code{v3} are factors or numeric vectors,
+\code{mydata <- data.frame(y = v1, a = v2, b = v3)} will result in a data
+frame with variables named \code{y}, \code{a} and \code{b}.
+
+PLSR and PCR are often used with a matrix as the single predictor term
+(especially when one is working with spectroscopic data).  Also,
+multi-response models require a matrix as the response term.  If \code{Z} is
+a matrix, it has to be protected by the `protect function' \code{I()} in
+calls to \code{data.frame}: \code{mydata <- data.frame(..., Z = I(Z))}.
+Otherwise, it will be split into separate variables for each column, and
+there will be no variable called \code{Z} in the data frame, so we cannot
+use \code{Z} in the formula.
+One can also add the matrix to an existing data frame:
+\begin{verbatim}
+> mydata <- data.frame(...)
+> mydata$Z <- Z
+\end{verbatim}
+%$
+This will also prevent \code{Z} from being split into separate variables.
+Finally, one can use \code{cbind} to combine vectors and matrices into
+matrices on the fly in the formula.  This is most useful for the response, e.g.,
+\code{cbind(y1, y2) \textasciitilde\ X}.
+
+Variables in a data frame can be accessed with the \code{\$} operator, e.g.,
+\code{mydata\$y}.  However, the \pkg{pls} functions access the variables
+automatically, so the user should never use \code{\$} in formulas.
+
+
+\section{Fitting models}\label{sec:fitting}
+%%%%%%%%%%%%%%%%
+The main functions for fitting models are \code{pcr} and \code{plsr}.  (They
+are simply wrappers for the function \code{mvr}, selecting the appropriate
+fit algorithm).  We will use \code{plsr} in the examples in this section,
+but everything could have been done with \code{pcr} (or \code{mvr}).
+
+In its simplest form, the function call for fitting models is
+\code{plsr(formula, ncomp, data)} (where \code{plsr} can be substituted with
+\code{pcr} or \code{mvr}).  The argument \code{formula} is a formula as
+described above, \code{ncomp} is the number of components one wishes to fit,
+and \code{data} is the data frame containing the variables to use in the
+model.  The function returns a fitted model (an object of class
+\code{"mvr"}) which can be inspected (Section~\ref{sec:inspecting}) or used
+for predicting new observations (Section~\ref{sec:predicting}).  For
+instance:
+<<>>=
+dens1 <- plsr(density ~ NIR, ncomp = 5, data = yarn)
+@
+If the response term of the formula is a matrix, a multi-response model is
+fit, e.g.,
+<<>>=
+dim(oliveoil$sensory)
+plsr(sensory ~ chemical, data = oliveoil)
+@
+(As we see, the \code{print} method simply tells us what type of model this
+is, and how the fit function was called.)
+
+The argument \code{ncomp} is optional.  If it is missing, the maximal
+possible number of components are used.  Also \code{data} is optional, and
+if it is missing, the variables specified in the formula is searched for in
+the global environment (the user's workspace).  Usually, it is preferable to
+keep the variables in data frames, but it can sometimes be convenient to
+have them in the global environment.  If the variables reside in a data
+frame, e.g.\ \code{yarn}, \emph{do not} be tempted to use formulas like
+\code{yarn\$density \textasciitilde\ yarn\$NIR}!  Use \code{density
+  \textasciitilde\ NIR} and specify the
+data frame with \code{data = yarn} as above.
+
+There are facilities for working interactively with models.  To use only
+part of the samples in a data set, for instance the first 20, one can use
+arguments \code{subset = 1:20} or \code{data = yarn[1:20,]}.
+Also, if one wants to try different alternatives of the model, one can use
+the function \code{update}.  For instance
+<<>>=
+trainind <- which(yarn$train == TRUE)
+dens2 <- update(dens1, subset = trainind)
+@
+will refit the model \code{dens1} using only the observations which are
+marked as \code{TRUE} in \code{yarn\$train}, and
+<<>>=
+dens3 <- update(dens1, ncomp = 10)
+@
+will change the number of components to 10.  Other arguments, such as
+\code{formula}, can also be changed with \code{update}.  This can save a bit
+of typing when working interactively with models (but it doesn't save
+computing time; the model is refitted each time).
+In general, the reader is referred to `The White
+Book'~\cite{R:Chambers+Hastie:1992} or `An Introduction to R' for more
+information about fitting and working with models in \proglang{R}.
+
+Missing data can sometimes be a problem.  The PLSR and PCR algorithms
+currently implemented in \pkg{pls} do not handle missing values
+intrinsically, so observations with missing values must be removed.  This
+can be done with the \code{na.action} argument.  With \code{na.action =
+na.omit} (the default), any observation with missing values will be removed
+from the model completely.  With \code{na.action = na.exclude}, they will be
+removed from the fitting process, but included as \code{NA}s in the
+residuals and fitted values.  If you want an explicit error when there are
+missing values in the data, use \code{na.action = na.fail}.  The default
+\code{na.action} can be set with \code{options()}, e.g.,
+\code{options(na.action = quote(na.fail))}.
+
+Standardisation and other pre-treatments of predictor variables are often
+called for.  In \code{pls}, the predictor variables are always centered, as a
+part of the fit algorithm.  Scaling can be requested with the \code{scale}
+argument.  If \code{scale} is \code{TRUE}, each variable is standardised by
+dividing it by its standard deviation, and if \code{scale} is a numeric
+vector, each variable is divided by the corresponding number.
+For instance, this will fit a model with standardised chemical
+measurements:
+<<>>=
+olive1 <- plsr(sensory ~ chemical, scale = TRUE, data = oliveoil)
+@
+
+As mentioned earlier, MSC~\cite{Geladi1985} is implemented in \pkg{pls} as a
+function \code{msc} that can be used in formulas:
+<<>>=
+gas2 <- plsr(octane ~ msc(NIR), ncomp = 10, data = gasTrain)
+@
+This scatter corrects \code{NIR} prior to the fitting, and arranges for new
+spectra to be automatically scatter corrected (using the same reference
+spectrum as when fitting) in \code{predict}:
+<<eval=FALSE>>=
+predict(gas2, ncomp = 3, newdata = gasTest)
+@
+
+There are other arguments that can be given in the fit call:
+\code{validation} is for selecting validation, and \code{...} is for sending
+arguments to the underlying functions, notably the cross-validation function
+\code{mvrCv}.  For the other arguments, see \code{?mvr}.
+
+
+\section{Choosing the number of components with cross-validation}\label{sec:cross-validation}
+%%%%%%%%%%%%%%%%
+Cross-validation, commonly used to determine the optimal number of
+components to take into account, is controlled by the \code{validation}
+argument in the modelling functions (\code{mvr}, \code{plsr} and
+\code{pcr}). The default value is \code{"none"}. Supplying a value of
+\code{"CV"} or \code{"LOO"} will cause the modelling procedure to call
+\code{mvrCv} to perform cross-validation; \code{"LOO"} provides
+leave-one-out cross-validation, whereas \code{"CV"} divides the data into
+segments. Default is to use ten segments, randomly selected, but also
+segments of consecutive objects or interleaved segments (sometimes also
+referred to as `Venetian blinds') are possible through the use of the
+argument \code{segment.type}.  One can also specify the segments explicitly
+with the argument \code{segments}; see \code{?mvrCv} for details.
+
+When validation is performed in this way, the
+model will contain an element comprising information on the out-of-bag
+predictions (in the form of predicted values, as well as MSEP and R2
+values). As a reference, the MSEP error using no components at all is
+calculated as well. The validation results can be visualised using the
+\code{plottype = "validation"} argument of the standard plotting
+function. An example is shown in Figure~\ref{fig:RMSEPplsr} for the
+gasoline data; typically, one would select a number of components
+after which the cross-validation error does not show a significant
+decrease. Unfortunately, no generally applicable tests are available,
+so the decision on how many components to retain will always be
+subjective to some extent.
+
+When a pre-treatment that depends on the composition of the training set is
+applied, the cross-validation procedure as described above is not optimal,
+in the sense that the cross-validation errors are biased downward.  As long
+as the only purpose is to select the optimal number of components, this bias
+may not be very important, but it is not too difficult to avoid it. The
+modelling functions have an argument \code{scale} that can be used for
+auto-scaling per segment.  However, more elaborate methods such as MSC need
+explicit handling per segment. For this, the function \code{crossval} is
+available. It takes an \code{mvr} object and performs the cross-validation
+as it should be done: applying the pre-treatment for each segment. The
+results can be shown in a plot (which looks very similar to
+Figure~\ref{fig:RMSEPplsr}) or summarised in numbers.
+<<>>=
+gas2.cv <- crossval(gas2, segments = 10)
+plot(MSEP(gas2.cv), legendpos="topright")
+summary(gas2.cv, what = "validation")
+@
+Applying MSC in this case leads to nearly identical cross-validation
+estimates of prediction error.
+
+When the scaling does not depend on the division of the data into
+segments (e.g., log-scaling), functions \code{crossval} and
+\code{mvrCv} give the same results; however, \code{crossval} is much
+slower.
+
+Cross-validation can be computationally demanding (especially when using the
+function \code{crossval}).  Therefore, both \code{mvrCv} and \code{crossval}
+can perform the calculations in parallel on a multi-core machine or on
+several machines.  How to do this is described in
+Section~\ref{sec:parallel-cv}.
+
+
+\section{Inspecting fitted models}\label{sec:inspecting}
+%%%%%%%%%%%%%%%%
+A closer look at the fitted model may reveal interesting agreements or
+disagreements with what is known about the relations between X and
+Y. Several functions are implemented in \pkg{pls} for plotting,
+extracting and summarising model components.
+
+
+\subsection{Plotting}
+%%%%%%%%%%%%%%%%
+One can access all plotting functions through the \code{"plottype"}
+argument of the \code{plot} method for \code{mvr} objects.  This is simply a wrapper
+function calling the actual plot functions; the latter are available
+to the user as well.
+
+The default plot is a prediction plot (\code{predplot}), showing predicted
+versus measured values.  Test set predictions are used if a test set is
+supplied with the \code{newdata} argument.  Otherwise, if the model was
+built using cross-validation, the cross-validated predictions are used,
+otherwise the predictions for the training set.  This can be overridden with
+the \code{which} argument.  An example of this type of plot can be seen in
+Figure~\ref{fig:cvpreds}. An optional argument can be used to indicate how
+many components should be included in the prediction.
+
+To assess how many components are optimal, a validation plot
+(\code{validationplot}) can be
+used such as the one shown in Figure~\ref{fig:RMSEPplsr}; this shows a
+measure of prediction performance (either RMSEP,
+MSEP, or $R^2$) against the number of components. Usually, one takes the
+first local minimum rather than the absolute minimum in the curve, to
+avoid over-fitting.
+
+The regression coefficients can be visualised using
+\code{plottype = "coef"} in the \code{plot} method, or directly through
+function \code{coefplot}. This allows simultaneous plotting of the
+regression vectors for several different numbers of components at
+once. The regression vectors for the \code{gasoline} data set using
+MSC are shown in Figure~\ref{fig:gascoefs} using the command
+<<eval=FALSE>>=
+plot(gas1, plottype = "coef", ncomp=1:3, legendpos = "bottomleft",
+     labels = "numbers", xlab = "nm")
+@
+\begin{figure}
+  \begin{center}
+\setkeys{Gin}{width=6in}
+<<fig=TRUE,echo=FALSE,height=3.5,width=6>>=
+par(mar = c(4, 4, 2.5, 1) + 0.1)
+plot(gas1, plottype = "coef", ncomp=1:3, legendpos = "bottomleft",
+     labels = "numbers", xlab = "nm")
+@
+\setkeys{Gin}{width=5in}
+  \caption{Regression coefficients for the \code{gasoline} data}\label{fig:gascoefs}
+  \end{center}
+\end{figure}
+Note that the coefficients for two components and three components are
+similar.  This is because the third component contributes little to the
+predictions.  The RMSEPs (see Figure~\ref{fig:RMSEPplsr}) and predictions
+(see Section~\ref{sec:predicting}) for two and three components are quite
+similar.
+
+Scores and loadings can be plotted using functions \code{scoreplot}
+(an example is shown in Figure~\ref{fig:scores})
+and \code{loadingplot} (in Figure~\ref{fig:loadings}),
+respectively. One can indicate the number of
+components with the \code{comps} argument; if more than two components
+are given, plotting the scores will give a pairs plot, otherwise a
+scatter plot. For \code{loadingplot}, the default is to use line plots.
+
+Finally, a `correlation loadings' plot (function \code{corrplot}, or
+\code{plottype = "correlation"} in \code{plot}) shows the
+correlations between each variable and the selected components (see
+Figure~\ref{fig:corrplot}). These
+plots are scatter plots of two sets of scores with concentric circles
+of radii given by \code{radii}. Each point corresponds to an X variable.
+The squared distance between the point and the origin equals the fraction
+of the variance of the variable explained by the components in the
+panel. The default values for \code{radii} correspond to 50\% and
+100\% explained variance, respectively.
+\begin{figure}
+  \begin{center}
+\setkeys{Gin}{width=3.7in}
+<<fig=TRUE,echo=FALSE,width=3.7,height=3.5>>=
+par(mar = c(4, 4, 0, 1) + 0.1)
+plot(gas1, plottype = "correlation")
+@
+\setkeys{Gin}{width=5in}
+  \caption{Correlation loadings plot for the \code{gasoline} data}\label{fig:corrplot}
+  \end{center}
+\end{figure}
+
+The plot functions accept most of the ordinary plot parameters, such as
+\code{col} and \code{pch}.
+If the model has several responses or one selects more than one
+model size, e.g.\ \code{ncomp = 4:6}, in some plot functions (notably
+prediction plots (see below), validation plots and coefficient plots) the
+plot window will be divided and one plot will be shown for
+each combination of response and model size.  The number of rows and columns
+are chosen automatically, but can be specified explicitly with arguments
+\code{nRows} and \code{nCols}.  If there are more plots than fit the plot
+window, one will be asked to press return to see the rest of the plots.
+
+
+\subsection{Extraction}
+%%%%%%%%%%%%%%%%
+Regression coefficients can be extracted using the generic function
+\code{coef}; the function takes several arguments, indicating the
+number of components to take into account, and whether the intercept is
+needed (default is \code{FALSE}).
+
+Scores and loadings can be extracted using functions \code{scores} and
+\code{loadings} for X, and \code{Yscores} and
+\code{Yloadings} for Y. These also return the percentage of variance
+explained as attributes. In PLSR, weights can be extracted using the function
+\code{loading.weights}. When applied to a PCR model, the function
+returns \code{NULL}.
+
+Note that commands like \code{plot(scores(gas1))} are perfectly
+correct, and lead to exactly the same plots as using \code{scoreplot}.
+
+
+\subsection{Summaries}
+%%%%%%%%%%%%%%%%
+The \code{print} method for an object of class \code{"mvr"} shows the
+regression type used, perhaps indicating the form of validation
+employed, and shows the function call. The \code{summary} method gives
+more information: it also shows the amount of variance explained by
+the model (for all choices of $a$, the number of latent
+variables). The \code{summary} method has an additional argument
+(\code{what}) to be able to focus on the training phase or validation
+phase, respectively. Default is to print both types of information.
+
+
+\section{Predicting new observations}\label{sec:predicting}
+%%%%%%%%%%%%%%%%
+Fitted models are often used to predict future observations, and
+\pkg{pls} implements a \code{predict} method for PLSR and PCR models.  The
+most common way of calling this function is
+\code{predict(mymod, ncomp = myncomp, newdata = mynewdata)}, where
+\code{mymod} is a fitted model, \code{myncomp} specifies the model size(s) to
+use, and \code{mynewdata} is a data frame with new X observations.  The
+data frame can also contain response measurements for the new observations,
+which can be used to compare the predicted values to the measured ones, or to
+estimate the overall prediction ability of the model.  If \code{newdata} is
+missing, \code{predict} uses the data used to fit the model, i.e., it returns
+fitted values.
+
+If the argument \code{ncomp} is missing, \code{predict} returns predictions
+for models with 1 component, 2 components, $\ldots$, $A$ components, where
+$A$ is the number of components used when fitting the model.  Otherwise, the
+model size(s) listed in \code{ncomp} are used.  For instance, to get
+predictions from the model built in Section~\ref{sec:example-session}, with
+two and three components, one would use
+<<>>=
+predict(gas1, ncomp = 2:3, newdata = gasTest[1:5,])
+@
+(We predict only the five first test observations, to save space.)  The
+predictions with two and three components are quite similar.  This could be
+expected, given that the regression vectors (Figure~\ref{fig:gascoefs})
+as well as the estimated RMSEPs for the two model sizes were similar.
+
+One can also specify explicitly which components to use when predicting.
+This is done by specifying the components in the argument \code{comps}.  (If
+both \code{ncomp} and \code{comps} are specified, \code{comps} takes
+precedence over \code{ncomp}.)  For instance, to get predictions from a
+model with only component 2, one can use
+<<>>=
+predict(gas1, comps = 2, newdata = gasTest[1:5,])
+@
+The results are different from the predictions with two components
+(i.e., components one and two) above.  (The intercept is always included in
+the predictions.  It can be removed by subtracting \code{mymod\$Ymeans}
+from the predicted values.)
+
+The \code{predict} method returns a three-dimensional array, in which the
+entry $(i,j,k)$ is the predicted value for observation $i$, response $j$ and
+model size $k$.  Note that singleton dimensions are not dropped, so
+predicting five observations for a uni-response model with \code{ncomp = 3}
+gives an $5 \times 1 \times 1$ array, not a vector of length five.  This is
+to make it easier to distinguish between predictions from models with one
+response and predictions with one model size.  (When using the \code{comps}
+argument, the last dimension is dropped, because the predictions are always
+from a single model.)  One can drop the singleton dimensions explicitly by
+using \code{drop(predict(...))}:
+<<>>=
+drop(predict(gas1, ncomp = 2:3, newdata = gasTest[1:5,]))
+@
+
+Missing values in \code{newdata} are propagated to \code{NA}s in the predicted
+response, by default.  This can be changed with the \code{na.action}
+argument.  See \code{?na.omit} for details.
+
+The \code{newdata} does not have to be a data frame.  Recognising the fact
+that the right hand side of PLSR and PCR formulas very often are a single
+matrix term, the \code{predict} method allows one to use a matrix as
+\code{newdata}, so instead of
+\begin{verbatim}
+newdataframe <- data.frame(X = newmatrix)
+predict(..., newdata = newdataframe)
+\end{verbatim}
+one can simply say
+\begin{verbatim}
+predict(..., newdata = newmatrix)
+\end{verbatim}
+However, there are a couple of caveats: First, this \emph{only} works in
+\code{predict}.  Other functions that take a \code{newdata} argument (such
+as \code{RMSEP}) must have a data frame (because they also need the response
+values).  Second, when \code{newdata} is a data frame, \code{predict} is
+able to perform more tests on the supplied data, such as the dimensions and
+types of variables.  Third, with the exception of scaling (specified with
+the \code{scale} argument when fitting the model), any transformations or
+coding of factors and interactions have to be performed manually if
+\code{newdata} is a matrix.
+
+It is often interesting to predict scores from new observations, instead of
+response values.  This can be done by specifying the argument \code{type =
+"scores"} in \code{predict}.  One will then get a matrix with the scores
+corresponding to the components specified in \code{comps} (\code{ncomp} is
+accepted as a synonym for \code{comps} when predicting scores).
+
+Predictions can be plotted with the function \code{predplot}.  This function
+is generic, and can also be used for plotting predictions from other types
+of models, such as \code{lm}.  Typically, \code{predplot} is called like this:
+<<eval=FALSE>>=
+predplot(gas1, ncomp = 2, newdata = gasTest, asp = 1, line = TRUE)
+@
+%
+\begin{figure}
+  \begin{center}
+\setkeys{Gin}{width=3.5in}
+<<echo=FALSE,fig=TRUE,width=3.5,height=3.7>>=
+par(mar = c(4, 4, 2.5, 1))
+predplot(gas1, ncomp = 2, newdata = gasTest, asp = 1, line = TRUE)
+@
+\setkeys{Gin}{width=5in}
+  \caption{Test set predictions}\label{fig:testPreds}
+  \end{center}
+\end{figure}
+
+This plots predicted (with 2 components) versus measured response values.
+(Note that \code{newdata} must be a data frame with both X and Y
+variables.)
+
+
+\section{Further topics}\label{sec:advanced}
+%%%%%%%%%%%%%%%%
+This section presents a couple of slightly technical topics for more
+advanced use of the package.
+
+
+\subsection{Selecting fit algorithms}\label{sec:select-fit-alg}
+%%%%%%%%%%%%%%%%
+There are several PLSR algorithms, and the \pkg{pls} package currently
+implements three of them: the kernel algorithm for tall matrices (many
+observations, few variables)~\cite{DayMacGre:ImprPlsAlg}, the classic
+orthogonal scores algorithm (A.K.A.\ NIPALS algorithm)~\cite{MarNaes:MultCal}
+and the SIMPLS algorithm~\cite{Jong1993a}.  The kernel and orthogonal
+scores algorithms produce the same results (the kernel algorithm being the
+fastest of them for most problems).  SIMPLS produces the same fit for
+single-response models, but slightly different results for multi-response
+models.  It is also usually faster than the NIPALS algorithm.
+
+The factory default is to use the kernel algorithm.  One can specify a
+different algorithm with the \code{method} argument; i.e., \code{method =
+"oscorespls"}.
+
+If one's personal taste of algorithms does not coincide with the defaults in
+\pkg{pls}, it can be quite tedious (and error prone) having to write e.g.\
+\code{method = "oscorespls"} every time (even though it can be shortened to
+e.g.\ \code{me = "o"} due to partial matching).  Therefore, the defaults can
+be changed, with the function \code{pls.options}.  Called without arguments,
+it returns the current settings as a named list:
+<<>>=
+pls.options()
+@
+The options specify the default fit algorithm of \code{mvr}, \code{plsr},
+and \code{pcr}.  To return only a specific option, one can use
+\code{pls.options("plsralg")}.  To change the default PLSR algorithm for the
+rest of the session, one can use, e.g.
+<<>>=
+pls.options(plsralg = "oscorespls")
+@
+Note that changes to the options only last until \proglang{R} exits.  (Earlier
+versions of \pkg{pls} stored the changes in the global environment so they
+could be saved and restored, but current CRAN policies do not allow this.)
+
+
+\subsection{Parallel cross-validation}\label{sec:parallel-cv}
+%%%%%%%%%%%%%%%%
+Cross-validation is a computationally demanding procedure.  A new model has to
+be fitted for each segment.  The underlying fit functions have been optimised,
+and the implementation of cross-validation that is used when specifying
+the \code{validation} argument to \code{mvr} tries to avoid any unneeded
+calculations (and house-keeping things like the formula handling, which can be
+surprisingly expensive).  Even so, cross-validation can take a long time, for
+models with large matrices, many components or many segments.
+
+By default, the cross-validation calculations in \pkg{pls} is performed
+serially, on one CPU (core).  (In the following, we will use `CPU' to denote
+both CPUs and cores.)
+
+Since version 2.14.0, \proglang{R} has shipped with a package \pkg{parallel}
+for running calculations in parallel, on multi-CPU machines or on
+several machines.  The \pkg{pls} package can use the facilities of
+\pkg{parallel} to run the cross-validations in parallel.
+
+The \pkg{parallel} package has several ways of running calculations in
+parallel, and not all of them are available on all systems.  Therefore, the
+support in \pkg{pls} is quite general, so one can select the ways that work
+well on the given system.
+
+To specify how to run calculations in parallel, one sets the option
+\code{parallel} in \code{pls.options}.  After setting the option, one simply
+runs cross-validatons as before, and the calculations will be performed in
+parallel.  This works both when using the \code{crossval} function and the
+\code{validation} argument to \code{mvr}.  The parallel specification has
+effect until it is changed.
+
+The default value for \code{parallel} is \code{NULL}, which specifies that the
+calculations are done serially, using one CPU.  Specifying the value 1 has the
+same effect.
+
+Specifying an integer $> 1$ makes the calculations use the function
+\code{mclapply} with the given number as the number of CPUs to use.  Note:
+\code{mclapply} depends on `forking' which does not exist on MS Windows, so
+\code{mclapply} cannot be used there.
+
+Example:
+\begin{verbatim}
+pls.options(parallel = 4) # Use mclapply with 4 CPUs
+gas1.cv <- plsr(octane ~ NIR, ncomp = 10, data = gasTrain, validation = "LOO")
+\end{verbatim}
+
+The \code{parallel} option can also be specified as a cluster object created
+by the \code{makeCluster} function from the package \code{parallel}.
+Any following cross-validation will then be performed with the function
+\code{parLapply} on that cluster.  Any valid cluster specification can be
+used.  The user should stop the cluster with
+\code{stopCluster(pls.options()\$parallel)} when it is no longer needed.
+
+\begin{verbatim}
+library(parallel) # Needed for the makeCluster call
+pls.options(parallel = makeCluster(4, type = "PSOCK")) # PSOCK cluster, 4 CPUs
+gas1.cv <- plsr(octane ~ NIR, ncomp = 10, data = gasTrain, validation = "LOO")
+## later:
+stopCluster(pls.options()$parallel)
+\end{verbatim}
+
+Several types of clusters are available: FORK uses forking, so starting the
+cluster is very quick, however it is not available on MS Windows.  PSOCK
+starts \proglang{R} processes with the \code{Rscript} command, which is
+slower, but is supported on MS Windows.  It can also start worker processes on
+different machines (see ?makeCluster for how).  MPI uses MPI to start and
+communicate with processes.  This is the most flexible, but is often slower to
+start up than the other types.  It also dependens on the packages \pkg{snow}
+and \pkg{Rmpi} to be installed and working.  It is especially useful when
+running batch jobs on a computing cluster, because MPI can interact with the
+queue system on the cluster to find out which machines to use when the job
+starts.
+
+Here is an example of running a batch job on a cluster using MPI:
+
+R script (myscript.R):
+\begin{verbatim}
+library(parallel) # for the makeCluster call
+pls.options(parallel = makeCluster(16, type = "MPI") # MPI cluster, 16 CPUs
+gas1.cv <- plsr(octane ~ NIR, ncomp = 10, data = gasTrain, validation = "LOO")
+## later:
+save.image(file = "results.RData")
+stopCluster(pls.options()$parallel)
+mpi.exit() # stop Rmpi
+\end{verbatim}
+
+To run the job:
+\begin{verbatim}
+mpirun -np 1 R --slave --file=myscript.R
+\end{verbatim}
+The details of how to run \code{mpirun} varies between the different MPI
+implementations and how they interact with the queue system used (if any).
+The above should work for OpenMPI running under the Slurm queue system.
+FIXME: references?  In other situations, one have to specify which machines to
+use with, e.g., the \code{-H} switch.
+
+FIXME: her er jeg!
+
+
+\subsection{Package design}\label{sec:package-design}
+%%%%%%%%%%%%%%%%
+The \pkg{pls} package is designed such that an interface function \code{mvr}
+handles the formula and data, and calls an underlying fit function (and
+possibly a cross-validation function) to do the real work.  There are
+several reasons for this design: it makes it easier to implement new
+algorithms, one can easily skip the time-consuming formula and data handling
+in computing-intensive applications (simulations, etc.), and it makes it
+easier to use the \code{pls} package as a building block in other packages.
+
+The plotting facilities are implemented similarly: the \code{plot} method
+simply calls the correct plot function based on the \code{plottype}
+argument.  Here, however, the separate plot functions are meant to be
+callable interactively, because some people like to use the generic
+\code{plot} function, while others like to use separate functions for each
+plot type.  There are also \code{plot} methods for some of the components of
+fitted models that can be extracted with extract functions, like score and
+loading matrices.  Thus there are several ways to get some plots, e.g.:
+\begin{verbatim}
+plot(mymod, plottype = "scores", ...)
+scoreplot(mymod, ...)
+plot(scores(mymod), ...)
+\end{verbatim}
+
+One example of a package that uses \pkg{pls} is \pkg{lspls}, available on
+CRAN.  In that package LS is combined with PLS in a regression procedure.
+It calls the fit functions of \pkg{pls} directly, and also uses the plot
+functions to construct score and loading plots.  There is also the
+\code{plsgenomics} package, which includes a modified version of (an earlier
+version of) the SIMPLS fit function \code{simpls.fit}.
+
+
+\subsection{Calling fit functions directly}\label{sec:call-fit-func}
+%%%%%%%%%%%%%%%%
+The underlying fit functions are called \code{kernelpls.fit},
+\code{oscorespls.fit}, and \code{simpls.fit} for the PLSR methods, and
+\code{svdpc.fit} for the PCR method.  They all take arguments \code{X},
+\code{Y}, \code{ncomp}, and \code{stripped}.  Arguments \code{X}, \code{Y},
+and \code{ncomp} specify $\bX$ and $\bY$ (as matrices, not data
+frames), and the number of components to fit, respectively.  The argument
+\code{stripped} defaults to \code{FALSE}.  When it is \code{TRUE}, the
+calculations are stripped down to the bare minimum required for returning
+the $\bX$ means, $\bY$ means, and the regression coefficients.  This is used
+to speed up cross-validation procedures.
+
+The fit functions can be called directly, for instance when one wants to
+avoid the overhead of formula and data handling in repeated fits.  As an
+example, this is how a simple leave-one-out cross-validation for a
+uni-response-model could be implemented, using the SIMPLS:
+<<>>=
+X <- gasTrain$NIR
+Y <- gasTrain$octane
+ncomp <- 5
+cvPreds <- matrix(nrow = nrow(X), ncol = ncomp)
+for (i in 1:nrow(X)) {
+    fit <- simpls.fit(X[-i,], Y[-i], ncomp = ncomp, stripped = TRUE)
+    cvPreds[i,] <- (X[i,] - fit$Xmeans) %*% drop(fit$coefficients) +
+        fit$Ymeans
+}
+@
+The RMSEP of the cross-validated predictions are
+<<>>=
+sqrt(colMeans((cvPreds - Y)^2))
+@
+which can be seen to be the same as the (unadjusted) CV results for the
+\code{gas1} model in Section~\ref{sec:example-session}.
+
+
+\subsection{Formula handling in more detail}\label{sec:formula-handling}
+%%%%%%%%%%%%%%%%
+The handling of formulas and variables in the model fitting is very similar
+to what happens in the function \code{lm}: The variables specified in the
+formula are looked up in the data frame given in the \code{data} argument of
+the fit function (\code{plsr}, \code{pcr} or \code{mvr}), or in the calling
+environment if not found in the data frame.  Factors are coded into one or
+more of columns, depending on the number of levels, and on the contrasts
+option.  All (possibly coded) variables are then collected in a numerical
+model matrix.  This matrix is then handed to the underlying fit or
+cross-validation functions.  A similar handling is used in the \code{predict}
+method.
+
+The intercept is treated specially in \pkg{pls}.  After the model matrix has
+been constructed, the intercept column is removed.  This ensures that any
+factors are coded as if the intercept was present.  The underlying fit
+functions then center the rest of the variables as a part of the fitting
+process.  (This is intrinsic to the PLSR and PCR algorithms.)  The intercept
+is handled separately.  A consequence of this is that explicitly specifying
+formulas without the intercept (e.g., \code{y \textasciitilde\ a + b - 1})
+will only result in the coding of any factors to change; the intercept will
+still be fitted.
+
+
+%%%%%%%%%%%%%%%%
+\bibliographystyle{plain}
+\bibliography{pls-manual}
+
+
+%%%%%%%%%%%%%%%%
+\end{document}
