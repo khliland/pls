@@ -61,14 +61,13 @@
   San Michele all'Adige (TN)\\
   Italy\\
 }
-%\date{\today\ (\revision)} % FIXME
 \maketitle
 
 %% Setup of Sweave:
-\SweaveOpts{width=5,height=5,eps=FALSE} %FIXME: eps=FALSE needed?
+\SweaveOpts{width=5,height=5}
 \setkeys{Gin}{width=5in}
 <<echo=FALSE,results=hide>>=
-ps.options(pointsize=10)
+pdf.options(pointsize=10)
 options(digits = 4)
 @
 
@@ -385,7 +384,7 @@ plot(RMSEP(gas1), legendpos = "topright")
 %
 \begin{figure}
   \begin{center}
-<<fig=TRUE,echo=FALSE,height=3>>=
+<<fig=TRUE,echo=FALSE,height=2.5>>=
 par(mar = c(4, 4, 2.5, 1) + 0.1)
 plot(RMSEP(gas1), legendpos = "topright")
 @
@@ -443,15 +442,13 @@ plot(gas1, plottype = "scores", comps = 1:3)
 \end{figure}
 
 \begin{figure}
-\setkeys{Gin}{width=6in}
   \begin{center}
-<<echo=FALSE,fig=TRUE,height=3,width=6>>=
+<<echo=FALSE,fig=TRUE,height=2.5>>=
 par(mar = c(4, 4, 0.3, 1) + 0.1)
 plot(gas1, "loadings", comps = 1:2, legendpos = "topleft",
      labels = "numbers", xlab = "nm")
 abline(h = 0)
 @
-\setkeys{Gin}{width=5in}
   \caption{Loading plot for the \code{gasoline} data}\label{fig:loadings}
   \end{center}
 \end{figure}
@@ -780,13 +777,11 @@ plot(gas1, plottype = "coef", ncomp=1:3, legendpos = "bottomleft",
 @
 \begin{figure}
   \begin{center}
-\setkeys{Gin}{width=6in}
-<<fig=TRUE,echo=FALSE,height=3.5,width=6>>=
+<<fig=TRUE,echo=FALSE,height=3>>=
 par(mar = c(4, 4, 2.5, 1) + 0.1)
 plot(gas1, plottype = "coef", ncomp=1:3, legendpos = "bottomleft",
      labels = "numbers", xlab = "nm")
 @
-\setkeys{Gin}{width=5in}
   \caption{Regression coefficients for the \code{gasoline} data}\label{fig:gascoefs}
   \end{center}
 \end{figure}
@@ -816,8 +811,8 @@ panel. The default values for \code{radii} correspond to 50\% and
 100\% explained variance, respectively.
 \begin{figure}
   \begin{center}
-\setkeys{Gin}{width=3.7in}
-<<fig=TRUE,echo=FALSE,width=3.7,height=3.5>>=
+\setkeys{Gin}{width=3.5in}
+<<fig=TRUE,echo=FALSE,width=3.5,height=3.4>>=
 par(mar = c(4, 4, 0, 1) + 0.1)
 plot(gas1, plottype = "correlation")
 @
@@ -1114,11 +1109,9 @@ mpirun -np 1 R --slave --file=myscript.R
 \end{verbatim}
 The details of how to run \code{mpirun} varies between the different MPI
 implementations and how they interact with the queue system used (if any).
-The above should work for OpenMPI running under the Slurm queue system.
-FIXME: references?  In other situations, one have to specify which machines to
-use with, e.g., the \code{-H} switch.
-
-FIXME: her er jeg!
+The above should work for OpenMPI or Intel MPI running under the Slurm queue
+system.  In other situations, one might have to specify which machines to use
+with, e.g., the \code{-host} or \code{-machinefile} switch.
 
 
 \subsection{Package design}\label{sec:package-design}
