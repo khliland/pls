@@ -235,9 +235,9 @@ crossval <- function(object, segments = 10,
     if (trace) cat("Segment: ")
     results <- lapplyFunc(pls.options()$parallel,
                           seq_along(segments), crossvalSeg,
-                          quote(clusterCall(parSpec, library, "pls",
-                                            character.only = TRUE,
-                                            warn.conflicts = FALSE)))
+                          quote(parallel::clusterCall(parSpec, library, "pls",
+                                                      character.only = TRUE,
+                                                      warn.conflicts = FALSE)))
     if (trace) cat("\n")
 
     ## Variables to save CV results in:
@@ -287,12 +287,11 @@ lapplyFunc <- function(parSpec, X, FUN, nonForkInit) {
         results <- lapply(X, FUN)
     } else {
         ## Parallel
-        require(parallel, warn.conflicts = FALSE)
         stop_cluster <- FALSE           # Whether to kill the workers afterwards
 
         if (is.numeric(parSpec) && parSpec > 1) {
             ## Number => number of workers with mclapply
-            results <- mclapply(X, FUN, mc.cores = parSpec)
+            results <- parallel::mclapply(X, FUN, mc.cores = parSpec)
         } else {
             if (is.call(parSpec)) {
                 ## Unevaluated call => evaluate it to create the cluster:
@@ -306,10 +305,10 @@ lapplyFunc <- function(parSpec, X, FUN, nonForkInit) {
                     && !missing(nonForkInit)) {
                     eval(nonForkInit)
                 }
-                results <- parLapply(parSpec, X, FUN)
+                results <- parallel::parLapply(parSpec, X, FUN)
 
                 if (stop_cluster) {
-                    stopCluster(parSpec)
+                    parallel::stopCluster(parSpec)
                 }
             } else {
                 stop("Unknown parallelity specification: '", parSpec, "'")
