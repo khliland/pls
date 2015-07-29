@@ -38,10 +38,16 @@ export(
        )
 
 ## Imports:
-## FIXME: maybe more?
-importFrom(stats, biplot, coef, fitted, makepredictcall, model.frame,
-           model.matrix, predict, residuals)
-importFrom(graphics, plot)
+importFrom("grDevices", "dev.interactive")
+importFrom("graphics", "abline", "arrows", "axTicks", "axis", "matplot",
+           "mtext", "pairs", "par", "plot", "points", "segments", "text",
+           "title")
+importFrom("methods", "hasArg")
+importFrom("stats", ".checkMFClasses", "coef", "cor", "delete.response",
+           "drop.terms", "fitted", "formula", "makepredictcall", "median",
+           "model.frame", "model.matrix", "model.response", "na.omit",
+           "na.pass", "napredict", "optimize", "predict", "printCoefmat",
+           "pt", "residuals", "terms", "update", "var")
 
 ## S3 Methods:
 S3method(MSEP, mvr)
