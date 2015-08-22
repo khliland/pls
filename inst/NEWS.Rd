@@ -2,6 +2,59 @@
 \name{NEWS}
 \title{News for Package 'pls'}
 \encoding{latin1}
+%% \section{Changes in pls version FIXME}{
+%%   \subsection{New features}{
+%%     \itemize{
+%%       \item
+%%     }
+%%   }
+%%   \subsection{User-visible changes}{
+%%     \itemize{
+%%       \item
+%%     }
+%%   }
+%%   \subsection{Bug fixes}{
+%%     \itemize{
+%%       \item
+%%     }
+%%   }
+%%   \subsection{Internal changes}{
+%%     \itemize{
+%%       \item
+%%     }
+%%   }
+%%   \subsection{Documentation}{
+%%     \itemize{
+%%       \item
+%%     }
+%%   }
+%% }
+\section{Changes in pls version 2.5-0}{
+  \subsection{New features}{
+    \itemize{
+      \item Cross-validation can now keep all replicates in the same
+      segment, through a new argument `nrep' to cvsegments().
+    }
+  }
+  \subsection{Bug fixes}{
+    \itemize{
+      \item legend did not work with plot types "b" or "p" for
+      validation plots.
+    }
+  }
+  \subsection{Internal changes}{
+    \itemize{
+      \item Changes to comply with cran rules for imports, suggests and
+      description
+    }
+  }
+  \subsection{Documentation}{
+    \itemize{
+      \item Added a vignette.
+      \item Added a NEWS.Rd file that can be viewed with the news() function.
+    }
+  }
+}
 \section{Changes in pls version 2.4-3}{
   \subsection{New features}{
     \itemize{
