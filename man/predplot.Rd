@@ -15,6 +15,7 @@ predplot(object, \dots)
 \method{predplot}{default}(object, \dots)
 \method{predplot}{mvr}(object, ncomp = object$ncomp, which, newdata, nCols, 
          nRows, xlab = "measured", ylab = "predicted", main,
+         ask = nRows * nCols < nPlots && dev.interactive(),
          \dots, font.main, cex.main)
 predplotXy(x, y, line = FALSE, labels, type = "p", main = "Prediction plot",
            xlab = "measured response", ylab = "predicted response",
@@ -44,6 +45,7 @@ predplotXy(x, y, line = FALSE, labels, type = "p", main = "Prediction plot",
     \code{"p"} (points).  See \code{\link{plot}} for a complete list
     of types.  The argument is ignored if \code{labels} is specified.}
   \item{main}{optional main title for the plot.  See Details.}
+  \item{ask}{logical.  Whether to ask the user before each page of a plot.}
   \item{font.main}{font to use for main titles.  See \code{\link{par}}
     for details.  Also see Details below.}
   \item{cex.main}{numeric.  The magnification to be used for main titles

@@ -38,7 +38,7 @@ export(
        )
 
 ## Imports:
-importFrom("grDevices", "dev.interactive")
+importFrom("grDevices", "dev.interactive", "devAskNewPage")
 importFrom("graphics", "abline", "arrows", "axTicks", "axis", "matplot",
            "mtext", "pairs", "par", "plot", "points", "segments", "text",
            "title")

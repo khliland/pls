@@ -331,7 +331,9 @@ predplot.default <- function(object, ...) {
 ## Method for mvr objects:
 predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
                          nCols, nRows, xlab = "measured", ylab = "predicted",
-                         main, ..., font.main, cex.main)
+                         main,
+                         ask = nRows * nCols < nPlots && dev.interactive(),
+                         ..., font.main, cex.main)
 {
     ## Select type(s) of prediction
     if (missing(which)) {
@@ -379,7 +381,10 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
         par(mfrow = c(nRows, nCols),
             oma = c(1, 1, if(missing(main)) 0 else 2, 0) + 0.1,
             mar = c(3,3,3,1) + 0.1)
-        if (nRows * nCols < nPlots && dev.interactive()) par(ask = TRUE)
+        if (isTRUE(ask)) {
+            oask <- devAskNewPage(TRUE)
+            on.exit(devAskNewPage(oask))
+        }
     } else {
         ## Set up default font.main and cex.main for the main title:
         if (missing(font.main)) font.main <- par("font.main")
@@ -484,7 +489,8 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
                      type = "l", lty, lwd = NULL,
                      pch, cex = NULL, col, legendpos,
                      xlab = "variable", ylab = "regression coefficient",
-                     main, pretty.xlabels = TRUE, xlim, ylim, ...)
+                     main, pretty.xlabels = TRUE, xlim, ylim,
+                     ask = nRows * nCols < nPlots && dev.interactive(), ...)
 {
     ## This simplifies code below:
     if (missing(comps)) comps <- NULL
@@ -511,7 +517,10 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
         par(mfrow = c(nRows, nCols),
             oma = c(1, 1, if(missing(main)) 0 else 2, 0) + 0.1,
             mar = c(3,3,3,1) + 0.1)
-        if (nRows * nCols < nPlots && dev.interactive()) par(ask = TRUE)
+        if (isTRUE(ask)) {
+            oask <- devAskNewPage(TRUE)
+            on.exit(devAskNewPage(oask))
+        }
     } else {
         nCols <- nRows <- 1
     }
@@ -682,7 +691,8 @@ validationplot <- function(object, val.type = c("RMSEP", "MSEP", "R2"),
 plot.mvrVal <- function(x, nCols, nRows, type = "l", lty = 1:nEst,
                         lwd = par("lwd"), pch = 1:nEst, cex = 1, col = 1:nEst,
                         legendpos, xlab = "number of components",
-                        ylab = x$type, main, ...)
+                        ylab = x$type, main,
+                        ask = nRows * nCols < nResp && dev.interactive(), ...)
 {
     if (!is.null(x$call$cumulative) && eval(x$call$cumulative) == FALSE)
         stop("`cumulative = FALSE' not supported.")
@@ -700,7 +710,10 @@ plot.mvrVal <- function(x, nCols, nRows, type = "l", lty = 1:nEst,
         par(mfrow = c(nRows, nCols),
             oma = c(1, 1, if(missing(main)) 0 else 2, 0) + 0.1,
             mar = c(3,3,3,1) + 0.1)
-        if (nRows * nCols < nResp && dev.interactive()) par(ask = TRUE)
+        if (isTRUE(ask)) {
+            oask <- devAskNewPage(TRUE)
+            on.exit(devAskNewPage(oask))
+        }
     } else {
         nCols <- nRows <- 1
     }

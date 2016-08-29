@@ -13,7 +13,8 @@ validationplot(object, val.type = c("RMSEP", "MSEP", "R2"), estimate,
                newdata, ncomp, comps, intercept, \dots)
 \method{plot}{mvrVal}(x, nCols, nRows, type = "l", lty = 1:nEst,
      lwd = par("lwd"), pch = 1:nEst, cex = 1, col = 1:nEst, legendpos,
-     xlab = "number of components", ylab = x$type, main, \dots)
+     xlab = "number of components", ylab = x$type, main,
+     ask = nRows * nCols < nResp && dev.interactive(), \dots)
 }
 \arguments{
   \item{object}{an \code{mvr} object.}
@@ -57,6 +58,7 @@ validationplot(object, val.type = c("RMSEP", "MSEP", "R2"), estimate,
     character strings, but can be expressions (e.g.,
     \code{expression(R^2)} or lists.  See \code{\link{title}} for details.}
   \item{main}{optional main title for the plot.  See Details.}
+  \item{ask}{logical.  Whether to ask the user before each page of a plot.}
   \item{\dots}{Further arguments sent to underlying plot functions.}
 }
 \details{
