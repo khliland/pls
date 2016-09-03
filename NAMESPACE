@@ -29,6 +29,7 @@ export(
        respnames,
        scoreplot,
        scores,
+       selectNcomp,
        simpls.fit,
        stdize,                          # Because model.frame uses eval()
        svdpc.fit,
@@ -39,15 +40,15 @@ export(
 
 ## Imports:
 importFrom("grDevices", "dev.interactive", "devAskNewPage")
-importFrom("graphics", "abline", "arrows", "axTicks", "axis", "matplot",
-           "mtext", "pairs", "par", "plot", "points", "segments", "text",
-           "title")
+importFrom("graphics", "abline", "arrows", "axTicks", "axis", "legend",
+           "matplot", "mtext", "pairs", "par", "plot", "points", "segments",
+           "text", "title")
 importFrom("methods", "hasArg")
 importFrom("stats", ".checkMFClasses", "coef", "cor", "delete.response",
            "drop.terms", "fitted", "formula", "makepredictcall", "median",
            "model.frame", "model.matrix", "model.response", "na.omit",
            "na.pass", "napredict", "optimize", "predict", "printCoefmat",
-           "pt", "residuals", "terms", "update", "var")
+           "pt", "residuals", "runif", "sd", "terms", "update", "var")
 
 ## S3 Methods:
 S3method(MSEP, mvr)
