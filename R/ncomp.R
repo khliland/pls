@@ -46,8 +46,8 @@ selectNcomp <- function(object,
                       function(ii) randomiz.test(allresids[,ii],
                                                  allresids[,absBest],
                                                  nperm = nperm))
-      idx <- c(which(pvals > alpha), maxIdx)
-      selection <- min(idx) - 1
+      idx <- which(pvals > alpha)
+      selection <- min(c(idx, maxIdx)) - 1
     } else {
       residsds <- apply(allresids, 2, sd) / sqrt(nrow(allresids))
       uls <- rmseps - residsds
