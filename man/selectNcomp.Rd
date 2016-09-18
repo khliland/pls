@@ -66,7 +66,7 @@ selectNcomp(object, method = c("randomization", "onesigma"),
 data(yarn)
 yarn.pls <- plsr(density ~ NIR, data = yarn, scale = TRUE,
                  ncomp = 20, validation = "LOO") 
-selectNcomp(yarn.pls, "onesigma", plot = TRUE)
+selectNcomp(yarn.pls, "onesigma", plot = TRUE, ylim = c(0, 3))
 selectNcomp(yarn.pls, "randomization", plot = TRUE)
 selectNcomp(yarn.pls, "randomization", plot = TRUE,
             ncomp = 10, ylim = c(0, 3))
