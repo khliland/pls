@@ -67,7 +67,7 @@
   \item{residuals}{an array of regression residuals.  It has the same
     dimensions as \code{fitted.values}.}
   \item{Xvar}{a vector with the amount of X-variance explained by each
-    number of components.}
+    component.}
   \item{Xtotvar}{total variance in \code{X}.}
   \item{gammas}{gamma-values obtained in power optimisation.}
   \item{canonical.correlations}{Canonical correlation values from the

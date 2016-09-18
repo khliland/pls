@@ -90,7 +90,7 @@ explvar(object)
   with the argument \code{comps}.
 
   \code{explvar} extracts the amount of \eqn{X} variance (in per cent)
-  explained by for each component in the model.  It can also handle
+  explained by each component in the model.  It can also handle
   score and loading matrices returned by \code{\link{scores}} and \code{\link{loadings}}.
 }
 \value{

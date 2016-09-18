@@ -47,7 +47,7 @@
   \item{residuals}{an array of regression residuals.  It has the same
     dimensions as \code{fitted.values}.}
   \item{Xvar}{a vector with the amount of X-variance explained by each
-    number of components.}
+    component.}
   \item{Xtotvar}{Total variance in \code{X}.}
 
   If \code{stripped} is \code{TRUE}, only the components
