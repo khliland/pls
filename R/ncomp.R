@@ -48,7 +48,7 @@ selectNcomp <- function(object,
                                                        allresids[,absBest],
                                                        nperm = nperm))
             idx <- which(pvals > alpha)
-            selection <- min(c(idx, maxIdx)) - 1
+            selection <- min(c(idx, absBest)) - 1
         } else {
             residsds <- apply(allresids, 2, sd) / sqrt(nrow(allresids))
             uls <- rmseps - residsds
