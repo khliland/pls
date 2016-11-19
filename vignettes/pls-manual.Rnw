@@ -56,10 +56,8 @@
   Norway\\
 \and
   Ron Wehrens\\
-  Biostatistics and Data Management\\
-  Center for Research and Innovation, Fondazione Edmund Mach\\
-  San Michele all'Adige (TN)\\
-  Italy\\
+  Biometris, Wageningen University \& Research\\
+  The Netherlands\\
 }
 \maketitle
 
@@ -697,9 +695,55 @@ calculated as well. The validation results can be visualised using the
 function. An example is shown in Figure~\ref{fig:RMSEPplsr} for the
 gasoline data; typically, one would select a number of components
 after which the cross-validation error does not show a significant
-decrease. Unfortunately, no generally applicable tests are available,
-so the decision on how many components to retain will always be
-subjective to some extent.
+decrease.
+
+The decision on how many components to retain will to some extent
+always be subjective. However, especially when building large numbers
+of models (e.g., in simulation studies), it can be crucial to have a
+consistent strategy on how to choose the ``optimal'' number of
+components. Two such strategies have been implemented in function
+\code{selectNcomp}. The first is based on the so-called one-sigma
+heuristic~\cite{TESL2013} and consists of choosing the model with fewest
+components that is still less than one standard error away from the
+overall best model. The second strategy employs a permutation
+approach, and basically tests whether adding a new component is
+beneficial at all~\cite{Voet1994}. It is implemented backwards, again
+taking the global minimum in the crossvalidation curve as a starting
+point, and assessing models with fewer and fewer components: as long
+as no significant deterioration in performance is found (by default on
+the $\alpha = 0.01$ level), the algorithm
+continues to remove components. Applying the function is quite
+straightforward:
+<<eval=FALSE>>=
+ncomp.onesigma <- selectNcomp(gas2, method = "onesigma", plot = TRUE,
+                              ylim = c(.18, .6))
+ncomp.permut <- selectNcomp(gas2, method = "randomization", plot = TRUE,
+                            ylim = c(.18, .6))
+@
+This leads to the plots in Figure~\ref{fig:NComp} -- note that
+graphical arguments can be supplied to customize the plots. In both cases,
+the global minimum of the crossvalidation curve is indicated with gray
+dotted lines, and the suggestion for the optimal number of components
+with a vertical blue dashed line. The left plot shows the width of the
+one-sigma intervals on which the suggestion is based; the right plot
+indicates which models have been assessed by the permutation approach
+through the large blue circles. The two criteria do not always agree
+(as in this case) but usually are quite close.
+\begin{figure}[tb]
+\centering
+\setkeys{Gin}{width=\textwidth}
+<<fig=TRUE,echo=FALSE,height=4.5,width=10>>=
+par(mfrow = c(1,2))
+ncomp.onesigma <- selectNcomp(gas1, "onesigma", plot = TRUE,
+                              ylim = c(.18, .6))
+ncomp.permut <- selectNcomp(gas1, "randomization", plot = TRUE,
+                            ylim = c(.18, .6))
+@
+\caption{The two strategies for suggesting optimal model dimensions:
+  the left plot shows the one-sigma strategy, the right plot the
+  permutation strategy.}
+\label{fig:NComp}
+\end{figure}
 
 When a pre-treatment that depends on the composition of the training set is
 applied, the cross-validation procedure as described above is not optimal,
