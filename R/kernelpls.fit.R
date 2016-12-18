@@ -71,7 +71,7 @@ kernelpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
                                t(R[,1:(a-1), drop=FALSE]))
         } else if (a > 1) {
             for (j in 1:(a - 1))
-                r.a <- r.a - (P[,j] %*% w.a) * R[,j]
+                r.a <- r.a - c(P[,j] %*% w.a) * R[,j]
         }
 
         ## 4.
