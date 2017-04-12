@@ -1,5 +1,4 @@
 ### widekernelpls.fit.R: Kernel PLS fit algorithm for wide data.
-### $Id$
 ###
 ### Implements an adapted version of the algorithm described in
 ###  Rannar, S., Lindgren, F., Geladi, P. and Wold, S. (1994) A PLS
@@ -7,7 +6,7 @@
 ###  Objects.  Part 1: Theory and Algorithm.
 ###  \emph{Journal of Chemometrics}, \bold{8}, 111--125.
 
-widekernelpls.fit <- function(X, Y, ncomp, stripped = FALSE,
+widekernelpls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE,
                               tol = .Machine$double.eps^0.5,
                               maxit = 100, ...)
 {
@@ -35,10 +34,17 @@ widekernelpls.fit <- function(X, Y, ncomp, stripped = FALSE,
     }
 
     ## Center variables:
-    Xmeans <- colMeans(X)
-    X <- X - rep(Xmeans, each = nobj)
-    Ymeans <- colMeans(Y)
-    Y <- Y - rep(Ymeans, each = nobj)
+    if (center) {
+        Xmeans <- colMeans(X)
+        X <- X - rep(Xmeans, each = nobj)
+        Ymeans <- colMeans(Y)
+        Y <- Y - rep(Ymeans, each = nobj)
+    } else {
+        ## Set means to zero. Will ensure that predictions do not take the
+        ## mean into account.
+        Xmeans <- rep_len(0, npred)
+        Ymeans <- rep_len(0, nresp)
+    }
 
     XXt <- tcrossprod(X)
     YYt <- tcrossprod(Y)

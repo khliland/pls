@@ -1,7 +1,6 @@
 ### svdpc.fit.R: SVD PC fit algorithm
-### $Id$
 
-svdpc.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
+svdpc.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE, ...)
 {
     Y <- as.matrix(Y)
     if (!stripped) {
@@ -21,10 +20,17 @@ svdpc.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
     if (!stripped) fitted <- array(0, dim = c(nobj, nresp, ncomp))
 
     ## Center variables:
-    Xmeans <- colMeans(X)
-    X <- X - rep(Xmeans, each = nobj)
-    Ymeans <- colMeans(Y)
-    Y <- Y - rep(Ymeans, each = nobj)
+    if (center) {
+        Xmeans <- colMeans(X)
+        X <- X - rep(Xmeans, each = nobj)
+        Ymeans <- colMeans(Y)
+        Y <- Y - rep(Ymeans, each = nobj)
+    } else {
+        ## Set means to zero. Will ensure that predictions do not take the
+        ## mean into account.
+        Xmeans <- rep_len(0, npred)
+        Ymeans <- rep_len(0, nresp)
+    }
 
     huhn <- La.svd(X)
     D <- huhn$d[1:ncomp]

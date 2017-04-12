@@ -1,14 +1,13 @@
 ### cppls.fit.R: The Canonical Powered PLS algorithm
 ###
-### $Id$
-###
 ### Implements the CPPLS algorithm as described in
 ### Indahl, U.G., Liland, K.H., Næs, T. (2009).
 ### Canonical partial least squares - a unified PLS approach to classification and regression problems,
 ### Journal of Chemometrics 23, pp. 495-504
 
-cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
-                      lower = 0.5, upper = 0.5, trunc.pow = FALSE, weights = NULL, ...)
+cppls.fit <- function(X, Y, ncomp, Y.add = NULL, center = TRUE,
+                      stripped = FALSE, lower = 0.5, upper = 0.5,
+                      trunc.pow = FALSE, weights = NULL, ...)
 {
     ## X       - the data matrix
     ## Y       - the primary response matrix
@@ -21,27 +20,35 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, stripped = FALSE,
     Yprim <- as.matrix(Y)
     Y <- cbind(Yprim, Y.add)
 
-    nobj <- dim(X)[1]
-    npred <- dim(X)[2]
-    nresp <- dim(Yprim)[2]
-
-    if(is.null(weights)){
-        Xmeans <- colMeans(X)
-        X <- X - rep(Xmeans, each = nobj)
-    } else {
-        Xmeans <- crossprod(weights,X)/sum(weights)
-        X <- X - rep(Xmeans, each = nobj)
-    }
-
-    X.orig <- X
-    Ymeans = colMeans(Yprim)
-
     if(!stripped) {
         ## Save dimnames:
         dnX <- dimnames(X)
         dnY <- dimnames(Yprim)
     }
     dimnames(X) <- dimnames(Y) <- dimnames(Yprim) <- NULL
+
+    nobj <- dim(X)[1]
+    npred <- dim(X)[2]
+    nresp <- dim(Yprim)[2]
+
+    ## Center variables:
+    if (center) {
+        if(is.null(weights)){
+            Xmeans <- colMeans(X)
+            X <- X - rep(Xmeans, each = nobj)
+        } else {
+            Xmeans <- crossprod(weights,X)/sum(weights)
+            X <- X - rep(Xmeans, each = nobj)
+        }
+        Ymeans <- colMeans(Yprim)
+    } else  {
+        ## Set means to zero. Will ensure that predictions do not take the
+        ## mean into account.
+        Xmeans <- rep_len(0, npred)
+        Ymeans <- rep_len(0, nresp)
+    }
+
+    X.orig <- X
 
     ## Declaration of variables
     W   <- matrix(0,npred,ncomp)    # W-loadings

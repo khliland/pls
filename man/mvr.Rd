@@ -1,4 +1,3 @@
-%% $Id$
 \encoding{latin1}
 \name{mvr}
 \alias{mvr}
@@ -17,7 +16,7 @@
 \usage{
 mvr(formula, ncomp, Y.add, data, subset, na.action,
     method = pls.options()$mvralg,
-    scale = FALSE, validation = c("none", "CV", "LOO"),
+    scale = FALSE, center = TRUE, validation = c("none", "CV", "LOO"),
     model = TRUE, x = FALSE, y = FALSE, \dots)
 plsr(\dots, method = pls.options()$plsralg)
 cppls(\dots, Y.add, weights, method = pls.options()$cpplsalg)
@@ -47,6 +46,8 @@ pcr(\dots, method = pls.options()$pcralg)
     by dividing each variable by its sample standard deviation.  If
     cross-validation is selected, scaling by the standard deviation is
     done for every segment.}
+  \item{center}{logical, determines if the \eqn{X} and \eqn{Y} matrices
+    are mean centered or not. Default is to perform mean centering.}
   \item{validation}{character.  What kind of (internal) validation to
     use.  See below.}
   \item{model}{a logical.  If \code{TRUE}, the model frame is returned.}
