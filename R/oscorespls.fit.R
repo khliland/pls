@@ -1,11 +1,9 @@
 ### oscorespls.fit.R: The multiresponse orthogonal scores algorithm
 ###
-### $Id$
-###
 ### Implements an adapted version of the `orthogonal scores' algorithm as
 ###   described in Martens and Naes, pp. 121--122 and 157--158.
 
-oscorespls.fit <- function(X, Y, ncomp, stripped = FALSE,
+oscorespls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE,
                            tol = .Machine$double.eps^0.5, ...)
 {
     ## Initialise
@@ -33,10 +31,17 @@ oscorespls.fit <- function(X, Y, ncomp, stripped = FALSE,
     }
 
     ## C1
-    Xmeans <- colMeans(X)
-    X <- X - rep(Xmeans, each = nobj)
-    Ymeans <- colMeans(Y)
-    Y <- Y - rep(Ymeans, each = nobj)
+    if (center) {
+        Xmeans <- colMeans(X)
+        X <- X - rep(Xmeans, each = nobj)
+        Ymeans <- colMeans(Y)
+        Y <- Y - rep(Ymeans, each = nobj)
+    } else {
+        ## Set means to zero. Will ensure that predictions do not take the
+        ## mean into account.
+        Xmeans <- rep_len(0, npred)
+        Ymeans <- rep_len(0, nresp)
+    }
 
     ## Must be done here due to the deflation of X
     if (!stripped) Xtotvar <- sum(X * X)

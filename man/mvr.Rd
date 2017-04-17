@@ -1,4 +1,3 @@
-%% $Id$
 \encoding{latin1}
 \name{mvr}
 \alias{mvr}
@@ -17,7 +16,7 @@
 \usage{
 mvr(formula, ncomp, Y.add, data, subset, na.action,
     method = pls.options()$mvralg,
-    scale = FALSE, validation = c("none", "CV", "LOO"),
+    scale = FALSE, center = TRUE, validation = c("none", "CV", "LOO"),
     model = TRUE, x = FALSE, y = FALSE, \dots)
 plsr(\dots, method = pls.options()$plsralg)
 cppls(\dots, Y.add, weights, method = pls.options()$cpplsalg)
@@ -47,6 +46,8 @@ pcr(\dots, method = pls.options()$pcralg)
     by dividing each variable by its sample standard deviation.  If
     cross-validation is selected, scaling by the standard deviation is
     done for every segment.}
+  \item{center}{logical, determines if the \eqn{X} and \eqn{Y} matrices
+    are mean centered or not. Default is to perform mean centering.}
   \item{validation}{character.  What kind of (internal) validation to
     use.  See below.}
   \item{model}{a logical.  If \code{TRUE}, the model frame is returned.}
@@ -90,6 +91,11 @@ pcr(\dots, method = pls.options()$pcralg)
   The number of components to fit is specified with the argument
   \code{ncomp}.  It this is not supplied, the maximal number of
   components is used (taking account of any cross-validation).
+
+  All implemented algorithms mean-center both predictor and response
+  matrices.  This can be turned off by specifying \code{center = FALSE}.
+  See Seasholtz and Kowalski for a discussion about centering in PLS
+  regression.
 
   If \code{validation = "CV"}, cross-validation is performed.  The number and
   type of cross-validation segments are specified with the arguments
@@ -140,6 +146,10 @@ pcr(\dots, method = pls.options()$pcralg)
 \references{
   Martens, H., Næs, T. (1989) \emph{Multivariate calibration.}
   Chichester: Wiley.
+
+  Seasholtz, M. B. and Kowalski, B. R. (1992) The effect of mean
+  centering on prediction in multivariate calibration.  \emph{Journal of
+  Chemometrics}, \bold{6}(2), 103--111.
 }
 \author{Ron Wehrens and Bjørn-Helge Mevik}
 \seealso{

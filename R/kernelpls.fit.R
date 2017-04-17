@@ -1,5 +1,4 @@
 ### kernelpls.fit.R: Kernel PLS fit algorithm for tall data.
-### $Id$
 ###
 ### Implements an adapted version of the `algorithm 1' described in
 ###   Dayal, B. S. and MacGregor, J. F. (1997) Improved PLS algorithms.
@@ -11,7 +10,7 @@
 ###   de Jong, S. and ter Braak,  C. J. F. (1994) Comments on the PLS kernel
 ###   algorithm.  \emph{Journal of Chemometrics}, \bold{8}, 169--174.
 
-kernelpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
+kernelpls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE, ...)
 {
     Y <- as.matrix(Y)
     if(!stripped) {
@@ -28,10 +27,17 @@ kernelpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
     nresp <- dim(Y)[2]
 
     ## Center variables:
-    Xmeans <- colMeans(X)
-    X <- X - rep(Xmeans, each = nobj)
-    Ymeans <- colMeans(Y)
-    Y <- Y - rep(Ymeans, each = nobj)
+    if (center) {
+        Xmeans <- colMeans(X)
+        X <- X - rep(Xmeans, each = nobj)
+        Ymeans <- colMeans(Y)
+        Y <- Y - rep(Ymeans, each = nobj)
+    } else {
+        ## Set means to zero. Will ensure that predictions do not take the
+        ## mean into account.
+        Xmeans <- rep_len(0, npred)
+        Ymeans <- rep_len(0, nresp)
+    }
 
     ## Projection, loadings
     R <- P <- matrix(0, ncol = ncomp, nrow = npred)
@@ -108,7 +114,9 @@ kernelpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
         list(coefficients = B, Xmeans = Xmeans, Ymeans = Ymeans)
     } else {
         residuals <- - fitted + c(Y)
-        fitted <- fitted + rep(Ymeans, each = nobj) # Add mean
+        if (center) {
+            fitted <- fitted + rep(Ymeans, each = nobj) # Add mean
+        }
 
         ## Add dimnames:
         objnames <- dnX[[1]]

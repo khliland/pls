@@ -1,11 +1,10 @@
-%% $Id$
 \encoding{latin1}
 \name{oscorespls.fit}
 \alias{oscorespls.fit}
 \title{Orthogonal scores PLSR}
 \description{Fits a PLSR model with the orthogonal scores algorithm
 (aka the NIPALS algorithm).}
-\usage{oscorespls.fit(X, Y, ncomp, stripped = FALSE,
+\usage{oscorespls.fit(X, Y, ncomp, center = TRUE, stripped = FALSE,
                tol = .Machine$double.eps^0.5, \dots)}
 \arguments{
   \item{X}{a matrix of observations.  \code{NA}s and \code{Inf}s are not
@@ -14,6 +13,8 @@
     are not allowed.} 
   \item{ncomp}{the number of components to be used in the
     modelling.}
+  \item{center}{logical, determines if the \eqn{X} and \eqn{Y} matrices
+    are mean centered or not. Default is to perform mean centering.}
   \item{stripped}{logical.  If \code{TRUE} the calculations are stripped
     as much as possible for speed; this is meant for use with
     cross-validation or simulations when only the coefficients are

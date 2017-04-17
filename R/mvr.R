@@ -1,14 +1,12 @@
 ### mvr.R: plsr/pcr modelling functions
 ###
-### $Id$
-###
 ### The top level user function.  Implements a formula interface and calls the
 ### correct fit function to do the work.
 ### The function borrows heavily from lm().
 
 mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
-                method = pls.options()$mvralg,
-                scale = FALSE, validation = c("none", "CV", "LOO"),
+                method = pls.options()$mvralg, scale = FALSE,
+                center = TRUE, validation = c("none", "CV", "LOO"),
                 model = TRUE, x = FALSE, y = FALSE, ...)
 {
     ret.x <- x                          # More useful names
@@ -120,7 +118,7 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
 
     ## Fit the model:
     start.time <- proc.time()[3]
-    z <- fitFunc(X, Y, ncomp, Y.add = Y.add, ...)
+    z <- fitFunc(X, Y, ncomp, Y.add = Y.add, center = center, ...)
     z$fit.time <- proc.time()[3] - start.time
 
     ## Build and return the object:

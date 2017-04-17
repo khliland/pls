@@ -1,12 +1,11 @@
 ### simpls.fit.R: SimPLS fit algorithm.
-### $Id$
 ###
 ### Implements an adapted version of the SIMPLS algorithm described in
 ###   de Jong, S. (1993) SIMPLS: an alternative approach to partial least
 ###   squares regression.  \emph{Chemometrics and Intelligent Laboratory
 ###   Systems}, \bold{18}, 251--263.
 
-simpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
+simpls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE, ...)
 {
     Y <- as.matrix(Y)
     if (!stripped) {
@@ -32,11 +31,18 @@ simpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
     }
 
     ## Center variables:
-    Xmeans <- colMeans(X)
-    X <- X - rep(Xmeans, each = nobj)   # This is not strictly neccessary
+    if (center) {
+        Xmeans <- colMeans(X)
+        X <- X - rep(Xmeans, each = nobj) # This is not strictly neccessary
                                         # (but might be good for accuracy?)!
-    Ymeans <- colMeans(Y)
-    Y <- Y - rep(Ymeans, each = nobj)
+        Ymeans <- colMeans(Y)
+        Y <- Y - rep(Ymeans, each = nobj)
+    } else {
+        ## Set means to zero. Will ensure that predictions do not take the
+        ## mean into account.
+        Xmeans <- rep_len(0, npred)
+        Ymeans <- rep_len(0, nresp)
+    }
 
     S <- crossprod(X, Y)
 
@@ -56,7 +62,9 @@ simpls.fit <- function(X, Y, ncomp, stripped = FALSE, ...)
         }
         r.a <- S %*% q.a                 # X block factor weights
         t.a <- X %*% r.a
-        t.a <- t.a - mean(t.a)           # center scores
+        if (center) {
+            t.a <- t.a - mean(t.a)       # center scores
+        }
         tnorm <- sqrt(c(crossprod(t.a)))
         t.a <- t.a / tnorm               # normalize scores
         r.a <- r.a / tnorm               # adapt weights accordingly
