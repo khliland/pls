@@ -147,8 +147,9 @@ pcr(\dots, method = pls.options()$pcralg)
   Martens, H., Næs, T. (1989) \emph{Multivariate calibration.}
   Chichester: Wiley.
 
-  Seasholtz, M. B. and Kowalski, B. R. (1992) Mean-centering in PLS.
-  \emph{Journal of Chemometrics}, \bold{6}(2), 103--111.
+  Seasholtz, M. B. and Kowalski, B. R. (1992) The effect of mean
+  centering on prediction in multivariate calibration.  \emph{Journal of
+  Chemometrics}, \bold{6}(2), 103--111.
 }
 \author{Ron Wehrens and Bjørn-Helge Mevik}
 \seealso{
