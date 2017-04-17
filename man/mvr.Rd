@@ -92,6 +92,11 @@ pcr(\dots, method = pls.options()$pcralg)
   \code{ncomp}.  It this is not supplied, the maximal number of
   components is used (taking account of any cross-validation).
 
+  All implemented algorithms mean-center both predictor and response
+  matrices.  This can be turned off by specifying \code{center = FALSE}.
+  See Seasholtz and Kowalski for a discussion about centering in PLS
+  regression.
+
   If \code{validation = "CV"}, cross-validation is performed.  The number and
   type of cross-validation segments are specified with the arguments
   \code{segments} and \code{segment.type}.  See \code{\link{mvrCv}} for
@@ -141,6 +146,9 @@ pcr(\dots, method = pls.options()$pcralg)
 \references{
   Martens, H., Næs, T. (1989) \emph{Multivariate calibration.}
   Chichester: Wiley.
+
+  Seasholtz, M. B. and Kowalski, B. R. (1992) Mean-centering in PLS.
+  \emph{Journal of Chemometrics}, \bold{6}(2), 103--111.
 }
 \author{Ron Wehrens and Bjørn-Helge Mevik}
 \seealso{
