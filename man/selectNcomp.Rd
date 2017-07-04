@@ -45,8 +45,16 @@ selectNcomp(object, method = c("randomization", "onesigma"),
   selected one. 
 
   The approach \code{"onesigma"} simply returns the first model where the
-  optimal CV is within one standard deviation (Hastie, Tibshirani and
-  Friedman, 2009).
+  optimal CV is within one standard error of the absolute optimum
+  (Hastie, Tibshirani and Friedman, 2009). Note that here we
+  simply use the standard deviation of the cross-validation
+  residuals, in line with the procedure used to calculate the error
+  measure itself. Some other packages implementing similar procedures
+  (such as \code{glmnet}) calculate an error measure for each validation
+  segment separately and use the average as the final estimate. In such
+  cases the standard error across segments is the relevant measure of
+  spread. For LOO, the two procedures are identical. In other forms of
+  validation, small differences will occur.
 }
 \value{A number indicating the suggested number of components in the
   model.}
