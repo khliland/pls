@@ -5,7 +5,7 @@
 \description{Fits a PLSR model with the orthogonal scores algorithm
 (aka the NIPALS algorithm).}
 \usage{oscorespls.fit(X, Y, ncomp, center = TRUE, stripped = FALSE,
-               tol = .Machine$double.eps^0.5, \dots)}
+               tol = .Machine$double.eps^0.5, maxit = 100, \dots)}
 \arguments{
   \item{X}{a matrix of observations.  \code{NA}s and \code{Inf}s are not
     allowed.} 
@@ -21,6 +21,8 @@
     needed.  Defaults to \code{FALSE}.}
   \item{tol}{numeric.  The tolerance used for determining convergence in
     multi-response models.}
+  \item{maxit}{positive integer.  The maximal number of iterations used
+    in the internal Eigenvector calculation.}
   \item{\dots}{other arguments.  Currently ignored.}
 }
 \details{This function should not be called directly, but through

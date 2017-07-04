@@ -4,7 +4,7 @@
 ###   described in Martens and Naes, pp. 121--122 and 157--158.
 
 oscorespls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE,
-                           tol = .Machine$double.eps^0.5, ...)
+                           tol = .Machine$double.eps^0.5, maxit = 100, ...)
 {
     ## Initialise
     Y <- as.matrix(Y)
@@ -55,7 +55,9 @@ oscorespls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE,
             u.a <- Y[,which.max(colSums(Y * Y))]
             t.a.old <- 0
         }
+        nit <- 0
         repeat {
+            nit <- nit + 1              # count the iterations
             ## C2.1
             w.a <- crossprod(X, u.a)
             w.a <- w.a / sqrt(c(crossprod(w.a)))
@@ -80,6 +82,10 @@ oscorespls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE,
             else {
                 u.a <- Y %*% q.a / c(crossprod(q.a))
                 t.a.old <- t.a          # Save for comparison
+            }
+            if (nit >= maxit) {
+              warning("No convergence in ", maxit, " iterations\n")
+              break
             }
         }
 

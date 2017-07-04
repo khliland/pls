@@ -70,7 +70,7 @@ widekernelpls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE,
             else
                 t.a.old <- t.a
             if (nit >= maxit) {         # for debugging
-              warning("No convergence in", maxit, "iterations\n")
+              warning("No convergence in ", maxit, " iterations\n")
               break
             }
         }
