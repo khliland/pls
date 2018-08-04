@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{msc}
 \alias{msc}
 \alias{predict.msc}
@@ -35,10 +35,10 @@ msc(X, reference = NULL)
   attribute of \code{object} is used as reference spectre.
 }
 \references{
-  Martens, H., Næs, T. (1989) \emph{Multivariate calibration.}
+  Martens, H., NÃ¦s, T. (1989) \emph{Multivariate calibration.}
   Chichester: Wiley.
 }
-\author{Bjørn-Helge Mevik and Ron Wehrens}
+\author{BjÃ¸rn-Helge Mevik and Ron Wehrens}
 \seealso{\code{\link{mvr}}, \code{\link{pcr}}, \code{\link{plsr}},
   \code{\link{stdize}}}
 \examples{

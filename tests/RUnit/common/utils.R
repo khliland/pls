@@ -1,5 +1,5 @@
 ### utils.R: Utilities for the test suites
-### By Bjørn-Helge Mevik
+### By BjÃ¸rn-Helge Mevik
 ### Started 2007-10-18
 
 ## scalecomps:  Utility function to scale and/or remove sign

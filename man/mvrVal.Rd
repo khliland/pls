@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{mvrVal}
 \alias{MSEP}
 \alias{MSEP.mvr}
@@ -136,7 +136,7 @@ mvrValstats(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
   and Partial Least Squares Regression (PLSR).
   \emph{Journal of Chemometrics}, \bold{18}(9), 422--429.
 }
-\author{Ron Wehrens and Bjørn-Helge Mevik}
+\author{Ron Wehrens and BjÃ¸rn-Helge Mevik}
 \seealso{\code{\link{mvr}}, \code{\link{crossval}}, \code{\link{mvrCv}},
   \code{\link{validationplot}}, \code{\link{plot.mvrVal}}}
 \examples{

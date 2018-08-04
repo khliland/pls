@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{mvrCv}
 \alias{mvrCv}
 \title{Cross-validation}
@@ -108,7 +108,7 @@ mvrCv(X, Y, ncomp, Y.add = NULL, weights = NULL,
   and Partial Least Squares Regression (PLSR).
   \emph{Journal of Chemometrics}, \bold{18}(9), 422--429.
 }
-\author{Ron Wehrens and Bjørn-Helge Mevik}
+\author{Ron Wehrens and BjÃ¸rn-Helge Mevik}
 \note{
   The \code{PRESS0} is always cross-validated using leave-one-out
   cross-validation.  This usually makes little difference in practice,

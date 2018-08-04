@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{delete.intercept}
 \alias{delete.intercept}
 \title{Delete intercept from model matrix}
@@ -17,6 +17,6 @@ delete.intercept(mm)
 \value{
   A model matrix without intercept column.
 }
-\author{Bjørn-Helge Mevik and Ron Wehrens}
+\author{BjÃ¸rn-Helge Mevik and Ron Wehrens}
 \seealso{\code{\link{mvr}}, \code{\link{model.matrix.mvr}}}
 \keyword{internal}

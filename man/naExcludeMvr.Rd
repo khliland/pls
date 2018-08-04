@@ -31,7 +31,7 @@ naExcludeMvr(omit, x, \dots)
   \code{x}, padded with \code{NA}s along the first dimension
   (\sQuote{rows}).
 }
-\author{Bjørn-Helge Mevik and Ron Wehrens}
+\author{BjÃ¸rn-Helge Mevik and Ron Wehrens}
 \seealso{\code{\link{predict.mvr}}, \code{\link{residuals.mvr}},
   \code{\link{napredict}}, \code{\link{naresid}}}
 \keyword{regression}

@@ -1,4 +1,4 @@
-\encoding{latin1}
+\encoding{UTF-8}
 \name{oscorespls.fit}
 \alias{oscorespls.fit}
 \title{Orthogonal scores PLSR}
@@ -28,7 +28,7 @@
 \details{This function should not be called directly, but through
   the generic functions \code{plsr} or \code{mvr} with the argument
   \code{method="oscorespls"}.  It implements the orthogonal scores
-  algorithm, as described in \cite{Martens and Næs (1989)}.  This is one
+  algorithm, as described in \cite{Martens and NÃ¦s (1989)}.  This is one
   of the two \dQuote{classical}
   PLSR algorithms, the other being the orthogonal loadings algorithm.}
 \value{A list containing the following components is returned:
@@ -59,10 +59,10 @@
   \code{coefficients}, \code{Xmeans} and \code{Ymeans} are returned.
 }
 \references{
-  Martens, H., Næs, T. (1989) \emph{Multivariate calibration.}
+  Martens, H., NÃ¦s, T. (1989) \emph{Multivariate calibration.}
   Chichester: Wiley.
 }
-\author{Ron Wehrens and Bjørn-Helge Mevik}
+\author{Ron Wehrens and BjÃ¸rn-Helge Mevik}
 \seealso{
   \code{\link{mvr}}
   \code{\link{plsr}}

@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{var.jack}
 \alias{var.jack}
 \title{Jackknife Variance Estimates of Regression Coefficients}
@@ -61,7 +61,7 @@ var.jack(object, ncomp = object$ncomp, covariance = FALSE, use.mean = TRUE)
   regression (OLSR), the bias can be calculated, and depends
   on the number of observations \eqn{n} and the number of parameters
   \eqn{k} in the mode.  For the common case of an orthogonal design
-  matrix with \eqn{\pm 1}{±1} levels, the delete-one jackknife estimate
+  matrix with \eqn{\pm 1}{Â±1} levels, the delete-one jackknife estimate
   equals \eqn{(n-1)/(n-k)} times the classical variance estimate for the
   regression coefficients in OLSR.  Similar expressions hold for
   delete-d estimates.  Modifications have been proposed to reduce or
@@ -87,7 +87,7 @@ var.jack(object, ncomp = object$ncomp, covariance = FALSE, use.mean = TRUE)
   Regression Analysis.  \emph{Te Annals of Statistics}, \bold{14}(4),
   1261--1295.
 }
-\author{Bjørn-Helge Mevik}
+\author{BjÃ¸rn-Helge Mevik}
 \seealso{\code{\link{mvrCv}}, \code{\link{jack.test}}}
 \examples{
 data(oliveoil)

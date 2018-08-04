@@ -1,4 +1,4 @@
-\encoding{latin1}
+\encoding{UTF-8}
 \name{mvr}
 \alias{mvr}
 \alias{pcr}
@@ -144,14 +144,14 @@ pcr(\dots, method = pls.options()$pcralg)
   \item{y}{if \code{y = TRUE}, the model response.}
 }
 \references{
-  Martens, H., Næs, T. (1989) \emph{Multivariate calibration.}
+  Martens, H., NÃ¦s, T. (1989) \emph{Multivariate calibration.}
   Chichester: Wiley.
 
   Seasholtz, M. B. and Kowalski, B. R. (1992) The effect of mean
   centering on prediction in multivariate calibration.  \emph{Journal of
   Chemometrics}, \bold{6}(2), 103--111.
 }
-\author{Ron Wehrens and Bjørn-Helge Mevik}
+\author{Ron Wehrens and BjÃ¸rn-Helge Mevik}
 \seealso{
   \code{\link{kernelpls.fit}},
   \code{\link{widekernelpls.fit}},

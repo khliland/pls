@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{validationplot}
 \alias{validationplot}
 \alias{plot.mvrVal}
@@ -85,7 +85,7 @@ validationplot(object, val.type = c("RMSEP", "MSEP", "R2"), estimate,
   titles.  (To have different settings for the two titles, one can
   override the \code{par} settings with arguments to the plot function.)
 }
-\author{Ron Wehrens and Bjørn-Helge Mevik}
+\author{Ron Wehrens and BjÃ¸rn-Helge Mevik}
 \note{\code{\link{legend}} has many options.  If you want greater
   control over the appearance of the legend, omit the \code{legendpos}
   argument and call \code{legend} manually.

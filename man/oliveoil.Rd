@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{oliveoil}
 \alias{oliveoil}
 \docType{data}

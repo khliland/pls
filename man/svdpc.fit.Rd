@@ -1,4 +1,4 @@
-\encoding{latin1}
+\encoding{UTF-8}
 \name{svdpc.fit}
 \alias{svdpc.fit}
 \title{Principal Component Regression}
@@ -50,10 +50,10 @@
   \code{coefficients}, \code{Xmeans} and \code{Ymeans} are returned.
 }
 \references{
-  Martens, H., Næs, T. (1989) \emph{Multivariate calibration.}
+  Martens, H., NÃ¦s, T. (1989) \emph{Multivariate calibration.}
   Chichester: Wiley.
 }
-\author{Ron Wehrens and Bjørn-Helge Mevik}
+\author{Ron Wehrens and BjÃ¸rn-Helge Mevik}
 \seealso{
   \code{\link{mvr}}
   \code{\link{plsr}}
