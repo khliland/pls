@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{scoreplot}
 \alias{scoreplot}
 \alias{scoreplot.default}
@@ -145,7 +145,7 @@ corrplot(object, comps = 1:2, labels, radii = c(sqrt(1/2), 1),
   Regression (PLSR).
   \emph{Food Quality and Preference}, \bold{11}(1--2), 5--16.
 }
-\author{Ron Wehrens and Bjørn-Helge Mevik}
+\author{Ron Wehrens and BjÃ¸rn-Helge Mevik}
 \note{\code{\link{legend}} has many options.  If you want greater
   control over the appearance of the legend, omit the \code{legendpos}
   argument and call \code{legend} manually.

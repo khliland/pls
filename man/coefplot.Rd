@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{coefplot}
 \alias{coefplot}
 \title{Plot Regression Coefficients of PLSR and PCR models}
@@ -112,7 +112,7 @@ coefplot(object, ncomp = object$ncomp, comps, intercept = FALSE,
   The function can also be called through the \code{mvr} plot method by
   specifying \code{plottype = "coefficients"}.
 }
-\author{Ron Wehrens and Bjørn-Helge Mevik}
+\author{Ron Wehrens and BjÃ¸rn-Helge Mevik}
 \note{\code{\link{legend}} has many options.  If you want greater
   control over the appearance of the legend, omit the \code{legendpos}
   argument and call \code{legend} manually.

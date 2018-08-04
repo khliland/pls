@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{yarn}
 \alias{yarn}
 \docType{data}

@@ -1,7 +1,7 @@
 ### cppls.fit.R: The Canonical Powered PLS algorithm
 ###
 ### Implements the CPPLS algorithm as described in
-### Indahl, U.G., Liland, K.H., Næs, T. (2009).
+### Indahl, U.G., Liland, K.H., NÃ¦s, T. (2009).
 ### Canonical partial least squares - a unified PLS approach to classification and regression problems,
 ### Journal of Chemometrics 23, pp. 495-504
 

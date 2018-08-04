@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{pls.options}
 \alias{pls.options}
 \title{Set or return options for the pls package}
@@ -81,7 +81,7 @@ pls.options(\dots)
   A list with the (possibly changed) options.  If any named argument (or
   list element) was provided, the list is returned invisibly.
 }
-\author{Bjørn-Helge Mevik and Ron Wehrens}
+\author{BjÃ¸rn-Helge Mevik and Ron Wehrens}
 \note{
   The function is a slight modification of the function
   \code{\link[sm]{sm.options}} from the package \pkg{sm}.

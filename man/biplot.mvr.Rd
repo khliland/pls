@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{biplot.mvr}
 \alias{biplot.mvr}
 \title{Biplots of PLSR and PCR Models.}
@@ -32,7 +32,7 @@
   \code{biplot.mvr} can also be called through the \code{mvr} plot
   method by specifying \code{plottype = "biplot"}.
 }
-\author{Ron Wehrens and Bjørn-Helge Mevik}
+\author{Ron Wehrens and BjÃ¸rn-Helge Mevik}
 \seealso{\code{\link{mvr}}, \code{\link{plot.mvr}}, \code{\link{biplot.default}}}
 \examples{
 data(oliveoil)

@@ -1,4 +1,4 @@
-\encoding{latin1}
+\encoding{UTF-8}
 \name{cppls.fit}
 \alias{cppls.fit}
 \title{CPPLS (Indahl et al.)}
@@ -89,7 +89,7 @@
   Liland, K.H and Indahl, U.G (2009) Powered partial least squares
   discriminant analysis, \emph{Journal of Chemometrics}, \bold{23}, 7--18.
 
-  Indahl, U.G., Liland, K.H. and Næs, T. (2009) Canonical partial least
+  Indahl, U.G., Liland, K.H. and NÃ¦s, T. (2009) Canonical partial least
   squares - a unified PLS approach to classification and regression problems.
   \emph{Journal of Chemometrics}, \bold{23}, 495--504.
 }

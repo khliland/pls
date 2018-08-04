@@ -1,5 +1,5 @@
 ### runit.jackknife.R: test functions for jackknifing
-### By Bjørn-Helge Mevik
+### By BjÃ¸rn-Helge Mevik
 ### Started 2007-08-02
 
 ## test.var.jack: Check dimensions of var.jack return value

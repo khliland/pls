@@ -1,5 +1,5 @@
 ### runit.CV.R: test functions for checking cross-validation functions
-### By Bjørn-Helge Mevik
+### By BjÃ¸rn-Helge Mevik
 ### Started 2007-10-18
 
 ## Parallel computations, mvrCv:

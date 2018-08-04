@@ -1,7 +1,7 @@
-\encoding{latin1}
+\encoding{UTF-8}
 \name{widekernelpls.fit}
 \alias{widekernelpls.fit}
-\title{Wide Kernel PLS (Rännar et al.)}
+\title{Wide Kernel PLS (RÃ¤nnar et al.)}
 \description{Fits a PLSR model with the wide kernel algorithm.}
 \usage{widekernelpls.fit(X, Y, ncomp, center = TRUE, stripped = FALSE,
                   tol = .Machine$double.eps^0.5, maxit = 100, \dots)}
@@ -75,12 +75,12 @@
   LAPACK library \R is linked against.
 }
 \references{
-  Rännar, S., Lindgren, F., Geladi, P. and Wold, S. (1994) A PLS
+  RÃ¤nnar, S., Lindgren, F., Geladi, P. and Wold, S. (1994) A PLS
   Kernel Algorithm for Data Sets with Many Variables and Fewer
   Objects.  Part 1: Theory and Algorithm.
   \emph{Journal of Chemometrics}, \bold{8}, 111--125.
 }
-\author{Bjørn-Helge Mevik}
+\author{BjÃ¸rn-Helge Mevik}
 \seealso{
   \code{\link{mvr}}
   \code{\link{plsr}}

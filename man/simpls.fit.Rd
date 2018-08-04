@@ -1,4 +1,4 @@
-\encoding{latin1}
+\encoding{UTF-8}
 \name{simpls.fit}
 \alias{simpls.fit}
 \title{Sijmen de Jong's SIMPLS}
@@ -59,7 +59,7 @@
   squares regression.  \emph{Chemometrics and Intelligent Laboratory Systems},
   \bold{18}, 251--263.
 }
-\author{Ron Wehrens and Bjørn-Helge Mevik}
+\author{Ron Wehrens and BjÃ¸rn-Helge Mevik}
 \seealso{
   \code{\link{mvr}}
   \code{\link{plsr}}

@@ -1,4 +1,4 @@
-\encoding{latin1}
+\encoding{UTF-8}
 \name{kernelpls.fit}
 \alias{kernelpls.fit}
 \title{Kernel PLS (Dayal and MacGregor)}
@@ -64,7 +64,7 @@
   Dayal, B. S. and MacGregor, J. F. (1997) Improved PLS algorithms.
   \emph{Journal of Chemometrics}, \bold{11}, 73--85.
 }
-\author{Ron Wehrens and Bjørn-Helge Mevik}
+\author{Ron Wehrens and BjÃ¸rn-Helge Mevik}
 \seealso{
   \code{\link{mvr}}
   \code{\link{plsr}}

@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{cvsegments}
 \alias{cvsegments}
 \title{Generate segments for cross-validation}
@@ -54,7 +54,7 @@ cvsegments(N, k, length.seg = ceiling(N / k), nrep = 1,
   The attribute \code{"incomplete"} contains the number of incomplete
   segments, and the attribute \code{"type"} contains the type of segments.
 }
-\author{Bjørn-Helge Mevik and Ron Wehrens}
+\author{BjÃ¸rn-Helge Mevik and Ron Wehrens}
 
 \examples{
 ## Segments for 10-fold randomised cross-validation:

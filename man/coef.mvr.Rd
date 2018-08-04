@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{coef.mvr}
 \alias{coef.mvr}
 \alias{fitted.mvr}
@@ -110,7 +110,7 @@ explvar(object)
   \code{explvar} returns a numeric vector with the explained variances,
   or \code{NULL} if not available.
 }
-\author{Ron Wehrens and Bjørn-Helge Mevik}
+\author{Ron Wehrens and BjÃ¸rn-Helge Mevik}
 \seealso{\code{\link{mvr}}, \code{\link{coef}}, \code{\link{fitted}},
   \code{\link{residuals}}, \code{\link{model.frame}},
   \code{\link{model.matrix}}, \code{\link{na.omit}}

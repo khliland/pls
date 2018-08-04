@@ -62,7 +62,7 @@ jack.test(object, ncomp = object$ncomp, use.mean = TRUE)
   Parameter Uncertainty in Bilinear Modelling by Partial Least Squares
   Regression (PLSR).  \emph{Food Quality and Preference}, \bold{11}, 5--16.
 }
-\author{Bjørn-Helge Mevik}
+\author{BjÃ¸rn-Helge Mevik}
 \seealso{\code{\link{var.jack}}, \code{\link{mvrCv}}}
 \examples{
 data(oliveoil)

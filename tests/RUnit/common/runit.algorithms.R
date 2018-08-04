@@ -1,5 +1,5 @@
 ### runit.algorithms.R: test functions for checking algorithm accurracy
-### By Bjørn-Helge Mevik
+### By BjÃ¸rn-Helge Mevik
 ### Started 2007-08-22
 
 ###

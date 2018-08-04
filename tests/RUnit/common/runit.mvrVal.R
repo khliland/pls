@@ -1,5 +1,5 @@
 ### runit.mvrVal.R: test functions for R2(), MSEP() and RMSEP()
-### By Bjørn-Helge Mevik
+### By BjÃ¸rn-Helge Mevik
 ### Started 2007-06-20
 
 ###

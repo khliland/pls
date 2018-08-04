@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{predplot}
 \alias{predplot}
 \alias{predplot.default}
@@ -91,7 +91,7 @@ predplotXy(x, y, line = FALSE, labels, type = "p", main = "Prediction plot",
 \value{
   The functions invisibly return a matrix with the (last) plotted data.
 }
-\author{Ron Wehrens and Bjørn-Helge Mevik}
+\author{Ron Wehrens and BjÃ¸rn-Helge Mevik}
 \note{
   The \code{font.main} and \code{cex.main} must be (completely) named.
   This is to avoid that any argument \code{cex} or \code{font} matches

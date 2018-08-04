@@ -1,5 +1,5 @@
 ### runit.predict.R: test functions for predict.mvr()
-### By Bjørn-Helge Mevik
+### By BjÃ¸rn-Helge Mevik
 ### Started 2007-06-11
 
 ###

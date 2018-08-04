@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{scores}
 \alias{scores}
 \alias{scores.default}
@@ -43,7 +43,7 @@ Yloadings(object)
 \value{
   A matrix with scores or loadings.
 }
-\author{Ron Wehrens and Bjørn-Helge Mevik}
+\author{Ron Wehrens and BjÃ¸rn-Helge Mevik}
 \note{
   There is a \code{loadings} function in package \pkg{stats}.  It simply
   returns any element named \code{"loadings"}.  See

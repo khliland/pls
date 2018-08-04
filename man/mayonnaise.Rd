@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{mayonnaise}
 \alias{mayonnaise}
 \docType{data}
@@ -22,7 +22,7 @@
   }
 }
 \source{
-  Indahl  U,  Sahni  NS,  Kirkhus  B,  Næs  T.  Multivariate  strategies  for
+  Indahl  U,  Sahni  NS,  Kirkhus  B,  NÃ¦s  T.  Multivariate  strategies  for
   classification based on NIR-spectra-with application to mayonnaise.
   Chemometr. Intell. Lab. Sys. 1999; 49: 19-31.
 }

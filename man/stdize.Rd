@@ -1,5 +1,5 @@
 %% $Id$
-\encoding{latin1}
+\encoding{UTF-8}
 \name{stdize}
 \alias{stdize}
 \alias{predict.stdized}
@@ -43,7 +43,7 @@ stdize(x, center = TRUE, scale = TRUE)
   \code{"stdized:scale"} the vector used for centering and/or scaling.
   The matrix is given class \code{c("stdized", "matrix")}.
 }
-\author{Bjørn-Helge Mevik and Ron Wehrens}
+\author{BjÃ¸rn-Helge Mevik and Ron Wehrens}
 \note{
   \code{stdize} is very similar to \code{\link[base]{scale}}.  The
   difference is that when \code{scale = TRUE}, \code{stdize} divides the
