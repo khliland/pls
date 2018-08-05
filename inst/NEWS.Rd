@@ -1,7 +1,7 @@
 %% $Id$
 \name{NEWS}
 \title{News for Package 'pls'}
-\encoding{latin1}
+\encoding{UTF-8}
 %% \section{Changes in pls version FIXME}{
 %%   \subsection{New features}{
 %%     \itemize{
@@ -29,6 +29,28 @@
 %%     }
 %%   }
 %% }
+\section{Changes in pls version 2.7-0}{
+  \subsection{New features}{
+    \itemize{
+      \item Now supports turning off the default centering of predictor
+      and response matrices, through a new argument `center' to mvr()
+      etal.  Suggested and implemented by Paul Hiemstra.
+      \item Added argument `maxit' to oscorespls.fit(), to avoid a
+      possible infinite loop for some near-orthoginal predictor
+      matrices.  Suggested by Martin Binder.
+    }
+  }
+  \subsection{Internal changes}{
+    \itemize{
+      \item Added a test suite.
+    }
+  }
+  \subsection{Documentation}{
+    \itemize{
+      \item Clarification of selectNcomp() documentation.
+    }
+  }
+}
 \section{Changes in pls version 2.6-0}{
   \subsection{New features}{
     \itemize{
