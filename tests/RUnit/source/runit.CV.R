@@ -12,16 +12,20 @@ test.mvrCv.parallel <- function() {
                     segment.type = "cons")
 
     ## mclapply:
-    pls.options(parallel = 2)
-    parallel <- mvrCv(gasoline$NIR, gasoline$octane, 5, length.seg = 1,
-                      segment.type = "cons")
-    checkEquals(serial, parallel, "mclapply")
+    if (.Platform$OS.type != "windows") {
+        pls.options(parallel = 2)
+        parallel <- mvrCv(gasoline$NIR, gasoline$octane, 5, length.seg = 1,
+                          segment.type = "cons")
+        checkEquals(serial, parallel, "mclapply")
+    }
 
     ## Auto-created FORK cluster:
-    pls.options(parallel = quote(parallel::makeCluster(2, type = "FORK")))
-    parallel <- mvrCv(gasoline$NIR, gasoline$octane, 5, length.seg = 1,
-                      segment.type = "cons")
-    checkEquals(serial, parallel, "parLapply, auto-created FORK cluster")
+    if (.Platform$OS.type != "windows") {
+        pls.options(parallel = quote(parallel::makeCluster(2, type = "FORK")))
+        parallel <- mvrCv(gasoline$NIR, gasoline$octane, 5, length.seg = 1,
+                          segment.type = "cons")
+        checkEquals(serial, parallel, "parLapply, auto-created FORK cluster")
+    }
 
     ## Auto-created PSOCK cluster:
     pls.options(parallel = quote(parallel::makeCluster(2, type = "PSOCK")))
@@ -34,11 +38,13 @@ test.mvrCv.parallel <- function() {
     require(parallel)
 
     ## Permanent FORK cluster:
-    pls.options(parallel = makeCluster(2, type = "FORK"))
-    parallel <- mvrCv(gasoline$NIR, gasoline$octane, 5, length.seg = 1,
-                      segment.type = "cons")
-    stopCluster(pls.options()$parallel)
-    checkEquals(serial, parallel, "parLapply, permanent FORK cluster")
+    if (.Platform$OS.type != "windows") {
+        pls.options(parallel = makeCluster(2, type = "FORK"))
+        parallel <- mvrCv(gasoline$NIR, gasoline$octane, 5, length.seg = 1,
+                          segment.type = "cons")
+        stopCluster(pls.options()$parallel)
+        checkEquals(serial, parallel, "parLapply, permanent FORK cluster")
+    }
 
     ## Permanent PSOCK cluster:
     pls.options(parallel = makeCluster(2, type = "PSOCK"))
