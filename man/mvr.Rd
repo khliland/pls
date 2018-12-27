@@ -12,7 +12,6 @@
   Cross-validation can be used.  Prediction, model extraction, plot,
   print and summary methods exist.
 }
-%% FIXME: Maybe use a \synopsis section, and show typical uses in \usage:
 \usage{
 mvr(formula, ncomp, Y.add, data, subset, na.action,
     method = pls.options()$mvralg,
@@ -23,7 +22,7 @@ cppls(\dots, Y.add, weights, method = pls.options()$cpplsalg)
 pcr(\dots, method = pls.options()$pcralg)
 }
 \arguments{
-  \item{formula}{a model formula.  Most of the \code{lm} formula
+  \item{formula}{a model formula.  Most of the \code{\link{lm}} formula
     constructs are supported.  See below.}
   \item{ncomp}{the number of components to include in the model (see below).}
   \item{Y.add}{a vector or matrix of additional responses containing
@@ -55,8 +54,33 @@ pcr(\dots, method = pls.options()$pcralg)
   \item{y}{a logical.  If \code{TRUE}, the response is returned.}
   \item{weights}{a vector of individual weights for the observations.
     Only used for \code{cppls}.  (Optional)}
-  \item{\dots}{additional arguments, passed to the underlying fit
-    functions, and \code{mvrCv}.}
+  \item{\dots}{additional optional arguments, passed to the underlying fit
+    functions, and \code{\link{mvrCv}}.
+
+    Currently, the fit functions \code{\link{oscorespls.fit}} and
+    \code{\link{widekernelpls.fit}} implement these extra arguments:
+    \describe{
+      \item{tol:}{numeric.  Tolerance used for determining convergence.}
+      \item{maxit:}{positive integer.  The maximal number of iterations used.}
+    }
+    and \code{\link{cppls.fit}} implements:
+    \describe{
+      \item{lower:}{a vector of lower limits for power optimisation.}
+      \item{upper:}{a vector of upper limits for power optimisation.}
+      \item{trunc.pow:}{logical. Whether to use an experimental alternative power algorithm.}
+    }
+    \code{\link{mvrCv}} implements several arguments; the following are
+    probably the most useful of them:
+    \describe{
+      \item{segments:}{the number of segments to use, or a list with segments.}
+      \item{segment.type:}{the type of segments to use.}
+      \item{length.seg:}{Positive integer.  The length of the segments to use.}
+      \item{jackknife:}{logical.  Whether to perform jackknifing of regression
+	coefficients.}
+    }
+
+    See the functions' documentation for details.
+  }
 }
 \details{
   The functions fit PLSR, CPPLS or PCR models with 1, \eqn{\ldots},
