@@ -23,7 +23,7 @@
     needed.  Defaults to \code{FALSE}.}
   \item{lower}{a vector of lower limits for power optimisation. Defaults to \code{0.5}.}
   \item{upper}{a vector of upper limits for power optimisation. Defaults to \code{0.5}.}
-  \item{trunc.pow}{logical . If \code{TRUE} an experimental alternative power algorithm is used. (Optional)}
+  \item{trunc.pow}{logical. If \code{TRUE} an experimental alternative power algorithm is used. (Optional)}
   \item{weights}{a vector of individual weights for the observations. (Optional)}
   \item{\dots}{other arguments.  Currently ignored.}
 }
