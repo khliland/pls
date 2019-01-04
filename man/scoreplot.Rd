@@ -25,8 +25,9 @@ loadingplot(object, \dots)
             col, legendpos, xlab, ylab, pretty.xlabels = TRUE, xlim, \dots)
 \method{plot}{loadings}(x, \dots)
 
-corrplot(object, comps = 1:2, labels, radii = c(sqrt(1/2), 1),
-         identify = FALSE, type = "p", xlab, ylab, \dots)
+corrplot(object, comps = 1:2, labels, plotx = TRUE, ploty = FALSE,
+         radii = c(sqrt(1/2), 1), identify = FALSE, type = "p",
+         xlab, ylab, col, \dots)
 }
 \arguments{
   \item{object}{an \R object.  The fitted model.}
@@ -35,6 +36,10 @@ corrplot(object, comps = 1:2, labels, radii = c(sqrt(1/2), 1),
     scatter instead of as lines.}
   \item{labels}{optional.  Alternative plot labels or \eqn{x} axis labels.
     See Details.}
+  \item{plotx}{locical.  Whether to plot the \eqn{X} correlation
+         loadings.  Defaults to \code{TRUE}.}
+  \item{ploty}{locical.  Whether to plot the \eqn{Y} correlation
+         loadings.  Defaults to \code{FALSE}.}
   \item{radii}{numeric vector, giving the radii of the circles drawn in
     \code{corrplot}.  The default radii represent 50\% and 100\%
     explained variance of the \eqn{X} variables by the chosen components.}
@@ -98,12 +103,15 @@ corrplot(object, comps = 1:2, labels, radii = c(sqrt(1/2), 1),
   \code{corrplot} works exactly like the default \code{scoreplot}
   method, except that at least two components must be selected.  The
   \dQuote{correlation loadings}, i.e. the correlations between each
-  variable and the selected components (see References), are plotted as pairwise scatter
-  plots, with concentric circles of radii given by \code{radii}.  Each
-  point corresponds to an \eqn{X} variable.  The squared distance
-  between the point and origin equals the fraction of the variance of the
-  variable explained by the components in the panel.  The default
-  \code{radii} corresponds to 50\% and 100\% explained variance.
+  variable and the selected components (see References), are plotted as
+  pairwise scatter plots, with concentric circles of radii given by
+  \code{radii}.  Each point corresponds to a variable.  The squared
+  distance between the point and origin equals the fraction of the
+  variance of the variable explained by the components in the panel.
+  The default \code{radii} corresponds to 50\% and 100\% explained
+  variance.  By default, only the correlation loadings of the \eqn{X}
+  variables are plotted, but if \code{ploty} is \code{TRUE}, also the
+  \eqn{Y} correlation loadings are plotted.
 
   \code{scoreplot}, \code{loadingplot} and \code{corrplot} can also be
   called through the plot method for \code{mvr} objects, by specifying
