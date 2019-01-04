@@ -242,20 +242,47 @@ plot.loadings <- function(x, ...) loadingplot(x, ...)
 ### Correlation loadings plot
 ###
 
-corrplot <- function(object, comps = 1:2, labels, radii = c(sqrt(1/2), 1),
-                     identify = FALSE, type = "p", xlab, ylab, ...) {
+corrplot <- function(object, comps = 1:2, labels, plotx = TRUE, ploty = FALSE,
+                     radii = c(sqrt(1/2), 1), identify = FALSE,
+                     type = "p", xlab, ylab, col, ...)
+{
     nComps <- length(comps)
     if (nComps < 2) stop("At least two components must be selected.")
     if (is.matrix(object)) {
         ## Assume this is already a correlation matrix
         cl <- object[,comps, drop = FALSE]
+        numX <- nrow(cl)
+        numY <- 0
         varlab <- colnames(cl)
     } else {
         S <- scores(object)[,comps, drop = FALSE]
         if (is.null(S))
             stop("`", deparse(substitute(object)), "' has no scores.")
-        cl <- cor(model.matrix(object), S)
+
+        if (isTRUE(plotx)) {
+            clX <- cor(model.matrix(object), S)
+            numX <- nrow(clX)
+        } else {
+            clX <- NULL
+            numX <- 0
+        }
+        if (isTRUE(ploty)) {
+            clY <- cor(model.response(model.frame(object)), S)
+            numY <- nrow(clY)
+            if (numY == 1) {
+                ## Add response name for single response models
+                rownames(clY) <- all.vars(formula(object))[1]
+            }
+        } else {
+            clY <- NULL
+            numY <- 0
+        }
+        cl <- rbind(clX, clY)
         varlab <- compnames(object, comps, explvar = TRUE)
+    }
+    if (missing(col)) {
+        ## Set up default colours:
+        col <- c(rep(1, numX), rep(2, numY))
     }
     if (!missing(labels)) {
         ## Set up point labels
@@ -281,10 +308,10 @@ corrplot <- function(object, comps = 1:2, labels, radii = c(sqrt(1/2), 1),
         if (missing(xlab)) xlab <- varlab[1]
         if (missing(ylab)) ylab <- varlab[2]
         plot(cl, xlim = c(-1,1), ylim = c(-1,1), asp = 1,
-             xlab = xlab, ylab = ylab, type = type, ...)
+             xlab = xlab, ylab = ylab, type = type, col = col, ...)
         eval(addcircles)
         segments(x0 = c(-1, 0), y0 = c(0, -1), x1 = c(1, 0), y1 = c(0, 1))
-        if (!missing(labels)) text(cl, labels, ...)
+        if (!missing(labels)) text(cl, labels, col = col, ...)
         if (identify) {
             if (!is.null(rownames(cl))) {
                 identify(cl, labels = rownames(cl))
@@ -308,7 +335,8 @@ corrplot <- function(object, comps = 1:2, labels, radii = c(sqrt(1/2), 1),
         }
         ## Call `pairs' with two leading `ghost points', to get
         ## correct xlim and ylim:
-        pairs(rbind(-1, 1, cl), labels = varlab, panel = panel, asp = 1, ...)
+        pairs(rbind(-1, 1, cl), labels = varlab, panel = panel, asp = 1,
+              col = col, ...)
     }
 }
 
