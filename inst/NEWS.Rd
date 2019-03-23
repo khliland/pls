@@ -29,6 +29,13 @@
 %%     }
 %%   }
 %% }
+\section{Changes in pls version 2.7-1}{
+  \subsection{Internal changes}{
+    \itemize{
+      \item Added temporary workaround in package tests for changes in RNG.
+    }
+  }
+}
 \section{Changes in pls version 2.7-0}{
   \subsection{New features}{
     \itemize{
