@@ -78,12 +78,14 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
     ## Optionally, perform validation:
     switch(match.arg(validation),
            CV = {
-               val <- mvrCv(X, Y, ncomp, Y.add = Y.add, method = method, scale = sdscale, ...)
+               val <- mvrCv(X, Y, ncomp, Y.add = Y.add, method = method,
+                            scale = sdscale, center = center, ...)
            },
            LOO = {
                segments <- as.list(1:nobj)
                attr(segments, "type") <- "leave-one-out"
-               val <- mvrCv(X, Y, ncomp, Y.add = Y.add, method = method, scale = sdscale,
+               val <- mvrCv(X, Y, ncomp, Y.add = Y.add, method = method,
+                            scale = sdscale, center = center,
                             segments = segments, ...)
            },
            none = {

@@ -58,6 +58,23 @@ test.CV <- function() {
     cvmod2 <- scalecomps(cvmod2, sign = TRUE) # Remove sign differences
     checkTrue(all.equal(cvmod1, cvmod2, check.attributes = FALSE),
               "5 resps, std, the rest")
+
+    ## 5 resps, LOO, unspecified # comps, without centering
+    cvmod1 <- mvr(sensory ~ chemical, data = oliveoil,
+                   validation = "LOO", center = FALSE)
+    omod <- mvr(sensory ~ chemical, data = oliveoil, center = FALSE)
+    cvmod2 <- crossval(omod, length.seg = 1)
+    ## Check the validation component:
+    cvmod1$validation$segments <- cvmod2$validation$segments <- NULL # Segment
+                                        # order and attributes will not match
+    checkEquals(cvmod1$validation, cvmod2$validation,
+                "5 resps, uncent, validation")
+    ## Remove components that will not match or have been tested:
+    cvmod1$call <- cvmod2$call <- NULL      # The calls will not match
+    cvmod1$fit.time <- cvmod2$fit.time <- NULL
+    cvmod1$validation <- cvmod2$validation <- NULL
+    checkTrue(all.equal(cvmod1, cvmod2, check.attributes = FALSE),
+              "5 resps, uncent, the rest")
 }
 
 ## Test cvsegments()
