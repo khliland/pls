@@ -29,6 +29,14 @@
 %%     }
 %%   }
 %% }
+\section{Changes in pls version 2.7-2}{
+  \subsection{Bug fixes}{
+    \itemize{
+      \item mvr() did not send the "center" argument to mvrCv(),
+      resulting in wrong cross-validation results with 'center = FALSE'.
+    }
+  }
+}
 \section{Changes in pls version 2.7-1}{
   \subsection{Internal changes}{
     \itemize{
