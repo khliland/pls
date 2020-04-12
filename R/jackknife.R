@@ -78,7 +78,7 @@ print.jacktest <- function(x, P.values = TRUE, ...) {
                              Df = x$df,
                              "t value" = x$tvalues[,resp,mod],
                              "Pr(>|t|)" = x$pvalues[,resp,mod])
-            printCoefmat(coefmat, P.values = P.values,
+            printCoefmat(coefmat, P.values = isTRUE(P.values),
                          cs.ind = 1:2, tst.ind = 4, ...)
         }
     }

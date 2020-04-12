@@ -6,7 +6,7 @@
 stdize <- function(x, center = TRUE, scale = TRUE) {
     nc <- ncol(x)
     if (is.logical(center)) {
-        if (center) {
+        if (isTRUE(center)) {
             center <- colMeans(x, na.rm = TRUE)
             x <- sweep(x, 2, center)
         }
@@ -14,7 +14,7 @@ stdize <- function(x, center = TRUE, scale = TRUE) {
         x <- sweep(x, 2, center)
     else stop("invalid 'center'")
     if (is.logical(scale)) {
-        if (scale) {
+        if (isTRUE(scale)) {
             ## This is faster than sd(x), but cannot handle missing values:
             scale <- sqrt(colSums(sweep(x, 2, colMeans(x))^2) / (nrow(x) - 1))
             x <- sweep(x, 2, scale, "/")

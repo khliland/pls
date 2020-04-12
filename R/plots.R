@@ -70,7 +70,7 @@ scoreplot.default <- function(object, comps = 1:2, labels, identify = FALSE,
         }
         plot(S, xlab = xlab, ylab = ylab, type = type, ...)
         if (!missing(labels)) text(S, labels, ...)
-        if (identify) {
+        if (isTRUE(identify)) {
             if (!is.null(rownames(S))) {
                 identify(S, labels = rownames(S))
             } else {
@@ -118,7 +118,7 @@ loadingplot.default <- function(object, comps = 1:2, scatter = FALSE, labels,
             stop("`", deparse(substitute(object)), "' has no loadings.")
     }
     varlab <- compnames(object, comps, explvar = TRUE)
-    if (scatter) {
+    if (isTRUE(scatter)) {
         ## Scatter plots
         if (missing(type)) type <- "p"
         if (!missing(labels)) {
@@ -153,7 +153,7 @@ loadingplot.default <- function(object, comps = 1:2, scatter = FALSE, labels,
             plot(L, xlab = xlab, ylab = ylab, type = type, lty = lty,
                  lwd = lwd, pch = pch, cex = cex, col = col, ...)
             if (!missing(labels)) text(L, labels, cex = cex, col = col, ...)
-            if (identify)
+            if (isTRUE(identify))
                 identify(L, labels = paste(1:nrow(L), rownames(L), sep = ": "))
         } else {
             ## Pairwise scatterplots of several components
@@ -167,7 +167,7 @@ loadingplot.default <- function(object, comps = 1:2, scatter = FALSE, labels,
             }
             pairs(L, labels = varlab, panel = panel, cex = cex, ...)
         }
-    } else {                            # if (scatter)
+    } else {                            # if (isTRUE(scatter))
         ## Line plots
         if (missing(type)) type <- "l"
         if (missing(lty)) lty <- 1:nComps
@@ -228,10 +228,10 @@ loadingplot.default <- function(object, comps = 1:2, scatter = FALSE, labels,
                                 if (dopoints) list(pch = pch, pt.cex = cex,
                                                    pt.lwd = lwd)))
         }
-        if (identify)
+        if (isTRUE(identify))
             identify(c(row(L)), c(L),
                      labels = paste(c(col(L)), rownames(L), sep = ": "))
-    }                                   # if (scatter)
+    }                                   # if (isTRUE(scatter))
 }
 
 ## A plot method for loadings (loadings, loading.weights or Yloadings):
@@ -312,7 +312,7 @@ corrplot <- function(object, comps = 1:2, labels, plotx = TRUE, ploty = FALSE,
         eval(addcircles)
         segments(x0 = c(-1, 0), y0 = c(0, -1), x1 = c(1, 0), y1 = c(0, 1))
         if (!missing(labels)) text(cl, labels, col = col, ...)
-        if (identify) {
+        if (isTRUE(identify)) {
             if (!is.null(rownames(cl))) {
                 identify(cl, labels = rownames(cl))
             } else {
@@ -502,7 +502,7 @@ predplotXy <- function(x, y, line = FALSE, labels, type = "p",
     }
     plot(y ~ x, type = type, main = main, xlab = xlab, ylab = ylab, ...)
     if (!missing(labels)) text(x, y, labels, ...)
-    if (line) abline(0, 1, col = line.col, lty = line.lty, lwd = line.lwd)
+    if (isTRUE(line)) abline(0, 1, col = line.col, lty = line.lty, lwd = line.lwd)
     invisible(cbind(measured = x, predicted = as.vector(y)))
 }
 
@@ -522,6 +522,8 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
 {
     ## This simplifies code below:
     if (missing(comps)) comps <- NULL
+    separate <- isTRUE(separate)
+    se.whiskers <- isTRUE(se.whiskers)
 
     ## Help variables
     nLines <- if (is.null(comps)) length(ncomp) else length(comps)
@@ -568,14 +570,14 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
     complabs <- dimnames(coefs)[[3]]
 
     ## Optionally, get the standard errors:
-    if (isTRUE(se.whiskers)) {
+    if (se.whiskers) {
         if (isTRUE(intercept)) stop(sQuote("se.whiskers"),
                                     " not supported when ",
                                     sQuote("intercept"), " is TRUE")
         if (!is.null(comps))
             stop(sQuote("se.whiskers"), " not supported when ",
                  sQuote("comps"), " is specified")
-        if (dim(coefs)[3] > 1 && !isTRUE(separate))
+        if (dim(coefs)[3] > 1 && !separate)
             stop(sQuote("se.whiskers"), " not supported when ",
                  sQuote("separate"), " is FALSE and length(ncomp) > 1")
         SEs <- sqrt(var.jack(object, ncomp = ncomp))
@@ -634,7 +636,7 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
             }
             if (separate) {
                 if (missing(ylim)) {
-                    if (isTRUE(se.whiskers)) {
+                    if (se.whiskers) {
                         ylims <- c(miny[resp,size], maxy[resp,size])
                     } else {
                         ylims <- range(coefs[,resp,size])
@@ -646,14 +648,14 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
                      main = lmain, xlab = xlab, ylab = ylab, type = type,
                      lty = lty, lwd = lwd, pch = pch, cex = cex,
                      col = col, xaxt = xaxt, xlim = xlim, ylim = ylims, ...)
-                if (isTRUE(se.whiskers)) {
+                if (se.whiskers) {
                     arrows(1:npred, (coefs - SEs)[,resp,size],
                            1:npred, (coefs + SEs)[,resp,size], length = 0.05,
                            angle = 90, code = 3, col = 2)
                 }
             } else {
                 if (missing(ylim)) {
-                    if (isTRUE(se.whiskers)) {
+                    if (se.whiskers) {
                         ylims <- c(miny[resp,], maxy[resp,])
                     } else {
                         ylims <- range(coefs[,resp,])
@@ -665,7 +667,7 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
                         ylab = ylab, type = type, lty = lty, lwd = lwd,
                         pch = pch, cex = cex, col = col, xaxt = xaxt,
                         xlim = xlim, ylim = ylims, ...)
-                if (isTRUE(se.whiskers)) {
+                if (se.whiskers) {
                     arrows(1:npred, (coefs - SEs)[,resp,],
                            1:npred, (coefs + SEs)[,resp,], length = 0.05,
                            angle = 90, code = 3, col = 2)
@@ -831,9 +833,9 @@ biplot.mvr <- function(x, comps = 1:2,
     mc$y <- vars[,comps, drop = FALSE]
     if (missing(main)) mc$main <- title
     if (missing(var.axes)) mc$var.axes = FALSE
-    if (!missing(xlabs) && is.logical(xlabs) && !xlabs) # i.e. xlabs = FALSE
+    if (!missing(xlabs) && isFALSE(xlabs))
         mc$xlabs <- rep("o", nrow(objects))
-    if (!missing(ylabs) && is.logical(ylabs) && !ylabs) # i.e. ylabs = FALSE
+    if (!missing(ylabs) && isFALSE(ylabs))
         mc$ylabs <- rep("o", nrow(vars))
     mc[[1]] <- as.name("biplot")
     ## Evaluate the call:

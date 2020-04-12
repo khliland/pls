@@ -9,8 +9,9 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
                 center = TRUE, validation = c("none", "CV", "LOO"),
                 model = TRUE, x = FALSE, y = FALSE, ...)
 {
-    ret.x <- x                          # More useful names
-    ret.y <- y
+    ret.x <- isTRUE(x)                  # More useful names
+    ret.y <- isTRUE(y)
+    center <- isTRUE(center)        # Make sure it is a single logical
 
     ## Get the model frame
     mf <- match.call(expand.dots = FALSE)
@@ -69,7 +70,7 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
     }
 
     ## Handle any fixed scaling before the the validation
-    sdscale <- identical(TRUE, scale)   # Signals scaling by sd
+    sdscale <- isTRUE(scale)            # Signals scaling by sd
     if (is.numeric(scale))
         if (length(scale) == npred)
             X <- X / rep(scale, each = nobj)
@@ -132,7 +133,7 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
     z$validation <- val
     z$call <- match.call()
     z$terms <- mt
-    if (model) z$model <- mf
+    if (isTRUE(model)) z$model <- mf
     if (ret.x) z$x <- X
     if (ret.y) z$y <- Y
     z

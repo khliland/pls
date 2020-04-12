@@ -86,7 +86,7 @@ mvrValstats <- function(object, estimate,
 
     if (cumulative) comps <- ncomp
     ## Either remove the intercept or add a "zeroth" component:
-    if (intercept)
+    if (isTRUE(intercept))
         comps <- c(0, comps)
     else
         SSE <- SSE[,,-1, drop=FALSE]
@@ -195,7 +195,7 @@ MSEP.mvr <- function(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
     if (adjCV) {
         ## Calculate the adjusted CV
         MSEP["adjCV",,] <- MSEP["CV",,]
-        if (intercept) {
+        if (isTRUE(intercept)) {
             MSEP["adjCV",,-1] <- MSEP["adjCV",,-1] + MSEP["train",,-1] -
                 object$validation$adj[,ncomp]
         } else {

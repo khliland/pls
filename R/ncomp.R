@@ -55,7 +55,7 @@ selectNcomp <- function(object,
             selection <- min(which(uls < rmseps[absBest])) - 1
         }
 
-        if (plot) {
+        if (isTRUE(plot)) {
             xvals <- seq_along(rmseps) - 1
             plot(xvals, rmseps, ylab = "RMSEP",
                  xlab = "Number of components", type = "b", ...)

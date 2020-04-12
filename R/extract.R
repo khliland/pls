@@ -9,7 +9,7 @@ coef.mvr <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
     if (missing(comps) || is.null(comps)) {
         ## Cumulative coefficients:
         B <- object$coefficients[,,ncomp, drop=FALSE]
-        if (intercept == TRUE) {      # Intercept has only meaning for
+        if (isTRUE(intercept)) {      # Intercept only has meaning for
                                       # cumulative coefficients
             dB <- dim(B)
             dB[1] <- dB[1] + 1
@@ -177,7 +177,7 @@ respnames <- function(object)
 
 ## The names of the prediction variables:
 prednames <- function(object, intercept = FALSE) {
-    if (identical(TRUE, intercept))
+    if (isTRUE(intercept))
         c("(Intercept)", rownames(object$loadings))
     else
         rownames(object$loadings)
@@ -192,7 +192,7 @@ compnames <- function(object, comps, explvar = FALSE, ...) {
         comps <- seq(along = labs)
     else
         labs <- labs[comps]
-    if (identical(TRUE, explvar) && !is.null(evar <- explvar(M)[comps]))
+    if (isTRUE(explvar) && !is.null(evar <- explvar(M)[comps]))
         labs <- paste(labs, " (", format(evar, digits = 2, trim = TRUE),
                       " %)", sep = "")
     return(labs)
