@@ -1,6 +1,4 @@
 ### msc.R: Multiplicative scatter/signal correction
-###
-###	$Id$	
 
 msc <- function(X, reference = NULL) {
     if (is.null(reference)) reference <- colMeans(X)
@@ -21,7 +19,7 @@ predict.msc <- function(object, newdata, ...) {
 ## This method makes things like
 ## `predict(plsr(y ~ msc(X), data = foo), newdata = bar)' work.
 makepredictcall.msc <- function(var, call) {
-    if (as.character(call)[1] != "msc") 
+    if (as.character(call)[1] != "msc")
         return(call)
     call$reference <- attr(var, "reference")
     call

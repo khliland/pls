@@ -1,6 +1,4 @@
 ### crossval.R: Cross-validation functions.
-### $Id$
-
 
 ## The basic cross-validation function
 mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,

@@ -1,7 +1,5 @@
 ### mvrVal.R: Functions for calculating validation statistics, such
 ### as MSEP, RMSEP and R2, for mvr objects.
-###
-### $Id$
 
 ## Calculate the validation statistics needed for (R)MSEP and R^2.
 ## Note that it accepts any values for `estimate', but only calculates

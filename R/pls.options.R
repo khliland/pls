@@ -1,7 +1,5 @@
 ### pls.options.R:  Package specific options mechanism.
 ###
-### $Id$
-###
 ### Implements a slightly modified version of the sm.options() as found in
 ### sm 2.1-0.  The difference is that the option list is stored in an
 ### environment '.pls.data'.

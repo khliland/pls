@@ -1,6 +1,5 @@
 ### cvsegments.R: A utility function to generate segments for k-fold
 ### cross-validation.
-### $Id$
 
 cvsegments <- function(N, k, length.seg = ceiling(N / k), nrep = 1,
                        type = c("random", "consecutive", "interleaved")) {

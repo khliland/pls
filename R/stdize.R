@@ -1,6 +1,4 @@
 ### stdize.R: Standardization by centering and scaling
-###
-###	$Id$
 
 ## This is a somewhat modified version of scale.default
 stdize <- function(x, center = TRUE, scale = TRUE) {

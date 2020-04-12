@@ -1,5 +1,4 @@
 ### summaries.R: print and summary methods.
-### $Id$
 
 ## Print method for mvr objects:
 print.mvr <- function(x, ...) {

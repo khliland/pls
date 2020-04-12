@@ -1,5 +1,4 @@
 ### predict.mvr.R: A predict method
-### $Id$
 
 predict.mvr <- function(object, newdata, ncomp = 1:object$ncomp, comps,
                         type = c("response", "scores"),

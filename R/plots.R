@@ -1,7 +1,5 @@
 ### Plots for mvr objects.  Some of them also work for other
 ### objects, but that is not a priority.
-###
-### $Id$
 
 ###
 ### Plot method for mvr objects
