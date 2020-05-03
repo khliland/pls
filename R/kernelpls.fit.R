@@ -10,10 +10,11 @@
 ###   de Jong, S. and ter Braak,  C. J. F. (1994) Comments on the PLS kernel
 ###   algorithm.  \emph{Journal of Chemometrics}, \bold{8}, 169--174.
 
-kernelpls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE, ...)
+kernelpls.fit <- function(X, Y, ncomp, center = TRUE,
+                          stripped = FALSE, ...)
 {
     Y <- as.matrix(Y)
-    if(!stripped) {
+    if (!stripped) {
         ## Save dimnames:
         dnX <- dimnames(X)
         dnY <- dimnames(Y)
@@ -22,7 +23,7 @@ kernelpls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE, ...)
     ## difference here (2.3.0).)
     dimnames(X) <- dimnames(Y) <- NULL
 
-    nobj <- dim(X)[1]
+    nobj  <- dim(X)[1]
     npred <- dim(X)[2]
     nresp <- dim(Y)[2]
 
@@ -90,8 +91,8 @@ kernelpls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE, ...)
         XtY <- XtY - (tsq * p.a) %*% t(q.a)
 
         ## 6.-8.
-        R[,a] <- r.a
-        P[,a] <- p.a
+        R[,a]  <- r.a
+        P[,a]  <- p.a
         tQ[a,] <- q.a
         B[,,a] <- R[,1:a, drop=FALSE] %*% tQ[1:a,, drop=FALSE]
         if (!stripped) {
@@ -100,9 +101,9 @@ kernelpls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE, ...)
             u.a <- Y %*% q.a / c(crossprod(q.a)) # Ok for nresp == 1 ??
             ## make u orth to previous X scores:
             if (a > 1) u.a <- u.a - TT %*% (crossprod(TT, u.a) / tsqs)
-            U[,a] <- u.a
+            U[,a]  <- u.a
             TT[,a] <- t.a
-            W[,a] <- w.a
+            W[,a]  <- w.a
             ## (For very tall, slim X and Y, X %*% B[,,a] is slightly faster
             ## due to less overhead.)
             fitted[,,a] <- TT[,1:a] %*% tQ[1:a,, drop=FALSE]

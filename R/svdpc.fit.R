@@ -1,7 +1,6 @@
 ### svdpc.fit.R: SVD PC fit algorithm
 
-svdpc.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE, ...)
-{
+svdpc.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE, ...) {
     Y <- as.matrix(Y)
     if (!stripped) {
         ## Save dimnames:
@@ -12,7 +11,7 @@ svdpc.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE, ...)
     ## as far as it has any effect, it hurts a tiny bit in most situations).
     ## dimnames(X) <- dimnames(Y) <- NULL
 
-    nobj <- dim(X)[1]
+    nobj  <- dim(X)[1]
     npred <- dim(X)[2]
     nresp <- dim(Y)[2]
 
@@ -33,9 +32,9 @@ svdpc.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE, ...)
     }
 
     huhn <- La.svd(X)
-    D <- huhn$d[1:ncomp]
+    D  <- huhn$d[1:ncomp]
     TT <- huhn$u[,1:ncomp, drop=FALSE] %*% diag(D, nrow = ncomp)
-    P <- t(huhn$vt[1:ncomp,, drop=FALSE])
+    P  <- t(huhn$vt[1:ncomp,, drop=FALSE])
     tQ <- crossprod(TT, Y) / D^2
 
     for (a in 1:ncomp) {

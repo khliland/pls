@@ -108,8 +108,7 @@ Yloadings <- function(object) object$Yloadings
 
 ## model.frame.mvr: Extract or generate the model frame from a `mvr' object.
 ## It is simply a slightly modified `model.frame.lm'.
-model.frame.mvr <- function(formula, ...)
-{
+model.frame.mvr <- function(formula, ...) {
     dots <- list(...)
     nargs <- dots[match(c("data", "na.action", "subset"), names(dots), 0)]
     if (length(nargs) || is.null(formula$model)) {
@@ -126,8 +125,7 @@ model.frame.mvr <- function(formula, ...)
 
 ## model.matrix.mvr: Extract the model matrix from an `mvr' object.
 ## It is a modified version of model.matrix.lm.
-model.matrix.mvr <- function(object, ...)
-{
+model.matrix.mvr <- function(object, ...) {
     if (n_match <- match("x", names(object), 0))
         object[[n_match]]
     else {
@@ -185,7 +183,7 @@ prednames <- function(object, intercept = FALSE) {
 ## The names of the components:
 ## Note: The components must be selected prior to the format statement
 compnames <- function(object, comps, explvar = FALSE, ...) {
-    M <- if(is.matrix(object)) object else scores(object)
+    M <- if (is.matrix(object)) object else scores(object)
     labs <- colnames(M)
     if (missing(comps))
         comps <- seq(along = labs)

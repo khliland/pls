@@ -9,7 +9,7 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
 {
     ## Initialise:
     Y <- as.matrix(Y)
-    if(!(missing(Y.add) || is.null(Y.add)))
+    if (!(missing(Y.add) || is.null(Y.add)))
         Y.add <- as.matrix(Y.add)
 
     ## Save dimnames:
@@ -21,7 +21,7 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
     ## dimnames(X) <- dimnames(Y) <- NULL
 
     ## Save dimensions:
-    nobj <- dim(X)[1]
+    nobj  <- dim(X)[1]
     npred <- dim(X)[2]
     nresp <- dim(Y)[2]
 
@@ -148,7 +148,7 @@ crossval <- function(object, segments = 10,
                      segment.type = c("random", "consecutive", "interleaved"),
                      length.seg, jackknife = FALSE, trace = 15, ...)
 {
-    if(!inherits(object, "mvr")) stop("`object' not an mvr object.")
+    if (!inherits(object, "mvr")) stop("`object' not an mvr object.")
     ## Get data frame
     fitCall <- object$call
     data <- eval(fitCall$data, parent.frame())
@@ -175,7 +175,7 @@ crossval <- function(object, segments = 10,
         mf <- model.frame(formula(object), data = data,
                           na.action = fitCall$na.action)
     }
-    if(!is.null(NAs <- attr(mf, "na.action"))) {
+    if (!is.null(NAs <- attr(mf, "na.action"))) {
         ## Some observations were dropped due to NAs.  Skip the same in data:
         data <- data[-NAs,]
     }

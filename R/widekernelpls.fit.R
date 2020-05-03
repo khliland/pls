@@ -20,7 +20,7 @@ widekernelpls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE,
     ## Remove dimnames during calculation.
     dimnames(X) <- dimnames(Y) <- NULL
 
-    nobj <- dim(X)[1]
+    nobj  <- dim(X)[1]
     npred <- dim(X)[2]
     nresp <- dim(Y)[2]
 
@@ -80,7 +80,7 @@ widekernelpls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE,
         utmp <- u.a / c(crossprod(t.a, u.a))
         wpw <- sqrt(c(crossprod(utmp, XXt) %*% utmp))
         TT[,a] <- t.a * wpw
-        U[,a] <- utmp * wpw
+        U[,a]  <- utmp * wpw
 
         G <- In - tcrossprod(t.a)
         XXt <- G %*% XXt %*% G

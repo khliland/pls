@@ -20,24 +20,24 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, center = TRUE,
     Yprim <- as.matrix(Y)
     Y <- cbind(Yprim, Y.add)
 
-    if(!stripped) {
+    if (!stripped) {
         ## Save dimnames:
         dnX <- dimnames(X)
         dnY <- dimnames(Yprim)
     }
     dimnames(X) <- dimnames(Y) <- dimnames(Yprim) <- NULL
 
-    nobj <- dim(X)[1]
+    nobj  <- dim(X)[1]
     npred <- dim(X)[2]
     nresp <- dim(Yprim)[2]
 
     ## Center variables:
     if (center) {
-        if(is.null(weights)){
+        if (is.null(weights)) {
             Xmeans <- colMeans(X)
             X <- X - rep(Xmeans, each = nobj)
         } else {
-            Xmeans <- crossprod(weights,X)/sum(weights)
+            Xmeans <- crossprod(weights,X) / sum(weights)
             X <- X - rep(Xmeans, each = nobj)
         }
         Ymeans <- colMeans(Yprim)
@@ -51,28 +51,29 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, center = TRUE,
     X.orig <- X
 
     ## Declaration of variables
-    W   <- matrix(0,npred,ncomp)    # W-loadings
-    TT  <- matrix(0,nobj,ncomp)     # T-scores
-    P   <- matrix(0,npred,ncomp)    # P-loadings
-    Q   <- matrix(0,nresp,ncomp)    # Q-loadings
-    A   <- matrix(0,dim(Y)[2],ncomp)# Column weights for W0 (from CCA)
+    W   <- matrix(0, npred, ncomp)    # W-loadings
+    TT  <- matrix(0, nobj,  ncomp)    # T-scores
+    P   <- matrix(0, npred, ncomp)    # P-loadings
+    Q   <- matrix(0, nresp, ncomp)    # Q-loadings
+    A   <- matrix(0, dim(Y)[2], ncomp)# Column weights for W0 (from CCA)
     cc  <- numeric(ncomp)
-    pot <- rep(0.5,ncomp)           # Powers used to construct the w-s in R
+    pot <- rep(0.5, ncomp)           # Powers used to construct the w-s in R
     B   <- array(0, c(npred, nresp, ncomp))
     smallNorm <- numeric()
-    if(!stripped){
+    if (!stripped) {
         U <- TT                     # U-scores
         tsqs <- rep.int(1, ncomp)   # t't
         fitted <- array(0, c(nobj, nresp, ncomp))
     }
 
-    for(a in 1:ncomp){
-        if( length(lower)==1 && lower==0.5 && length(upper)==1 && upper==0.5 ) {
-			Rlist <- Rcal(X, Y, Yprim, weights)} 			   # Default CPLS algorithm
-		else {
-			Rlist <- RcalP(X, Y, Yprim, weights, lower, upper, trunc.pow) # Alternate CPPLS algorithm
-			pot[a] <- Rlist$pot }
-		cc[a] <- Rlist$cc
+    for (a in 1:ncomp) {
+        if (length(lower) == 1 && lower == 0.5 && length(upper) == 1 && upper == 0.5 ) {
+            Rlist <- Rcal(X, Y, Yprim, weights) # Default CPLS algorithm
+        } else {
+            Rlist <- RcalP(X, Y, Yprim, weights, lower, upper, trunc.pow) # Alternate CPPLS algorithm
+            pot[a] <- Rlist$pot
+        }
+        cc[a] <- Rlist$cc
         w.a <- Rlist$w
         ifelse(!is.null(Rlist$a), aa <- Rlist$a, aa <- NA)
         A[,a] <- aa
@@ -88,13 +89,13 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, center = TRUE,
         X   <- X - tcrossprod(t.a,p.a)             # Deflation
 
         ## Check and compensate for small norms
-        mm <- apply(abs(X),2,sum)
+        mm <- apply(abs(X), 2, sum)
         r <- which(mm < pls.options()$X.tol)
-        if(length(r)>0){
-            for(i in 1:length(r)){
-                if(sum(smallNorm==r[i]) == 0){
+        if (length(r) > 0) {
+            for (i in 1:length(r)) {
+                if (sum(smallNorm == r[i]) == 0) {
                     ## Add new short small to list
-                    smallNorm[length(smallNorm)+1] <- r[i]
+                    smallNorm[length(smallNorm) + 1] <- r[i]
                 }
             }
         }
@@ -104,7 +105,11 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, center = TRUE,
         TT[,a] <- t.a
         P[,a]  <- p.a
         Q[,a]  <- q.a
-        B[,,a] <- W[,1:a, drop=FALSE]%*%tcrossprod(solve(crossprod(P[,1:a, drop=FALSE],W[,1:a, drop=FALSE])),Q[,1:a, drop=FALSE])
+        B[,,a] <- W[,1:a, drop=FALSE] %*%
+            tcrossprod(
+                solve(crossprod(P[,1:a, drop=FALSE], W[,1:a, drop=FALSE])),
+                Q[,1:a, drop=FALSE]
+            )
 
         if (!stripped) {
             tsqs[a] <- tsq
@@ -160,11 +165,11 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, center = TRUE,
 #######################
 ## Rcal function (CPLS)
 Rcal <- function(X, Y, Yprim, weights) {
-	W0 <- crossprod(X,Y)
-	Ar <- cancorr(X%*%W0, Yprim, weights, FALSE) # Computes canonical correlations between columns in XW and Y with rows weighted according to 'weights'
-	w  <- W0 %*% Ar$A[,1, drop=FALSE]  # Optimal loadings
-	ifelse(exists('Ar'), a <- Ar$A[,1], a <- NA)
-	list(w = w, cc = Ar$r^2, a = a)
+    W0 <- crossprod(X,Y)
+    Ar <- cancorr(X %*% W0, Yprim, weights, FALSE) # Computes canonical correlations between columns in XW and Y with rows weighted according to 'weights'
+    w  <- W0 %*% Ar$A[,1, drop=FALSE]  # Optimal loadings
+    ifelse(exists('Ar'), a <- Ar$A[,1], a <- NA)
+    list(w = w, cc = Ar$r^2, a = a)
 }
 
 
@@ -184,48 +189,50 @@ RcalP <- function(X, Y, Yprim, weights, lower, upper, trunc.pow) {
 
 ################
 ## lw_bestpar function
-lw_bestpar <- function(X, S, C, sng, Yprim, weights, lower, upper, trunc.pow) {
-	if(!is.null(weights))
-		weights <- sqrt(weights) # Prepare weights for cca
-	# Compute for S and each columns of C the distance from the median scaled to [0,1]
-	if(trunc.pow){
-		medC <- t(abs(t(sng*C)-apply(sng*C,2,median)))
-		medC <- t(t(medC)/apply(medC,2,max))
-		medS <- abs(S-median(S))
-		medS <- medS/max(medS)
-	} else {
-		medS <- medC <- NULL
-	}
+lw_bestpar <- function(X, S, C, sng, Yprim, weights, lower, upper,
+                       trunc.pow)
+{
+    if (!is.null(weights))
+        weights <- sqrt(weights) # Prepare weights for cca
+    ## Compute for S and each columns of C the distance from the median scaled to [0,1]
+    if (trunc.pow) {
+        medC <- t(abs(t(sng * C) - apply(sng * C, 2, median)))
+        medC <- t(t(medC) / apply(medC, 2, max))
+        medS <- abs(S - median(S))
+        medS <- medS / max(medS)
+    } else {
+        medS <- medC <- NULL
+    }
 
     #########################
     # Optimization function #
     #########################
     f <- function(p, X, S, C, sng, Yprim, weights, trunc.pow, medS, medC) {
-        if(p == 0){         # Variable selection from standard deviation
+        if(p == 0) {        # Variable selection from standard deviation
             S[S < max(S)] <- 0
             W0 <- S
         } else if(p == 1) { # Variable selection from correlation
             C[C < max(C)] <- 0
             W0 <- rowSums(C)
         } else {            # Standard deviation and correlation with powers
-			if(trunc.pow){
-				ps <- (1-p)/p
-				if(ps<1){
-					S <- S^ps
-				} else {
-					S[medS<(1-2*p)] <- 0
-				}
-				pc <- p/(1-p)
-				if(pc<1){
-					W0 <- (sng*(C^pc))*S
-				} else {
-					C[medC<(2*p-1)] <- 0
-					W0 <- (sng*C)*S
-				}
-			} else {
-				S <- S^((1-p)/p)
-				W0 <- (sng*(C^(p/(1-p))))*S
-			}
+            if (trunc.pow) {
+                ps <- (1 - p) / p
+                if (ps < 1) {
+                    S <- S^ps
+                } else {
+                    S[medS < (1 - 2 * p)] <- 0
+                }
+                pc <- p / (1 - p)
+                if (pc < 1) {
+                    W0 <- (sng * (C^pc)) * S
+                } else {
+                    C[medC < (2 * p - 1)] <- 0
+                    W0 <- (sng * C) * S
+                }
+            } else {
+                S <- S^((1 - p) / p)
+                W0 <- (sng * (C^(p / (1 - p)))) * S
+            }
         }
         Z <- X %*% W0  # Transform X into W0
         -(cancorr(Z, Yprim, weights))^2
@@ -235,21 +242,24 @@ lw_bestpar <- function(X, S, C, sng, Yprim, weights, lower, upper, trunc.pow) {
     # Logic for optimization segment(s) #
     #####################################
     nOpt <- length(lower)
-    pot  <- numeric(3*nOpt)
-    ca   <- numeric(3*nOpt)
+    pot  <- numeric(3 * nOpt)
+    ca   <- numeric(3 * nOpt)
 
-    for (i in 1:nOpt){
-        ca[1+(i-1)*3]  <- f(lower[i], X, S, C, sng, Yprim, weights, trunc.pow, medS, medC)
-        pot[1+(i-1)*3] <- lower[i]
+    for (i in 1:nOpt) {
+        ca[ 1 + (i - 1) * 3] <-
+            f(lower[i], X, S, C, sng, Yprim, weights, trunc.pow, medS, medC)
+        pot[1 + (i - 1) * 3] <- lower[i]
         if (lower[i] != upper[i]) {
             Pc <- optimize(f = f, interval = c(lower[i], upper[i]),
                            tol = 10^-4, maximum = FALSE,
                            X = X, S = S, C = C, sng = sng, Yprim = Yprim,
                            weights = weights, trunc.pow = trunc.pow, medS, medC)
-            pot[2+(i-1)*3] <- Pc[[1]]; ca[2+(i-1)*3] <- Pc[[2]]
+            pot[2 + (i - 1) * 3] <- Pc[[1]]
+            ca[ 2 + (i - 1) * 3] <- Pc[[2]]
         }
-        ca[3+(i-1)*3]  <- f(upper[i], X, S, C, sng, Yprim, weights, trunc.pow, medS, medC)
-        pot[3+(i-1)*3] <- upper[i]
+        ca[ 3 + (i - 1) * 3] <-
+            f(upper[i], X, S, C, sng, Yprim, weights, trunc.pow, medS, medC)
+        pot[3 + (i - 1) * 3] <- upper[i]
     }
 
 
@@ -265,25 +275,25 @@ lw_bestpar <- function(X, S, C, sng, Yprim, weights, lower, upper, trunc.pow) {
         C[C < max(C)] <- 0
         w <- rowSums(C)
     } else {                     # Standard deviation and correlation with powers
-        p <- pot[cmin]                  # Power from optimization
-		if(trunc.pow){ # New power algorithm
-			ps <- (1-p)/p
-			if(ps<1){
-				S <- S^ps
-			} else {
-				S[medS<(1-2*p)] <- 0
-			}
-			pc <- p/(1-p)
-			if(pc<1){
-				W0 <- (sng*(C^pc))*S
-			} else {
-				C[medC<(2*p-1)] <- 0
-				W0 <- (sng*C)*S
-			}
-		} else {
-			S <- S^((1-p)/p)
-			W0 <- (sng*(C^(p/(1-p))))*S
-		}
+        p <- pot[cmin]           # Power from optimization
+        if (trunc.pow) {         # New power algorithm
+            ps <- (1 - p) / p
+            if (ps < 1) {
+                S <- S^ps
+            } else {
+                S[medS < (1 - 2 * p)] <- 0
+            }
+            pc <- p / (1 - p)
+            if (pc < 1) {
+                W0 <- (sng * (C^pc)) * S
+            } else {
+                C[medC < (2 * p-1)] <- 0
+                W0 <- (sng * C) * S
+            }
+        } else {
+            S <- S^((1 - p) / p)
+            W0 <- (sng * (C^(p / (1 - p)))) * S
+        }
 
         Z <- X %*% W0                   # Transform X into W
         Ar <- cancorr(Z, Yprim, weights, FALSE) # Computes canonical correlations between columns in XW and Y with rows weighted according to 'weights'
@@ -300,26 +310,26 @@ lw_bestpar <- function(X, S, C, sng, Yprim, weights, lower, upper, trunc.pow) {
 CorrXY <- function(X, Y, weights) {
     ##  Computation of correlations between the columns of X and Y
     n  <- dim(X)[1]
-	if(is.null(weights)){
-		cx <- colMeans(X)
-		cy <- colMeans(Y)
-		X <- X - rep(cx, each = n)
-		Y <- Y - rep(cy, each = n)
-	} else {
-		cx <- crossprod(weights,X)/sum(weights)
-		cy <- crossprod(weights,Y)/sum(weights)
-		X  <- X - rep(cx, each = n)
-		Y  <- Y - rep(cy, each = n)
-		X  <- X * weights
-		Y  <- Y * weights
-	}
+    if (is.null(weights)) {
+        cx <- colMeans(X)
+        cy <- colMeans(Y)
+        X <- X - rep(cx, each = n)
+        Y <- Y - rep(cy, each = n)
+    } else {
+        cx <- crossprod(weights,X) / sum(weights)
+        cy <- crossprod(weights,Y) / sum(weights)
+        X  <- X - rep(cx, each = n)
+        Y  <- Y - rep(cy, each = n)
+        X  <- X * weights
+        Y  <- Y * weights
+    }
 
-    sdX <- sqrt(apply(X^2,2,mean))
-    inds <- which(sdX == 0, arr.ind=FALSE)
+    sdX <- sqrt(apply(X^2, 2, mean))
+    inds <- which(sdX == 0, arr.ind = FALSE)
     sdX[inds] <- 1
 
-    ccxy <- crossprod(X, Y) / (n * tcrossprod(sdX, sqrt(apply(Y^2,2,mean))))
-    sdX[inds] <- 0
+    ccxy <- crossprod(X, Y) / (n * tcrossprod(sdX, sqrt(apply(Y^2, 2, mean))))
+    sdX[ inds ] <- 0
     ccxy[inds,] <- 0
     list(C = ccxy, S = sdX)
 }
@@ -338,36 +348,38 @@ cancorr <- function (x, y, weights, opt = TRUE) {
     nr  <- nrow(x)
     ncx <- ncol(x)
     ncy <- ncol(y)
-    if (!is.null(weights)){
+    if (!is.null(weights)) {
         x <- x * weights
         y <- y * weights
     }
     qx <- qr(x, LAPACK = TRUE)
     qy <- qr(y, LAPACK = TRUE)
-	qxR <- qr.R(qx)
-	# Compute rank like MATLAB does
-	dx <- sum(abs(diag(qxR)) > .Machine$double.eps*2^floor(log2(abs(qxR[1])))*max(nr,ncx))
+    qxR <- qr.R(qx)
+    ## Compute rank like MATLAB does
+    dx <- sum(abs(diag(qxR)) >
+              .Machine$double.eps * 2^floor(log2(abs(qxR[1]))) * max(nr, ncx))
     if (!dx)
         stop("'x' has rank 0")
-	qyR <- qr.R(qy)
-	# Compute rank like MATLAB does
-	dy <- sum(abs(diag(qyR)) > .Machine$double.eps*2^floor(log2(abs(qyR[1])))*max(nr,ncy))
+    qyR <- qr.R(qy)
+    ## Compute rank like MATLAB does
+    dy <- sum(abs(diag(qyR)) >
+              .Machine$double.eps * 2^floor(log2(abs(qyR[1]))) * max(nr, ncy))
     if (!dy)
         stop("'y' has rank 0")
-	dxy <- min(dx,dy)
-    if(opt) {
+    dxy <- min(dx, dy)
+    if (opt) {
         z <- svd(qr.qty(qx, qr.qy(qy, diag(1, nr, dy)))[1:dx,, drop = FALSE],
                  nu = 0, nv = 0)
-        ret <- max(min(z$d[1],1),0)
+        ret <- max(min(z$d[1], 1), 0)
     } else {
         z <- svd(qr.qty(qx, qr.qy(qy, diag(1, nr, dy)))[1:dx,, drop = FALSE],
                  nu = dxy, nv = 0)
-        A <- backsolve((qx$qr)[1:dx,1:dx, drop = FALSE], z$u)*sqrt(nr-1)
-        if((ncx - nrow(A)) > 0) {
+        A <- backsolve((qx$qr)[1:dx,1:dx, drop = FALSE], z$u) * sqrt(nr - 1)
+        if ((ncx - nrow(A)) > 0) {
             A <- rbind(A, matrix(0, ncx - nrow(A), dxy))
         }
         A[qx$pivot,] <- A
-		ret <- list(A=A, r=max(min(z$d[1],1),0))
+        ret <- list(A = A, r = max(min(z$d[1], 1), 0))
     }
     ret
 }

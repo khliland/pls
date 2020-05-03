@@ -2,7 +2,8 @@
 ### cross-validation.
 
 cvsegments <- function(N, k, length.seg = ceiling(N / k), nrep = 1,
-                       type = c("random", "consecutive", "interleaved")) {
+                       type = c("random", "consecutive", "interleaved"))
+{
     ## length.seg overrides k:
     if (!missing(length.seg)) k <- ceiling(N / length.seg)
 
@@ -35,7 +36,7 @@ cvsegments <- function(N, k, length.seg = ceiling(N / k), nrep = 1,
     }
 
     incomplete <- k * length.seg - N    # Number of incomplete segments
-    complete <- k - incomplete          # Number of complete segments
+    complete   <- k - incomplete        # Number of complete segments
 
     ## Create matrix of indices
     type <- match.arg(type)

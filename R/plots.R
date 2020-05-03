@@ -30,7 +30,8 @@ plot.mvr <- function(x, plottype = c("prediction", "validation",
 scoreplot <- function(object, ...) UseMethod("scoreplot")
 
 scoreplot.default <- function(object, comps = 1:2, labels, identify = FALSE,
-                              type = "p", xlab, ylab, ...) {
+                              type = "p", xlab, ylab, ...)
+{
     ## Check arguments
     nComps <- length(comps)
     if (nComps == 0) stop("At least one component must be selected.")
@@ -168,9 +169,9 @@ loadingplot.default <- function(object, comps = 1:2, scatter = FALSE, labels,
     } else {                            # if (isTRUE(scatter))
         ## Line plots
         if (missing(type)) type <- "l"
-        if (missing(lty)) lty <- 1:nComps
-        if (missing(pch)) pch <- 1:nComps
-        if (missing(col)) col <- 1:nComps
+        if (missing(lty))  lty  <- 1:nComps
+        if (missing(pch))  pch  <- 1:nComps
+        if (missing(col))  col  <- 1:nComps
         if (missing(xlab)) xlab <- "variable"
         if (missing(ylab)) ylab <- "loading value"
         xnum <- 1:nrow(L)
@@ -383,7 +384,7 @@ predplot.mvr <- function(object, ncomp = object$ncomp, which, newdata,
     }
 
     ## Help variables
-    nEst <- length(which)
+    nEst  <- length(which)
     nSize <- length(ncomp)
     nResp <- dim(object$fitted.values)[2]
 
@@ -569,9 +570,9 @@ coefplot <- function(object, ncomp = object$ncomp, comps, intercept = FALSE,
 
     ## Optionally, get the standard errors:
     if (se.whiskers) {
-        if (isTRUE(intercept)) stop(sQuote("se.whiskers"),
-                                    " not supported when ",
-                                    sQuote("intercept"), " is TRUE")
+        if (isTRUE(intercept))
+            stop(sQuote("se.whiskers"), " not supported when ",
+                 sQuote("intercept"), " is TRUE")
         if (!is.null(comps))
             stop(sQuote("se.whiskers"), " not supported when ",
                  sQuote("comps"), " is specified")
@@ -797,7 +798,8 @@ plot.mvrVal <- function(x, nCols, nRows, type = "l", lty = 1:nEst,
 
 biplot.mvr <- function(x, comps = 1:2,
                        which = c("x", "y", "scores", "loadings"),
-                       var.axes = FALSE, xlabs, ylabs, main, ...) {
+                       var.axes = FALSE, xlabs, ylabs, main, ...)
+{
     if (length(comps) != 2) stop("Exactly 2 components must be selected.")
     which <- match.arg(which)
     switch(which,

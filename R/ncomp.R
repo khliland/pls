@@ -78,4 +78,3 @@ selectNcomp <- function(object,
         0
     }
 }
-

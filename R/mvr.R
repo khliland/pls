@@ -9,8 +9,8 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
                 center = TRUE, validation = c("none", "CV", "LOO"),
                 model = TRUE, x = FALSE, y = FALSE, ...)
 {
-    ret.x <- isTRUE(x)                  # More useful names
-    ret.y <- isTRUE(y)
+    ret.x  <- isTRUE(x)                 # More useful names
+    ret.y  <- isTRUE(y)
     center <- isTRUE(center)        # Make sure it is a single logical
 
     ## Get the model frame
@@ -49,7 +49,7 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
     }
     X <- delete.intercept(model.matrix(mt, mf))
 
-    nobj <- dim(X)[1]
+    nobj  <- dim(X)[1]
     npred <- dim(X)[2]
 
     ## model.matrix prepends the term name to the colnames of matrices.

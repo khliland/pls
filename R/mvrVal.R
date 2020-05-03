@@ -97,7 +97,8 @@ mvrValstats <- function(object, estimate,
 ## R2: Return R^2
 R2 <- function(object, ...) UseMethod("R2")
 R2.mvr <- function(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
-               intercept = cumulative, se = FALSE, ...) {
+                   intercept = cumulative, se = FALSE, ...)
+{
     ## Makes the code slightly simpler:  FIXME: maybe remove
     cumulative <- missing(comps) || is.null(comps)
 
@@ -116,12 +117,14 @@ R2.mvr <- function(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
         }
     } else {
         estimate <- allEstimates[pmatch(estimate, allEstimates)]
-        if (any(is.na(estimate))) stop("`estimate' should be a subset of ",
-                                       paste(allEstimates, collapse = ", "))
+        if (any(is.na(estimate)))
+            stop("`estimate' should be a subset of ",
+                 paste(allEstimates, collapse = ", "))
         if (any(estimate == "all")) {
             estimate <- allEstimates[-1] # Try all estimates (except "all")
-            if(missing(newdata)) estimate <- setdiff(estimate, "test")
-            if(is.null(object$validation) || !cumulative)
+            if (missing(newdata))
+                estimate <- setdiff(estimate, "test")
+            if (is.null(object$validation) || !cumulative)
                 estimate <- setdiff(estimate, "CV")
         }
     }
@@ -164,12 +167,14 @@ MSEP.mvr <- function(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
         }
     } else {
         estimate <- allEstimates[pmatch(estimate, allEstimates)]
-        if (any(is.na(estimate))) stop("`estimate' should be a subset of ",
-                                       paste(allEstimates, collapse = ", "))
+        if (any(is.na(estimate)))
+            stop("`estimate' should be a subset of ",
+                 paste(allEstimates, collapse = ", "))
         if (any(estimate == "all")) {
             estimate <- allEstimates[-1] # Try all estimates (except "all")
-            if(missing(newdata)) estimate <- setdiff(estimate, "test")
-            if(is.null(object$validation) || !cumulative)
+            if (missing(newdata))
+                estimate <- setdiff(estimate, "test")
+            if (is.null(object$validation) || !cumulative)
                 estimate <- setdiff(estimate, c("CV", "adjCV"))
         }
     }

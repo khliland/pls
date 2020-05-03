@@ -2,7 +2,8 @@
 
 predict.mvr <- function(object, newdata, ncomp = 1:object$ncomp, comps,
                         type = c("response", "scores"),
-                        na.action = na.pass, ...) {
+                        na.action = na.pass, ...)
+{
     if (missing(newdata) || is.null(newdata))
         newX <- model.matrix(object)
     else if (is.matrix(newdata)) {
@@ -53,7 +54,8 @@ predict.mvr <- function(object, newdata, ncomp = 1:object$ncomp, comps,
         if (missing(comps) || is.null(comps)) comps <- ncomp
         if (missing(newdata)) {
             TT <- object$scores[,comps]
-            if (!is.null(object$na.action))  TT <- napredict(object$na.action, TT)
+            if (!is.null(object$na.action))
+                TT <- napredict(object$na.action, TT)
         } else {
             if (is.null(object$projection))
                 stop("`object' has no `projection' component.  Maybe it was fitted with `stripped = TRUE'.")

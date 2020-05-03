@@ -2,7 +2,8 @@
 
 ## var.jack: Calculate jackknife variance (or covariance) estimates
 var.jack <- function(object, ncomp = object$ncomp, covariance = FALSE,
-                     use.mean = TRUE) {
+                     use.mean = TRUE)
+{
     if (!inherits(object, "mvr"))
         stop("Not an 'mvr' object")
     if (is.null(object$validation) || is.null(object$validation$coefficients))

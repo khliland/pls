@@ -17,7 +17,7 @@ oscorespls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE,
     ## as far as it has any effect, it hurts a tiny bit in most situations.
     dimnames(X) <- dimnames(Y) <- NULL
 
-    nobj <- dim(X)[1]
+    nobj  <- dim(X)[1]
     npred <- dim(X)[2]
     nresp <- dim(Y)[2]
 
@@ -46,7 +46,7 @@ oscorespls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE,
     ## Must be done here due to the deflation of X
     if (!stripped) Xtotvar <- sum(X * X)
 
-    for(a in 1:ncomp) {
+    for (a in 1:ncomp) {
         ## Initial values:
         if (nresp == 1) {               # pls1
             u.a <- Y                    # FIXME: scale?
@@ -97,12 +97,12 @@ oscorespls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE,
         Y <- Y - t.a %*% t(q.a)
 
         ## Save scores etc:
-        W[,a] <- w.a
-        P[,a] <- p.a
+        W[,a]  <- w.a
+        P[,a]  <- p.a
         tQ[a,] <- q.a
         if (!stripped) {
             TT[,a] <- t.a
-            U[,a] <- u.a
+            U[,a]  <- u.a
             tsqs[a] <- tsq
             ## (For very tall, slim X and Y, X0 %*% B[,,a] is slightly faster,
             ## due to less overhead.)

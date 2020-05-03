@@ -21,7 +21,7 @@ stdize <- function(x, center = TRUE, scale = TRUE) {
         x <- sweep(x, 2, scale, "/")
     else stop("invalid 'scale'")
     if (is.numeric(center)) attr(x, "stdized:center") <- center
-    if (is.numeric(scale)) attr(x, "stdized:scale") <- scale
+    if (is.numeric(scale))  attr(x, "stdized:scale")  <- scale
     class(x) <- c("stdized", "matrix")
     return(x)
 }
