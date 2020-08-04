@@ -1,7 +1,7 @@
 Package: pls
 Title: Partial Least Squares and Principal Component Regression
-Version: 2.7-2
-Date: 2019-09-30
+Version: 2.7-3
+Date: 2020-08-04
 Authors@R: c(person("Bjørn-Helge", "Mevik", role = c("aut", "cre"),
                      email = "b-h@mevik.net"),
               person("Ron", "Wehrens", role = "aut"),
@@ -19,5 +19,5 @@ Depends: R (>= 2.10)
 Imports: grDevices, graphics, methods, stats
 Suggests: MASS, parallel, Rmpi, testthat, RUnit
 License: GPL-2
-URL: http://mevik.net/work/software/pls.html, https://github.com/bhmevik/pls
+URL: https://mevik.net/work/software/pls.html, https://github.com/bhmevik/pls
 BugReports: https://github.com/bhmevik/pls/issues

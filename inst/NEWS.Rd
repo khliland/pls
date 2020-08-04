@@ -29,6 +29,15 @@
 %%     }
 %%   }
 %% }
+\section{Changes in pls version 2.7-3}{
+  \subsection{Internal changes}{
+    \itemize{
+      \item Small code cleanups and standardization of white space,
+      indentation, etc.
+      \item Fixes in test suite for MKL.
+    }
+  }
+}
 \section{Changes in pls version 2.7-2}{
   \subsection{Bug fixes}{
     \itemize{
