@@ -19,12 +19,13 @@ yarn.pls.widekernel$fit.time = 0
 cppls_weights = runif(nrow(yarn))
 yarn.cppls <- cppls(density ~ NIR, 6, data = yarn, validation = "CV", weights = cppls_weights)
 yarn.cppls$fit.time = 0
-test_that('Basic model fitting methods works', {
-  expect_equal_to_reference(yarn.pcr, 'yarn.pcr.rds', info = 'Principal Component Regression (pcr), method = `svdpc`')
-  expect_equal_to_reference(yarn.pls, 'yarn.pls.rds', info = 'Partial Least Squars (pls), method = `kernelpls`')
-  expect_equal_to_reference(yarn.pls.widekernel, 'yarn.pls.widekernel.rds', info = 'Partial Least Squars (pls), method = `widekernelpls`')
-  expect_equal_to_reference(yarn.cppls, 'yarn.cppls.rds', info = 'Canocial Powered Partial Least Squares works (cppls), method = `cppls`')
-})
+## These tests might fail with alternative BLAS implementations:
+## test_that('Basic model fitting methods works', {
+##   expect_equal_to_reference(yarn.pcr, 'yarn.pcr.rds', info = 'Principal Component Regression (pcr), method = `svdpc`')
+##   expect_equal_to_reference(yarn.pls, 'yarn.pls.rds', info = 'Partial Least Squars (pls), method = `kernelpls`')
+##   expect_equal_to_reference(yarn.pls.widekernel, 'yarn.pls.widekernel.rds', info = 'Partial Least Squars (pls), method = `widekernelpls`')
+##   expect_equal_to_reference(yarn.cppls, 'yarn.cppls.rds', info = 'Canocial Powered Partial Least Squares works (cppls), method = `cppls`')
+## })
 
 ## Alternative methods:
 yarn.oscorespls <- mvr(density ~ NIR, 6, data = yarn, validation = "CV",
@@ -33,10 +34,11 @@ yarn.oscorespls$fit.time = 0
 yarn.simpls <- mvr(density ~ NIR, 6, data = yarn, validation = "CV",
                    method = "simpls")
 yarn.simpls$fit.time = 0
-test_that('Alternative model fitting methods works', {
-  expect_equal_to_reference(yarn.oscorespls, 'yarn.oscorespls.rds', info = 'Classical orthogonal scores algorithm (oscorespls)')
-  expect_equal_to_reference(yarn.simpls, 'yarn.simpls.rds', info = 'SIMPLS algorithm')
-})
+## These tests might fail with alternative BLAS implementations:
+## test_that('Alternative model fitting methods works', {
+##   expect_equal_to_reference(yarn.oscorespls, 'yarn.oscorespls.rds', info = 'Classical orthogonal scores algorithm (oscorespls)')
+##   expect_equal_to_reference(yarn.simpls, 'yarn.simpls.rds', info = 'SIMPLS algorithm')
+## })
 
 ## Match predictions
 context('Test if predictions of the different methods line up')
