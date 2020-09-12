@@ -2,7 +2,7 @@
 ### cross-validation.
 
 cvsegments <- function(N, k, length.seg = ceiling(N / k), nrep = 1,
-                       type = c("random", "consecutive", "interleaved"))
+                            type = c("random", "consecutive", "interleaved"), stratify = NULL)
 {
     ## length.seg overrides k:
     if (!missing(length.seg)) k <- ceiling(N / length.seg)
@@ -20,14 +20,14 @@ cvsegments <- function(N, k, length.seg = ceiling(N / k), nrep = 1,
                 "observations.\n  A best effort segment size will be used.")
 
     ## The idea is to generate a k times length.seg matrix with indices, and
-    ## use each coloum as a segment.  If k*length.seg > N, the last element of
+    ## use each column as a segment.  If k*length.seg > N, the last element of
     ## the N - k*length.seg last rows will be NA.  Any NAs are stripped when
     ## the matrix is converted to a list of vectors.
 
     ## If nrep > 1, N and length.seg is first divided by nrep, and the matrix
     ## of indices is created as above.  The matrix is then expanded by
-    ## replacing each element i with a coloumn vector nrep * (i - 1) + 1:nrep,
-    ## before using the coloumns as segments.
+    ## replacing each element i with a column vector nrep * (i - 1) + 1:nrep,
+    ## before using the columns as segments.
 
     ## Reduce N and length.seg if needed
     if (nrep > 1) {
@@ -40,26 +40,76 @@ cvsegments <- function(N, k, length.seg = ceiling(N / k), nrep = 1,
 
     ## Create matrix of indices
     type <- match.arg(type)
-    switch(type,
-           random = {
-               inds <- matrix(c(sample(1:N), rep(NA, incomplete)),
-                              nrow = length.seg, byrow = TRUE)
-           },
-           consecutive = {
-               if (complete < k) {
-                   inds <- cbind(matrix(1:(length.seg*complete),
-                                        nrow = length.seg),
-                                 rbind(matrix((length.seg*complete+1):N,
-                                              nrow = length.seg-1), NA))
-               } else {
-                   inds <- matrix(1:N, nrow = length.seg)
+    if (is.null(stratify)) { # No stratification
+        switch(type,
+               random = {
+                   inds <- matrix(c(sample(1:N), rep(NA, incomplete)),
+                                  nrow = length.seg, byrow = TRUE)
+               },
+               consecutive = {
+                   if (complete < k) {
+                       inds <- cbind(matrix(1:(length.seg*complete),
+                                            nrow = length.seg),
+                                     rbind(matrix((length.seg*complete+1):N,
+                                                  nrow = length.seg-1), NA))
+                   } else {
+                       inds <- matrix(1:N, nrow = length.seg)
+                   }
+               },
+               interleaved = {
+                   inds <- matrix(c(1:N, rep(NA, incomplete)),
+                                  nrow = length.seg, byrow = TRUE)
                }
-           },
-           interleaved = {
-               inds <- matrix(c(1:N, rep(NA, incomplete)),
-                              nrow = length.seg, byrow = TRUE)
-           }
-           )
+        )
+    } else {
+
+        ## Prepare stratification
+        if (!is.list(stratify)) {
+            stratify <- lapply(1:max(stratify), function(i)which(stratify==i))
+        }
+        stratVec <- unlist(lapply(1:length(stratify), function(i)rep(i,length(stratify[[i]]))))
+        indVec   <- unlist(stratify)
+        segs     <- integer(N)
+        blinds   <- rep(1:k, length.out=N)
+        switch(type,
+               random = {
+                   stratRand <- sample(length(stratify))
+                   stratify  <- stratify[stratRand]
+                   indVec    <- unlist(stratify)
+                   stratVec  <- unlist(lapply(1:length(stratify), function(i)rep(i,length(stratify[[i]]))))
+                   for(i in 1:length(stratify)){
+                       segs[stratify[[i]]] <- blinds[indVec[stratVec==i]]
+                   }
+                   inds <- lapply(1:k,function(i)indVec[segs==i])
+                   lapply(inds, function(i)i[sample(length(i))])
+                   if(incomplete>0)
+                       inds[-(1:complete)] <- lapply(inds[-(1:complete)], function(i){i[length.seg] <- NA;i})
+                   inds <- do.call(cbind, inds)
+                   inds <- inds[,sample(k)]
+               },
+               consecutive = {
+                   for(i in 1:length(stratify)){
+                       blinds[stratVec==i] <- sort(blinds[stratVec==i])
+                   }
+                   for(i in 1:length(stratify)){
+                       segs[stratify[[i]]] <- blinds[stratVec==i]
+                   }
+                   inds <- lapply(1:k,function(i)which(segs==i))
+                   if(incomplete>0)
+                       inds[-(1:complete)] <- lapply(inds[-(1:complete)], function(i){i[length.seg] <- NA;i})
+                   inds <- do.call(cbind, inds)
+               },
+               interleaved = {
+                   for(i in 1:length(stratify)){
+                       segs[stratify[[i]]] <- blinds[indVec[stratVec==i]]
+                   }
+                   inds <- lapply(1:k,function(i)indVec[segs==i])
+                   if(incomplete>0)
+                       inds[-(1:complete)] <- lapply(inds[-(1:complete)], function(i){i[length.seg] <- NA;i})
+                   inds <- do.call(cbind, inds)
+               }
+        )
+    }
 
     ## Expand matrix if needed
     if (nrep > 1) {
