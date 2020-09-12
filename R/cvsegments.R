@@ -81,7 +81,7 @@ cvsegments <- function(N, k, length.seg = ceiling(N / k), nrep = 1,
                        segs[stratify[[i]]] <- blinds[indVec[stratVec==i]]
                    }
                    inds <- lapply(1:k,function(i)indVec[segs==i])
-                   lapply(inds, function(i)i[sample(length(i))])
+                   inds <- lapply(inds, function(i)i[sample(length(i))])
                    if(incomplete>0)
                        inds[-(1:complete)] <- lapply(inds[-(1:complete)], function(i){i[length.seg] <- NA;i})
                    inds <- do.call(cbind, inds)
