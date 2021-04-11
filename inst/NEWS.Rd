@@ -29,6 +29,13 @@
 %%     }
 %%   }
 %% }
+\section{Changes in pls version 2.7-4}{
+  \subsection{New features}{
+    \itemize{
+      \item Added support for straified cross-validation segments through stratify argument.
+    }
+  }
+}
 \section{Changes in pls version 2.7-3}{
   \subsection{Internal changes}{
     \itemize{
@@ -125,8 +132,8 @@
   }
   \subsection{User-visible changes}{
     \itemize{
-      \item In order to comply with current CRAN submission policies, 
-        pls.options() no longer stores the modified option list in the global 
+      \item In order to comply with current CRAN submission policies,
+        pls.options() no longer stores the modified option list in the global
         environment.  This has the effect that the options will have to be set
         every time R is started, even if the work space was saved and loaded.
     }
@@ -321,7 +328,7 @@
   }
   \subsection{Bug fixes}{
     \itemize{
-      \item `ncomp' is now reduced when it is too large for the requested 
+      \item `ncomp' is now reduced when it is too large for the requested
         cross-validation.
       \item The (optional) plot parametres `cex' and `font' were
       incorrectly matched with `cex.main' and `font.main' in predplot().
@@ -364,7 +371,7 @@
         explicit centering and/or scaling.
       \item Correlation loadings plot (corrplot).
       \item New argument `varnames' in coefplot, to label the x tick
-      marks with the variable names. 
+      marks with the variable names.
       \item loadingplot now uses the `labels' argument to label x tick
       marks when 'scatter = FALSE'.
       \item loadingplot, coefplot and plot.mvrVal can now display

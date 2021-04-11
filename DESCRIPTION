@@ -1,7 +1,7 @@
 Package: pls
 Title: Partial Least Squares and Principal Component Regression
-Version: 2.7-3
-Date: 2020-08-04
+Version: 2.7-4
+Date: 2020-09-19
 Authors@R: c(person("Bjørn-Helge", "Mevik", role = c("aut", "cre"),
                      email = "b-h@mevik.net"),
               person("Ron", "Wehrens", role = "aut"),
