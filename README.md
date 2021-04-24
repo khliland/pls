@@ -12,7 +12,7 @@ This is the source code repository of the CRAN package "pls".
 (If needed, install the `devtools` package from CRAN first.)
 
     library(devtools)
-    install_github("bhmevik/pls")
+    install_github("khliland/pls")
 
 ## Usage
 
