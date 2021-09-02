@@ -8,7 +8,7 @@ This is the source code repository of the CRAN package "pls".
 
     install.packages("pls")
 
-## Installatin from github
+## Installation from github
 
 (If needed, install the `devtools` package from CRAN first.)
 
