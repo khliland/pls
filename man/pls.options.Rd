@@ -86,7 +86,9 @@ pls.options(list(plsralg = "simpls", mvralg = "simpls")) # Equivalent
 pls.options()
 
 ## Restore `factory settings':
-rm(.pls.Options)
+pls.options(list(mvralg = "kernelpls", plsralg = "kernelpls", cpplsalg = "cppls",
+                 pcralg = "svdpc", parallel = NULL,
+                 w.tol = .Machine$double.eps, X.tol = 10^-12))
 pls.options()
 
 }
