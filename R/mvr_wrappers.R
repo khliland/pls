@@ -1,5 +1,7 @@
 ### mvr_wrappers.R: plsr, pls and pcr wrappers for mvr
 
+#' @rdname mvr
+#' @export
 plsr <- function(..., method = pls.options()$plsralg) {
     cl <- match.call()
     cl$method <- match.arg(method, c("kernelpls", "widekernelpls", "simpls",
@@ -12,6 +14,8 @@ plsr <- function(..., method = pls.options()$plsralg) {
     res
 }
 
+#' @rdname mvr
+#' @export
 pcr <- function(..., method = pls.options()$pcralg) {
     cl <- match.call()
     cl$method <- match.arg(method, c("svdpc", "model.frame"))
@@ -23,6 +27,8 @@ pcr <- function(..., method = pls.options()$pcralg) {
     res
 }
 
+#' @rdname mvr
+#' @export
 cppls <- function(..., Y.add, weights, method = pls.options()$cpplsalg) {
     cl <- match.call()
     cl$method <- match.arg(method, c("cppls", "model.frame"))

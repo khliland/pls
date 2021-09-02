@@ -5,6 +5,61 @@
 ###   squares regression.  \emph{Chemometrics and Intelligent Laboratory
 ###   Systems}, \bold{18}, 251--263.
 
+
+
+#' @title Sijmen de Jong's SIMPLS
+#'
+#' @description Fits a PLSR model with the SIMPLS algorithm.
+#'
+#' @details This function should not be called directly, but through the generic
+#' functions \code{plsr} or \code{mvr} with the argument
+#' \code{method="simpls"}.  SIMPLS is much faster than the NIPALS algorithm,
+#' especially when the number of X variables increases, but gives slightly
+#' different results in the case of multivariate Y.  SIMPLS truly maximises the
+#' covariance criterion.  According to de Jong, the standard PLS2 algorithms
+#' lie closer to ordinary least-squares regression where a precise fit is
+#' sought; SIMPLS lies closer to PCR with stable predictions.
+#'
+#' @param X a matrix of observations.  \code{NA}s and \code{Inf}s are not
+#' allowed.
+#' @param Y a vector or matrix of responses.  \code{NA}s and \code{Inf}s are
+#' not allowed.
+#' @param ncomp the number of components to be used in the modelling.
+#' @param center logical, determines if the \eqn{X} and \eqn{Y} matrices are
+#' mean centered or not. Default is to perform mean centering.
+#' @param stripped logical.  If \code{TRUE} the calculations are stripped as
+#' much as possible for speed; this is meant for use with cross-validation or
+#' simulations when only the coefficients are needed.  Defaults to
+#' \code{FALSE}.
+#' @param \dots other arguments.  Currently ignored.
+#' @return A list containing the following components is returned:
+#' \item{coefficients}{an array of regression coefficients for 1, \ldots{},
+#' \code{ncomp} components.  The dimensions of \code{coefficients} are
+#' \code{c(nvar, npred, ncomp)} with \code{nvar} the number of \code{X}
+#' variables and \code{npred} the number of variables to be predicted in
+#' \code{Y}.} \item{scores}{a matrix of scores.} \item{loadings}{a matrix of
+#' loadings.} \item{Yscores}{a matrix of Y-scores.} \item{Yloadings}{a matrix
+#' of Y-loadings.} \item{projection}{the projection matrix used to convert X to
+#' scores.} \item{Xmeans}{a vector of means of the X variables.}
+#' \item{Ymeans}{a vector of means of the Y variables.} \item{fitted.values}{an
+#' array of fitted values.  The dimensions of \code{fitted.values} are
+#' \code{c(nobj, npred, ncomp)} with \code{nobj} the number samples and
+#' \code{npred} the number of Y variables.} \item{residuals}{an array of
+#' regression residuals.  It has the same dimensions as \code{fitted.values}.}
+#' \item{Xvar}{a vector with the amount of X-variance explained by each
+#' component.} \item{Xtotvar}{Total variance in \code{X}.}
+#'
+#' If \code{stripped} is \code{TRUE}, only the components \code{coefficients},
+#' \code{Xmeans} and \code{Ymeans} are returned.
+#' @author Ron Wehrens and Bjørn-Helge Mevik
+#' @seealso \code{\link{mvr}} \code{\link{plsr}} \code{\link{pcr}}
+#' \code{\link{kernelpls.fit}} \code{\link{widekernelpls.fit}}
+#' \code{\link{oscorespls.fit}}
+#' @references de Jong, S. (1993) SIMPLS: an alternative approach to partial
+#' least squares regression.  \emph{Chemometrics and Intelligent Laboratory
+#' Systems}, \bold{18}, 251--263.
+#' @keywords regression multivariate
+#' @export
 simpls.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE, ...) {
     Y <- as.matrix(Y)
     if (!stripped) {

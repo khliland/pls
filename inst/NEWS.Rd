@@ -29,7 +29,12 @@
 %%     }
 %%   }
 %% }
-\section{Changes in pls version 2.7-4}{
+\section{Changes in pls version 2.8-0}{
+  \subsection{Documentation}{
+    \itemize{
+      \item Converted documentation from .Rd to roxygen2.
+    }
+  }
   \subsection{New features}{
     \itemize{
       \item Added support for straified cross-validation segments through stratify argument.

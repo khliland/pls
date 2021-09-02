@@ -3,6 +3,7 @@
 This is the source code repository of the CRAN package "pls".
 
 ## Installation from CRAN
+
 (Recommended, unless you want to test the newest changes.)
 
     install.packages("pls")

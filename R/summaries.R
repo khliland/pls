@@ -1,6 +1,8 @@
 ### summaries.R: print and summary methods.
 
 ## Print method for mvr objects:
+#' @rdname summary.mvr
+#' @export
 print.mvr <- function(x, ...) {
     switch(x$method,
            kernelpls = {
@@ -38,6 +40,39 @@ print.mvr <- function(x, ...) {
 }
 
 ## Summary method for mvr objects
+
+
+#' @name summary.mvr
+#' @title Summary and Print Methods for PLSR and PCR objects
+#'
+#' @description Summary and print methods for \code{mvr} and \code{mvrVal} objects.
+#'
+#' @details If \code{what} is \code{"training"}, the explained variances are given; if
+#' it is \code{"validation"}, the cross-validated RMSEPs (if available) are
+#' given; if it is \code{"all"}, both are given.
+#'
+#' @aliases summary.mvr print.mvr print.mvrVal
+#' @param x,object an \code{mvr} object
+#' @param what one of \code{"all"}, \code{"validation"} or \code{"training"}
+#' @param digits integer.  Minimum number of significant digits in the output.
+#' Default is 4.
+#' @param print.gap Integer.  Gap between coloumns of the printed tables.
+#' @param \dots Other arguments sent to underlying methods.
+#' @return \code{print.mvr} and \code{print.mvrVal} return the object
+#' invisibly.
+#' @author Ron Wehrens and Bjørn-Helge Mevik
+#' @seealso \code{\link{mvr}}, \code{\link{pcr}}, \code{\link{plsr}},
+#' \code{\link{RMSEP}}, \code{\link{MSEP}}
+#' @keywords regression multivariate
+#' @examples
+#'
+#' data(yarn)
+#' nir.mvr <- mvr(density ~ NIR, ncomp = 8, validation = "LOO", data = yarn)
+#' nir.mvr
+#' summary(nir.mvr)
+#' RMSEP(nir.mvr)
+#'
+#' @export
 summary.mvr <- function(object, what = c("all", "validation", "training"),
                         digits = 4, print.gap = 2, ...)
 {
@@ -73,6 +108,8 @@ summary.mvr <- function(object, what = c("all", "validation", "training"),
 }
 
 ## Print method for mvrVal objects:
+#' @rdname summary.mvr
+#' @export
 print.mvrVal <- function(x, digits = 4, print.gap = 2, ...) {
     nresp <- dim(x$val)[2]
     yvarnames <- dimnames(x$val)[[2]]
