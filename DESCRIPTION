@@ -1,7 +1,7 @@
 Package: pls
 Title: Partial Least Squares and Principal Component Regression
-Version: 2.8-0
-Date: 2021-09-02
+Version: 2.8-1
+Date: 2022-07-14
 Authors@R: c(person("Kristian Hovde", "Liland", role = c("aut", "cre"),
                     email = "kristian.liland@nmbu.no"),
 	     person("Bjørn-Helge", "Mevik", role = "aut" ,
@@ -16,10 +16,10 @@ LazyData: yes
 Description: Multivariate regression methods
 	Partial Least Squares Regression (PLSR), Principal Component
 	Regression (PCR) and Canonical Powered Partial Least Squares (CPPLS).
-Depends: R (>= 2.10)
+Depends: R (>= 3.5.0)
 Imports: grDevices, graphics, methods, stats
 Suggests: MASS, parallel, Rmpi, testthat, RUnit
 License: GPL-2
 URL: https://github.com/khliland/pls
 BugReports: https://github.com/khliland/pls/issues
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.0

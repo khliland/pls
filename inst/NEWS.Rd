@@ -29,6 +29,13 @@
 %%     }
 %%   }
 %% }
+\section{Changes in pls version 2.8-1}{
+  \subsection{New features}{
+    \itemize{
+      \item Added vcov() for computing variance-covariance matrices for PCR.
+    }
+  }
+}
 \section{Changes in pls version 2.8-0}{
   \subsection{Documentation}{
     \itemize{

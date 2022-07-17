@@ -108,7 +108,8 @@ details.} \item{fit.time}{the elapsed time for the fit.  This is used by
 vector is used by functions like \code{fitted} to decide how to treat the
 observations.} \item{ncomp}{the number of components of the model.}
 \item{method}{the method used to fit the model.  See the argument
-\code{method} for possible values.} \item{scale}{if scaling was requested
+\code{method} for possible values.} \item{center}{use of centering in the model}
+\item{scale}{if scaling was requested
 (with \code{scale}), the scaling used.} \item{call}{the function call.}
 \item{terms}{the model terms.} \item{model}{if \code{model = TRUE}, the
 model frame.} \item{x}{if \code{x = TRUE}, the model matrix.} \item{y}{if

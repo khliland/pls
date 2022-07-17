@@ -7,19 +7,19 @@ test.wrapper_results <- function() {
     # plsr
     mvrmod <- mvr(octane ~ NIR, ncomp=10, data = gasoline, x = TRUE, y = TRUE, method = "kernelpls")
     wrapmod <- plsr(octane ~ NIR, ncomp=10, data = gasoline, x = TRUE, y = TRUE)
-    checkEquals(mvrmod[-c(14,17)], wrapmod[-c(14,17)],
+    checkEquals(mvrmod[-c(14,18)], wrapmod[-c(14,18)],
                 "plsr() doesn't give the same as mvr()")
 
     # pcr
     mvrmod <- mvr(octane ~ NIR, ncomp=10, data = gasoline, x = TRUE, y = TRUE, method = "svdpc")
     wrapmod <- pcr(octane ~ NIR, ncomp=10, data = gasoline, x = TRUE, y = TRUE)
-    checkEquals(mvrmod[-c(12,15)], wrapmod[-c(12,15)],
+    checkEquals(mvrmod[-c(12,16)], wrapmod[-c(12,16)],
                 "pcr() doesn't give the same as mvr()")
 
     # cppls
     mvrmod <- mvr(oil.type ~ NIR, Y.add = design, ncomp=10, data = mayonnaise, x = TRUE, y = TRUE, method = "cppls")
     wrapmod <- cppls(oil.type ~ NIR, Y.add = design, ncomp=10, data = mayonnaise, x = TRUE, y = TRUE)
-    checkEquals(mvrmod[-c(19,22)], wrapmod[-c(19,22)],
+    checkEquals(mvrmod[-c(19,23)], wrapmod[-c(19,23)],
                 "cppls() doesn't give the same as mvr()")
 }
 
