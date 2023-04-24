@@ -1,7 +1,7 @@
 Package: pls
 Title: Partial Least Squares and Principal Component Regression
-Version: 2.8-1
-Date: 2022-07-14
+Version: 2.8-2
+Date: 2023-04-24
 Authors@R: c(person("Kristian Hovde", "Liland", role = c("aut", "cre"),
                     email = "kristian.liland@nmbu.no"),
 	     person("Bjørn-Helge", "Mevik", role = "aut" ,
@@ -22,4 +22,4 @@ Suggests: MASS, parallel, Rmpi, testthat, RUnit
 License: GPL-2
 URL: https://github.com/khliland/pls
 BugReports: https://github.com/khliland/pls/issues
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3

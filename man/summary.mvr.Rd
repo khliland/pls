@@ -4,6 +4,7 @@
 \alias{print.mvr}
 \alias{summary.mvr}
 \alias{print.mvrVal}
+\alias{as.data.frame.mvrVal}
 \title{Summary and Print Methods for PLSR and PCR objects}
 \usage{
 \method{print}{mvr}(x, ...)
@@ -17,6 +18,12 @@
 )
 
 \method{print}{mvrVal}(x, digits = 4, print.gap = 2, ...)
+
+\method{as.data.frame}{mvrVal}(
+  x,
+  ...,
+  columns = c(validation = FALSE, method = FALSE, algorithm = FALSE)
+)
 }
 \arguments{
 \item{x, object}{an \code{mvr} object}
@@ -29,6 +36,9 @@
 Default is 4.}
 
 \item{print.gap}{Integer.  Gap between coloumns of the printed tables.}
+
+\item{columns}{Named logical vector. Which columns to include in \code{data.frame}.
+Default: c(validation=FALSE, method=FALSE, algorithm=FALSE). Alternatively \code{columns=TRUE} as shorthand for "include all".}
 }
 \value{
 \code{print.mvr} and \code{print.mvrVal} return the object
@@ -49,6 +59,9 @@ nir.mvr <- mvr(density ~ NIR, ncomp = 8, validation = "LOO", data = yarn)
 nir.mvr
 summary(nir.mvr)
 RMSEP(nir.mvr)
+# Extract MVR validation statistics as data.frame:
+as.data.frame(RMSEP(nir.mvr, estimate = "CV"))
+as.data.frame(R2(nir.mvr), columns = c(method = TRUE))
 
 }
 \seealso{

@@ -29,6 +29,13 @@
 %%     }
 %%   }
 %% }
+\section{Changes in pls version 2.8-2}{
+  \subsection{New features}{
+    \itemize{
+      \item Added as.data.frame.mvrVal() to convert output from mvrVal to tall data.frame format.
+    }
+  }
+}
 \section{Changes in pls version 2.8-1}{
   \subsection{New features}{
     \itemize{

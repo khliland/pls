@@ -3,6 +3,7 @@
 S3method(MSEP,mvr)
 S3method(R2,mvr)
 S3method(RMSEP,mvr)
+S3method(as.data.frame,mvrVal)
 S3method(biplot,mvr)
 S3method(coef,mvr)
 S3method(fitted,mvr)

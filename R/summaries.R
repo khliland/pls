@@ -31,7 +31,7 @@ print.mvr <- function(x, ...) {
            },
            stop("Unknown fit method.")
            )
-    cat(ana, ", fitted with the", alg, "algorithm.")
+    cat(ana, ", fitted with the ", alg, " algorithm.", sep = "")
     if (!is.null(x$validation))
         cat("\nCross-validated using", length(x$validation$segments),
             attr(x$validation$segments, "type"), "segments.")
@@ -57,6 +57,8 @@ print.mvr <- function(x, ...) {
 #' @param digits integer.  Minimum number of significant digits in the output.
 #' Default is 4.
 #' @param print.gap Integer.  Gap between coloumns of the printed tables.
+#' @param columns Named logical vector. Which columns to include in \code{data.frame}.
+#' Default: c(validation=FALSE, method=FALSE, algorithm=FALSE). Alternatively \code{columns=TRUE} as shorthand for "include all".
 #' @param \dots Other arguments sent to underlying methods.
 #' @return \code{print.mvr} and \code{print.mvrVal} return the object
 #' invisibly.
@@ -71,6 +73,9 @@ print.mvr <- function(x, ...) {
 #' nir.mvr
 #' summary(nir.mvr)
 #' RMSEP(nir.mvr)
+#' # Extract MVR validation statistics as data.frame:
+#' as.data.frame(RMSEP(nir.mvr, estimate = "CV"))
+#' as.data.frame(R2(nir.mvr), columns = TRUE)
 #'
 #' @export
 summary.mvr <- function(object, what = c("all", "validation", "training"),
@@ -119,4 +124,69 @@ print.mvrVal <- function(x, digits = 4, print.gap = 2, ...) {
         print(x$val[,i,], digits = digits, print.gap = print.gap, ...)
     }
     invisible(x)
+}
+
+#' @rdname summary.mvr
+#' @export
+as.data.frame.mvrVal <- function(x,
+                                 ...,
+                                 columns = c(validation=FALSE, method=FALSE, algorithm=FALSE)){
+  # mvrVal values
+  mvrVals <- x$val
+
+  # Reshape and add columns
+  dnames <- dimnames(mvrVals)
+  dims <- dim(mvrVals)
+  obj <- data.frame(estimate = rep(dnames$estimate, dims[2]*dims[3]),
+                    response = rep(dnames$response, dims[1]*dims[3]),
+                    comps    = rep(x$comps, each = dims[1]*dims[2]))
+
+  # Fitting method and validation type
+  cols <- c(validation=FALSE, method=FALSE, algorithm=FALSE)
+  if(is.null(columns))
+    cols <- cols
+  else {
+    if (length(columns) == 1 && columns && is.null(names(columns)))
+      cols <- c(validation=TRUE, method=TRUE, algorithm=TRUE)
+    else {
+      names <- names(columns)
+      for(i in 1:length(columns)){
+        cols[names[i]] <- columns[i]
+      }
+    }
+  }
+  if(cols["validation"] || cols["method"] || cols["algorithm"]){
+    object <- eval(x$call$object, envir = parent.frame())
+    fit <- as.character(object$call[[1]])
+    val <- object$call$validation
+    switch(object$method,
+           kernelpls = {
+             alg = "kernel"
+           },
+           widekernelpls = {
+             alg = "wide kernel"
+           },
+           simpls = {
+             alg = "simpls"
+           },
+           oscorespls = {
+             alg = "orthogonal scores"
+           },
+           cppls = {
+             alg = "cppls"
+           },
+           svdpc = {
+             alg = "singular value decomposition"
+           },
+           stop("Unknown fit method.")
+    )
+  }
+  if(cols["validation"])
+    obj$validation <- rep(val, prod(dims))
+  if(cols["method"])
+    obj$method <- rep(fit, prod(dims))
+  if(cols["algorithm"])
+    obj$algorithm <- rep(alg, prod(dims))
+  obj$value <- c(mvrVals)
+  obj
 }
