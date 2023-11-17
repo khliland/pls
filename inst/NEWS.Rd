@@ -29,6 +29,13 @@
 %%     }
 %%   }
 %% }
+\section{Changes in pls version 2.8-3}{
+  \subsection{Documentation}{
+    \itemize{
+      \item Added _PACKAGE to conform to changed roxygen2.
+    }
+  }
+}
 \section{Changes in pls version 2.8-2}{
   \subsection{New features}{
     \itemize{

@@ -10,4 +10,5 @@
 #' @importFrom stats .checkMFClasses coef cor delete.response drop.terms fitted formula makepredictcall median model.frame model.matrix model.response na.omit na.pass napredict optimize predict printCoefmat pt residuals runif sd terms update var
 #' @docType package
 #' @name pls
-NULL
+#' @keywords internal
+"_PACKAGE"
