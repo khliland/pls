@@ -2,8 +2,8 @@
 % Please edit documentation in R/pls-package.R
 \docType{package}
 \name{pls}
-\alias{pls}
 \alias{pls-package}
+\alias{pls}
 \title{Partial Least Squares and Principal Component Regression}
 \description{
 Multivariate regression methods Partial Least Squares Regression (PLSR), Principal Component

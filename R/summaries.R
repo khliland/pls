@@ -100,6 +100,8 @@ summary.mvr <- function(object, what = c("all", "validation", "training"),
       xve <- explvar(object)
       yve <- 100 * drop(R2(object, estimate = "train",
                            intercept = FALSE)$val)
+      if(length(xve) == 1)
+        yve <- as.matrix(yve)
       tbl <- rbind(cumsum(xve), yve)
       dimnames(tbl) <- list(c("X", yvarnames),
                             paste(1:object$ncomp, "comps"))

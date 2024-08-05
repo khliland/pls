@@ -29,6 +29,19 @@
 %%     }
 %%   }
 %% }
+\section{Changes in pls version 2.8-4}{
+  \subsection{New features}{
+    \itemize{
+      \item Added fac2seg() to create cross-validation segments from a factor.
+    }
+  }
+  \subsection{Bug fixes}{
+    \itemize{
+      \item Fixed issues with single component, multiple respons models in
+      summary.mvr(), loadingplot() and scoreplot().
+    }
+  }
+}
 \section{Changes in pls version 2.8-3}{
   \subsection{Documentation}{
     \itemize{
