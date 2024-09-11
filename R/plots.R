@@ -315,7 +315,7 @@ loadingplot.default <- function(object, comps = 1:2, scatter = FALSE, labels,
   ## Check arguments
   nComps <- length(comps)
   if (nComps == 0) stop("At least one component must be selected.")
-  if((inherits(object, "scores") && ncol(object) == 1 ) ||
+  if((inherits(object, "loadings") && ncol(object) == 1 ) ||
      (inherits(object, "mvr") && length(object$Xvar) == 1)){ # Check for single component in model
     comps <- comps[1]
     nComps <- length(comps)

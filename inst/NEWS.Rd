@@ -29,6 +29,14 @@
 %%     }
 %%   }
 %% }
+\section{Changes in pls version 2.8-5}{
+  \subsection{Bug fixes}{
+    \itemize{
+      \item Fixed issues with single component models in
+      loadingplot().
+    }
+  }
+}
 \section{Changes in pls version 2.8-4}{
   \subsection{New features}{
     \itemize{
