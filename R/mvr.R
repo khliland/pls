@@ -227,7 +227,7 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
     }
     m <- match(c("formula", "data", "subset", "na.action"), names(mf), 0)
     mf <- mf[c(1, m)]                # Retain only the named arguments
-    mf[[1]] <- as.name("model.frame")
+    mf[[1]] <- quote(model.frame)
     mf <- eval(mf, parent.frame())
     method <- match.arg(method, c("kernelpls", "widekernelpls", "simpls",
                                   "oscorespls", "cppls", "svdpc", "model.frame"))

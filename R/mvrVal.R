@@ -236,7 +236,7 @@ R2.mvr <- function(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
     ## Get the needed validation statistics:
     cl <- match.call(expand.dots = FALSE)
     cl$estimate <- estimate             # update estimate argument
-    cl[[1]] <- as.name("mvrValstats")
+    cl[[1]] <- quote(pls::mvrValstats)
     valstats <- eval(cl, parent.frame())
 
     ## Calculate the R^2s:
@@ -298,7 +298,7 @@ MSEP.mvr <- function(object, estimate, newdata, ncomp = 1:object$ncomp, comps,
     ## Get the needed validation statistics:
     cl <- match.call(expand.dots = FALSE)
     cl$estimate <- calcestimates        # update estimate argument
-    cl[[1]] <- as.name("mvrValstats")
+    cl[[1]] <- quote(pls::mvrValstats)
     valstats <- eval(cl, parent.frame())
 
     ## Calculate the MSEPs:
@@ -331,10 +331,10 @@ RMSEP <- function(object, ...) UseMethod("RMSEP")
 #' @export
 RMSEP.mvr <- function(object, ...) {
     cl <- match.call()
-    cl[[1]] <- as.name("MSEP")
+    cl[[1]] <- quote(pls::MSEP)
     z <- eval(cl, parent.frame())
     z$val <- sqrt(z$val)
     z$type <- "RMSEP"
-    z$call[[1]] <- as.name("RMSEP")
+    z$call[[1]] <- quote(pls::RMSEP)
     z
 }

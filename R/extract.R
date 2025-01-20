@@ -303,7 +303,7 @@ model.frame.mvr <- function(formula, ...) {
     if (length(nargs) || is.null(formula$model)) {
         fcall <- formula$call
         fcall$method <- "model.frame"
-        fcall[[1]] <- as.name("mvr")
+        fcall[[1]] <- quote(pls::mvr)
         fcall[names(nargs)] <- nargs
         env <- environment(formula$terms)
         if (is.null(env)) env <- parent.frame()

@@ -1433,7 +1433,7 @@ biplot.mvr <- function(x, comps = 1:2,
     mc$xlabs <- rep("o", nrow(objects))
   if (!missing(ylabs) && isFALSE(ylabs))
     mc$ylabs <- rep("o", nrow(vars))
-  mc[[1]] <- as.name("biplot")
+  mc[[1]] <- quote(biplot)
   ## Evaluate the call:
   eval(mc, parent.frame())
 }

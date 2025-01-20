@@ -9,7 +9,7 @@ plsr <- function(..., method = pls.options()$plsralg) {
     cl[[1]] <- quote(pls::mvr)
     res <- eval(cl, parent.frame())
     ## Fix call component
-    if (cl$method != "model.frame") res$call[[1]] <- as.name("plsr")
+    if (cl$method != "model.frame") res$call[[1]] <- quote(pls::plsr)
     if (missing(method)) res$call$method <- NULL
     res
 }
@@ -22,7 +22,7 @@ pcr <- function(..., method = pls.options()$pcralg) {
     cl[[1]] <- quote(pls::mvr)
     res <- eval(cl, parent.frame())
     ## Fix call component
-    if (cl$method != "model.frame") res$call[[1]] <- as.name("pcr")
+    if (cl$method != "model.frame") res$call[[1]] <- quote(pls::pcr)
     if (missing(method)) res$call$method <- NULL
     res
 }
@@ -35,7 +35,7 @@ cppls <- function(..., Y.add, weights, method = pls.options()$cpplsalg) {
     cl[[1]] <- quote(pls::mvr)
     res <- eval(cl, parent.frame())
     ## Fix call component
-    if (cl$method != "model.frame") res$call[[1]] <- as.name("cppls")
+    if (cl$method != "model.frame") res$call[[1]] <- quote(pls::cppls)
     if (missing(method)) res$call$method <- NULL
     res
 }
