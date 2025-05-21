@@ -141,7 +141,7 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, center = TRUE,
     ## upper   - upper bounds for power algorithm (default=0.5)
     ## weights - prior weighting of observations (optional)
 
-    Yprim <- as.matrix(Y)
+    Y.orig <- Yprim <- as.matrix(Y)
     Y <- cbind(Yprim, Y.add)
 
     if (!stripped) {
@@ -161,10 +161,12 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, center = TRUE,
             Xmeans <- colMeans(X)
             X <- X - rep(Xmeans, each = nobj)
         } else {
-            Xmeans <- crossprod(weights,X) / sum(weights)
+            Xmeans <- c(crossprod(weights,X) / sum(weights))
             X <- X - rep(Xmeans, each = nobj)
         }
         Ymeans <- colMeans(Yprim)
+        Yprim <- Yprim - rep(Ymeans, each = nobj)
+        Y <- Y - rep(colMeans(Y), each = nobj)
     } else  {
         ## Set means to zero. Will ensure that predictions do not take the
         ## mean into account.
@@ -249,7 +251,7 @@ cppls.fit <- function(X, Y, ncomp, Y.add = NULL, center = TRUE,
         list(coefficients = B, Xmeans = Xmeans, Ymeans = Ymeans, gammas = pot)
     } else {
         fitted <- fitted + rep(Ymeans, each = nobj) # Add mean
-        residuals <- - fitted + c(Yprim)
+        residuals <- - fitted + c(Y.orig)
 
         ## Add dimnames:
         objnames <- dnX[[1]]
@@ -473,8 +475,8 @@ cancorr <- function (x, y, weights, opt = TRUE) {
     ncx <- ncol(x)
     ncy <- ncol(y)
     if (!is.null(weights)) {
-        x <- x * weights
-        y <- y * weights
+        x <- x * c(weights)
+        y <- y * c(weights)
     }
     qx <- qr(x, LAPACK = TRUE)
     qy <- qr(y, LAPACK = TRUE)
