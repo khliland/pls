@@ -5,6 +5,7 @@
 \alias{pcr}
 \alias{plsr}
 \alias{cppls}
+\alias{nipals}
 \title{Partial Least Squares and Principal Component Regression}
 \usage{
 mvr(
@@ -29,6 +30,8 @@ plsr(..., method = pls.options()$plsralg)
 pcr(..., method = pls.options()$pcralg)
 
 cppls(..., Y.add, weights, method = pls.options()$cpplsalg)
+
+nipals(..., weights, method = "nipalspls")
 }
 \arguments{
 \item{formula}{a model formula.  Most of the \code{\link{lm}} formula
@@ -191,6 +194,7 @@ yarn.oscorespls <- mvr(density ~ NIR, 6, data = yarn, validation = "CV",
                       method = "oscorespls")
 yarn.simpls <- mvr(density ~ NIR, 6, data = yarn, validation = "CV",
                   method = "simpls")
+# See ?simpls.fit for example of numerical instability in SIMPLS
 
 \dontrun{
 ## Parallelised cross-validation, using transient cluster:
@@ -244,7 +248,7 @@ prediction in multivariate calibration.  \emph{Journal of Chemometrics},
 }
 \seealso{
 \code{\link{kernelpls.fit}}, \code{\link{widekernelpls.fit}},
-\code{\link{simpls.fit}}, \code{\link{oscorespls.fit}},
+\code{\link{simpls.fit}}, \code{\link{oscorespls.fit}}, \code{\link{nipals.fit}},
 \code{\link{cppls.fit}}, \code{\link{svdpc.fit}}, \code{\link{mvrCv}},
 \code{\link{crossval}}, \code{\link[stats]{loadings}}, \code{\link{scores}},
 \code{\link{loading.weights}}, \code{\link{coef.mvr}},

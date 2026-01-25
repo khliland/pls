@@ -225,6 +225,14 @@ plot.mvr <- function(x, plottype = c("prediction", "validation",
 #' corrplot(mod, comps = 1:3)
 #' }
 #'
+#' # Use of labels in plots and x scales
+#' data(gasoline)
+#' colnames(gasoline$NIR) <- paste(seq(900, 1700, 2), "nm")
+#' gas <- plsr(octane ~ NIR, ncomp = 10, data = gasoline)
+#' loadingplot(gas, labels="numbers")
+#' loadingplot(gas, labels="names")
+#' loadingplot(gas, labels="names", scatter=TRUE)
+#'
 #' @export
 scoreplot <- function(object, ...) UseMethod("scoreplot")
 

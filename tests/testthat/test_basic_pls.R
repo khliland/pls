@@ -3,7 +3,7 @@ context('Tests of the basic PLS functionality')
 # Temporary measure to pass the tests while production R and devel R have
 # different algorithms for generating random numbers.  When 3.6.0 is out,
                                         # consider removing this and update the saved results:
-suppressWarnings(RNGversion("3.5.0"))
+#suppressWarnings(RNGversion("3.5.0"))
 
 # Set seed to make random choices reproducible
 set.seed(100)
@@ -50,6 +50,10 @@ pred.oscorepls = predict(yarn.oscorespls)
 pred.simpls = predict(yarn.simpls)
 
 test_that('The predictions for PLS are the same and for PCR/CPPLS are diffrent than PLS', {
+  # expect_snapshot(pred.pls)
+  # expect_snapshot(pred.pls.widekernel, 'pred.pls.widekernel.rds', info = 'PLS widekernel predictions should not change')
+  # expect_snapshot(pred.pcr, 'pred.pcr.rds', info = 'PCR predictions should not change')
+  # expect_snapshot(pred.cppls, 'pred.cppls.rds', info = 'PCR predictions should not change')
   expect_equal_to_reference(pred.pls, 'pred.pls.rds', info = 'PLS predictions should not change')
   expect_equal_to_reference(pred.pls.widekernel, 'pred.pls.widekernel.rds', info = 'PLS widekernel predictions should not change')
   expect_equal_to_reference(pred.pcr, 'pred.pcr.rds', info = 'PCR predictions should not change')

@@ -78,7 +78,9 @@ example).
 cvsegments(100, 10)
 
 ## Segments with four objects, taken consecutive:
-cvsegments(60, length.seg = 4, type = "cons")
+(segs <- cvsegments(60, length.seg = 4, type = "cons"))
+data(gasoline)
+plsr(octane ~ NIR, data=gasoline, ncomp=5, validation="CV", segments=segs)
 
 ## Incomplete segments
 segs <- cvsegments(50, length.seg = 3)
@@ -102,6 +104,15 @@ cvsegments(10, 3, type = "consecutive", stratify = c(rep(1,7), rep(2,3)))
 cvsegments(20, 3, type = "consecutive", nrep = 2, stratify = c(rep(1,7), rep(2,3)))
 ## Note the length of stratify matching number of replicate sets, not samples.
 
+## Converting a factor to segments
+fac <- factor(c("a", "b", "a", "b", "c", "c"))
+fac2seg(fac)
+## Starting from a numeric vector
+num <- c(1, 2, 1, 2, 3, 3)
+fac2seg(factor(num))
+}
+\seealso{
+Converting a factor to segments: \code{\link{fac2seg}}.
 }
 \author{
 Bjørn-Helge Mevik, Ron Wehrens and Kristian Hovde Liland

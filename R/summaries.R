@@ -21,6 +21,10 @@ print.mvr <- function(x, ...) {
            ana = "Partial least squares regression"
            alg = "orthogonal scores"
          },
+         nipalspls = {
+           ana = "Partial least squares regression"
+           alg = "NIPALS"
+         },
          cppls = {
            ana = "Canonical powered partial least squares"
            alg = "cppls"
@@ -112,6 +116,11 @@ summary.mvr <- function(object, what = c("all", "validation", "training"),
           attr(object$validation$segments, "type"), "segments.\n")
       print(RMSEP(object), digits = digits, print.gap = print.gap, ...)
     }
+  }
+  # Warn if missing data have been removed
+  if(object$nobj < object$nobjOrig){
+    cat("(", object$nobjOrig - object$nobj,
+        " observations deleted due to missingness)\n", sep = "")
   }
 }
 

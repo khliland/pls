@@ -6,6 +6,7 @@
 #' of the corresponding segment
 #' @export
 #'
+#' @seealso CV segments by various patterns: \code{\link{cvsegments}}.
 #' @examples
 #' fac <- factor(c("a", "b", "a", "b", "c", "c"))
 #' fac2seg(fac)

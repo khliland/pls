@@ -20,3 +20,6 @@ Factor to Segments
 fac <- factor(c("a", "b", "a", "b", "c", "c"))
 fac2seg(fac)
 }
+\seealso{
+CV segments by various patterns: \code{\link{cvsegments}}.
+}

@@ -29,6 +29,18 @@
 %%     }
 %%   }
 %% }
+\section{Changes in pls version 2.8-6}{
+  \subsection{New features}{
+    \itemize{
+      \item Added nipals() (NIPALS PLS) with robustness against missing data.
+    }
+  }
+  \subsection{User-visible changes}{
+    \itemize{
+      \item Added feedback in summary() regarding number of dropped samples when missingness is present.
+    }
+  }
+}
 \section{Changes in pls version 2.8-5}{
   \subsection{Bug fixes}{
     \itemize{

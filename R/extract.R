@@ -277,6 +277,83 @@ scores.default <- function(object, ...) {
     attr(S, "explvar") <- explvar(object)
     S
 }
+#' #' @rdname scores
+#' #' @export
+#' scores.mvr_not_now <- function(object, estimate, newdata, ...){
+#'   browser()
+#'   allEstimates <- c("all", "train", "CV", "test")
+#'   if (missing(estimate)) {
+#'     ## Select the `best' available estimate
+#'     if (!missing(newdata)) {
+#'       estimate = "test"
+#'     } else {
+#'         estimate = "train"
+#'     }
+#'   } else {
+#'     if(length(estimate) > 1){
+#'       scoreList < list()
+#'     }
+#'     estimate <- allEstimates[pmatch(estimate, allEstimates)]
+#'     if (any(is.na(estimate)))
+#'       stop("`estimate' should be a subset of ",
+#'            paste(allEstimates, collapse = ", "))
+#'     if (any(estimate == "all")) {
+#'       estimate <- allEstimates[-1] # Try all estimates (except "all")
+#'       if (missing(newdata))
+#'         estimate <- setdiff(estimate, "test")
+#'       if (is.null(object$validation) || !cumulative)
+#'         estimate <- setdiff(estimate, "CV")
+#'     }
+#'   }
+#'   if("train" %in% estimate){
+#'     S <- if (inherits(object, "prcomp")) object$x else object$scores
+#'     if (!(inherits(S, "scores") || inherits(S, "list")))
+#'       class(S) <- "scores"
+#'     attr(S, "explvar") <- explvar(object)
+#'     scoreList$train <- S
+#'   }
+#'   if("test" %in% estimate){
+#'     S <- predict(object, newdata=newdata, type="scores")
+#'     if (!(inherits(S, "scores") || inherits(S, "list")))
+#'       class(S) <- "scores"
+#'     # # Explained variance for newdata
+#'     # if(object$center){
+#'     #   # Extract input data from newdata
+#'     #   Xnewdata <- model.matrix(object, newdata)
+#'     #   Xnewdata <- scale(Xnewdata, center=object$Xmeans, scale=FALSE)
+#'     # }
+#'     # attr(S, "explvar") <- (colSums(S^2)*colSums(object$loadings^2))/sum(Xnewdata^2)
+#'     scoreList$test <- S
+#'   }
+#'   if("CV" %in% estimate){
+#'     N <- nrow(object$scores)
+#'     S <- matrix(0.0, N, ncol(object$scores))
+#'     dimnames(S) <- dimnames(object$scores)
+#'     CVtv <- 0
+#'     for(seg in 1:length(object$validation$segments)){
+#'       newd <- object$model[object$validation$segments[[seg]],,drop=FALSE]
+#'       S[object$validation$segments[[seg]],] <- predict(
+#'         update(object, subset=!((1:N)%in%object$validation$segments[[seg]])),
+#'         newdata = newd,
+#'         type = "scores")
+#'       # if(object$center)
+#'       #   newd <- scale(newd,
+#'       #                 center = colMeans(object$model[!((1:N)%in%object$validation$segments[[seg]]),,drop=FALSE]),
+#'       #                 scale = FALSE)
+#'       # CVtv <- CVtv + sum(newd^2)
+#'     }
+#'     if (!(inherits(S, "scores") || inherits(S, "list")))
+#'       class(S) <- "scores"
+#'     # attr(S, "explvar") <- (colSums(S^2)*colSums(object$loadings^2))/CVtv
+#'     scoreList$CV <- S
+#'   }
+#'   if(length(scoreList) == 1){
+#'     return(scoreList[[1]])
+#'   } else {
+#'     class(scoreList) <- "scoreList"
+#'     return(scoreList)
+#'   }
+#' }
 
 ## Yscores: Return the Yscores
 #' @rdname scores
@@ -334,7 +411,7 @@ model.matrix.mvr <- function(object, ...) {
     }
 }
 
-## delete.intercept: utilitiy function that deletes the response coloumn from
+## delete.intercept: utility function that deletes the response coloumn from
 ## a model matrix, and adjusts the "assign" attribute:
 
 
