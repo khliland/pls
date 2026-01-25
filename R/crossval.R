@@ -150,7 +150,7 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
 
     ## Select fit function:
     method <- match.arg(method,c("kernelpls", "widekernelpls", "simpls",
-                                 "oscorespls", "nipalspls", "cppls", "svdpc"))
+                                 "oscorespls", "nipalspls", "cppls", "svdpc", "nipalspc"))
     fitFunc <- switch(method,
                       kernelpls = kernelpls.fit,
                       widekernelpls = widekernelpls.fit,
@@ -158,7 +158,8 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
                       oscorespls = oscorespls.fit,
                       nipalspls = nipals.fit,
                       cppls = cppls.fit,
-                      svdpc = svdpc.fit)
+                      svdpc = svdpc.fit,
+                      nipalspc = nipalspc.fit)
 
     ## Helper function to perform the cross-validatoin for one segment.
     ## Defined inside mvrCv to be able to access local variables:
@@ -198,7 +199,7 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
         Ymeansrep <- rep(fit$Ymeans, each = nobj)
         for (a in 1:ncomp)
             pred[,,a] <- Xtest %*% fit$coefficients[,,a] + Ymeansrep
-        if(method == "nipalspls")
+        if(method %in% c("nipalspls", "nipalspc"))
           adj <- length(seg) * colSums((pred - c(Y))^2, na.rm=TRUE)
         else
           adj <- length(seg) * colSums((pred - c(Y))^2)
@@ -232,7 +233,7 @@ mvrCv <- function(X, Y, ncomp, Y.add = NULL, weights = NULL,
 
     ## Calculate validation statistics:
     PRESS0 <- apply(Y, 2, var) * nobj^2 / (nobj - 1) # FIXME: Only correct for loocv!
-    if(method == "nipalspls")
+    if(method %in% c("nipalspls", "nipalspc"))
       PRESS <- colSums((cvPred - c(Y))^2, na.rm=TRUE)
     else
       PRESS <- colSums((cvPred - c(Y))^2)

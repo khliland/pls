@@ -33,6 +33,10 @@ print.mvr <- function(x, ...) {
            ana = "Principal component regression"
            alg = "singular value decomposition"
          },
+         nipalspc = {
+           ana = "Principal component regression"
+           alg = "nipals algorithm"
+         },
          stop("Unknown fit method.")
   )
   cat(ana, ", fitted with the ", alg, " algorithm.", sep = "")
@@ -169,6 +173,9 @@ as.data.frame.mvrVal <- function(x, row.names = NULL, optional = FALSE,
          simpls = {
            alg = "simpls"
          },
+         nipalspls = {
+           alg = "nipalspls"
+         },
          oscorespls = {
            if(shortAlgs)
              alg = "orthScores"
@@ -183,6 +190,9 @@ as.data.frame.mvrVal <- function(x, row.names = NULL, optional = FALSE,
              alg = "svd"
            else
              alg = "singular value decomposition"
+         },
+         nipalspc = {
+           alg = "nipals pca"
          },
          stop("Unknown fit method.")
   )

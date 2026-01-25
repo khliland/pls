@@ -125,3 +125,199 @@ svdpc.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE, ...) {
              Xvar = D^2, Xtotvar = sum(X * X))
     }
 }
+
+
+#' @title NIPALS PCR with missing values
+#'
+#' @description A NIPALS-based PCR that tolerates missing entries in both
+#' predictors and responses by only using observed cells when updating scores
+#' and loadings.  It follows the same API as \code{svdpc.fit} so it can be used
+#' whenever low-level PCR needs to handle incomplete data.
+#'
+#' @param X numeric matrix (or coercible) of predictors. Missing values are
+#' allowed and handled internally.
+#' @param Y numeric matrix (or coercible) of responses. Missing values are also
+#' handled internally during the final regression step.
+#' @param ncomp number of PCR components to extract.
+#' @param center logical. If \code{TRUE} both \code{X} and \code{Y} are
+#' centered column-wise (ignoring missing entries).
+#' @param stripped logical. When \code{TRUE} only the coefficients and mean
+#' vectors are returned for faster use in resampling.
+#' @param maxiter maximum number of inner iterations per component.
+#' @param tol convergence tolerance used when the direction vector stabilizes.
+#' @param ... currently ignored.
+#'
+#' @return A list mirroring the return value of \code{svdpc.fit} but computed
+#' via the NA-robust NIPALS PCR updates.
+#' @export
+nipalspc.fit <- function(X, Y, ncomp, center = TRUE, stripped = FALSE,
+                         maxiter = 500, tol = 1e-06, ...)
+{
+    X <- as.matrix(X)
+    Y <- as.matrix(Y)
+    if (!stripped) {
+        dnX <- dimnames(X)
+        dnY <- dimnames(Y)
+    }
+    dimnames(X) <- dimnames(Y) <- NULL
+
+    nobj <- nrow(X)
+    npred <- ncol(X)
+    nresp <- ncol(Y)
+
+    mean_ignore_na <- function(mat) {
+        colMeans(mat, na.rm = TRUE)
+    }
+
+    if (center) {
+        Xmeans <- mean_ignore_na(X)
+        Ymeans <- mean_ignore_na(Y)
+        X <- sweep(X, 2, Xmeans, "-")
+        Y <- sweep(Y, 2, Ymeans, "-")
+    } else {
+        Xmeans <- rep_len(0, npred)
+        Ymeans <- rep_len(0, nresp)
+    }
+
+    Xcentre <- X
+    Ycentre <- Y
+    Xresid <- X
+    maskX <- !is.na(Xcentre)
+
+    safe_crossprod <- function(mat, vec) {
+        apply(mat, 2, function(col) sum(col * vec, na.rm = TRUE))
+    }
+
+    safe_matvec <- function(mat, vec) {
+        res <- numeric(nrow(mat))
+        for (j in seq_len(ncol(mat))) {
+            col <- mat[, j]
+            idx <- !is.na(col)
+            if (any(idx)) {
+                res[idx] <- res[idx] + col[idx] * vec[j]
+            }
+        }
+        res
+    }
+
+    safe_times <- function(mat, coeff) {
+        res <- matrix(0, nrow = nrow(mat), ncol = ncol(coeff))
+        for (j in seq_len(ncol(coeff))) {
+            res[, j] <- safe_matvec(mat, coeff[, j])
+        }
+        res
+    }
+
+    normalize <- function(v) {
+        n <- sum(v * v)
+        if (n <= .Machine$double.eps) return(v)
+        v / sqrt(n)
+    }
+
+    TT <- matrix(0, nrow = nobj, ncol = ncomp)
+    P <- matrix(0, nrow = npred, ncol = ncomp)
+    tsqs <- numeric(ncomp)
+    B <- array(0, c(npred, nresp, ncomp))
+    tQ <- matrix(0, nrow = ncomp, ncol = nresp)
+    nused <- 0
+    if (!stripped) {
+        fitted <- array(0, c(nobj, nresp, ncomp))
+    }
+
+    for (a in seq_len(ncomp)) {
+        start <- Xresid[, 1]
+        start[is.na(start)] <- 0
+        if (sum(start * start) == 0) {
+            start <- rep_len(1, nobj)
+        }
+        w <- normalize(safe_crossprod(Xresid, start))
+        if (sum(w * w) == 0) {
+            warning("component ", a, " has zero loading weights", call. = FALSE)
+            break
+        }
+
+        for (iter in seq_len(maxiter)) {
+            t1 <- safe_matvec(Xresid, w)
+            if (sum(t1 * t1) == 0) break
+            p <- safe_crossprod(Xresid, t1) / sum(t1 * t1)
+            w1 <- normalize(p)
+            if (sum((w1 - w)^2) < tol^2) {
+                w <- w1
+                break
+            }
+            w <- w1
+        }
+
+        t1 <- safe_matvec(Xresid, w)
+        tt <- sum(t1 * t1)
+        if (tt == 0) {
+            warning("component ", a, " collapsed to zero scores", call. = FALSE)
+            break
+        }
+
+        p <- safe_crossprod(Xresid, t1) / tt
+        TT[, a] <- t1
+        P[, a] <- p
+        tsqs[a] <- tt
+        nused <- a
+
+        reconX <- tcrossprod(t1, p)
+        Xresid[maskX] <- Xresid[maskX] - reconX[maskX]
+    }
+
+    for (a in seq_len(nused)) {
+        if (tsqs[a] <= 0) break
+        tQ[a, ] <- safe_crossprod(Ycentre, TT[, a]) / tsqs[a]
+    }
+
+    for (a in seq_len(ncomp)) {
+        if (a > nused) break
+        B[,,a] <- P[, 1:a, drop = FALSE] %*% tQ[1:a, , drop = FALSE]
+    }
+
+    if (!stripped) {
+        for (a in seq_len(ncomp)) {
+            fitted[,,a] <- safe_times(Xcentre, matrix(B[,,a]))
+        }
+        residuals <- array(NA, c(nobj, nresp, ncomp))
+        for (a in seq_len(ncomp)) {
+            residuals[,,a] <- Ycentre - fitted[,,a]
+        }
+        if (center) {
+            fitted <- fitted + rep(Ymeans, each = nobj)
+        }
+    }
+
+    Xvar <- tsqs
+    Xtotvar <- sum(Xcentre[maskX]^2)
+
+    if (stripped) {
+        return(list(coefficients = B, Xmeans = Xmeans, Ymeans = Ymeans))
+    }
+
+    objnames <- dnX[[1]]
+    if (is.null(objnames)) objnames <- dnY[[1]]
+    prednames <- dnX[[2]]
+    respnames <- dnY[[2]]
+    compnames <- paste("Comp", seq_len(ncomp))
+    nCompnames <- paste(seq_len(ncomp), "comps")
+
+    dimnames(TT) <- list(objnames, compnames)
+    dimnames(P) <- list(prednames, compnames)
+    dimnames(tQ) <- list(compnames, respnames)
+    dimnames(B) <- list(prednames, respnames, nCompnames)
+    dimnames(fitted) <- dimnames(residuals) <-
+        list(objnames, respnames, nCompnames)
+    names(Xvar) <- compnames
+    class(TT) <- "scores"
+    R <- P
+    class(P) <- class(tQ) <- "loadings"
+
+    list(coefficients = B,
+         scores = TT, loadings = P,
+         Yloadings = t(tQ),
+         projection = R,
+         Xmeans = Xmeans, Ymeans = Ymeans,
+         fitted.values = fitted, residuals = residuals,
+         Xvar = Xvar, Xtotvar = Xtotvar)
+}

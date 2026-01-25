@@ -52,3 +52,16 @@ nipals <- function(..., weights, method = "nipalspls") {
   if (missing(method)) res$call$method <- NULL
   res
 }
+
+#' @rdname mvr
+#' @export
+nipalspcr <- function(..., method = "nipalspc") {
+  cl <- match.call()
+  cl$method <- match.arg(method, c("nipalspc", "model.frame"))
+  cl[[1]] <- quote(pls::mvr)
+  res <- eval(cl, parent.frame())
+  ## Fix call component
+  if (cl$method != "model.frame") res$call[[1]] <- quote(pls::pcr)
+  if (missing(method)) res$call$method <- NULL
+  res
+}

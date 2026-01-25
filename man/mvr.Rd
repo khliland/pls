@@ -6,6 +6,7 @@
 \alias{plsr}
 \alias{cppls}
 \alias{nipals}
+\alias{nipalspcr}
 \title{Partial Least Squares and Principal Component Regression}
 \usage{
 mvr(
@@ -32,6 +33,8 @@ pcr(..., method = pls.options()$pcralg)
 cppls(..., Y.add, weights, method = pls.options()$cpplsalg)
 
 nipals(..., weights, method = "nipalspls")
+
+nipalspcr(..., method = "nipalspc")
 }
 \arguments{
 \item{formula}{a model formula.  Most of the \code{\link{lm}} formula

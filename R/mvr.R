@@ -236,13 +236,13 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
   mf <- mf[c(1, m)]                # Retain only the named arguments
   mf[[1]] <- quote(model.frame)
   # Ensure that na.action is set to NULL for nipalspls
-  if(missing(na.action) && method == "nipalspls"){
+  if(missing(na.action) && method %in% c("nipalspls", "nipalspc")){
     mf$na.action <- quote("na.pass")
     na.action <- "na.pass"
   }
   mf <- eval(mf, parent.frame())
   method <- match.arg(method, c("kernelpls", "widekernelpls", "simpls",
-                                "oscorespls", "nipalspls", "cppls", "svdpc", "model.frame"))
+                                "oscorespls", "nipalspls", "cppls", "svdpc", "nipalspc", "model.frame"))
   if (method == "model.frame") return(mf)
   ## Get the terms
   mt <- attr(mf, "terms")        # This is to include the `predvars'
@@ -325,7 +325,8 @@ mvr <- function(formula, ncomp, Y.add, data, subset, na.action,
                     oscorespls = oscorespls.fit,
                     nipalspls = nipals.fit,
                     cppls = cppls.fit,
-                    svdpc = svdpc.fit)
+                    svdpc = svdpc.fit,
+                    nipalspc = nipalspc.fit)
 
   ## Perform any scaling by sd:
   if (sdscale) {

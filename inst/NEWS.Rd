@@ -32,7 +32,7 @@
 \section{Changes in pls version 2.8-6}{
   \subsection{New features}{
     \itemize{
-      \item Added nipals() (NIPALS PLS) with robustness against missing data.
+      \item Added nipals() (NIPALS PLS) and nipalspcr() (NIPALS PCR) with robustness against missing data.
     }
   }
   \subsection{User-visible changes}{
