@@ -236,6 +236,10 @@ naExcludeMvr <- function(omit, x, ...) {
 #' @aliases scores scores.default loadings loadings.default loading.weights
 #' Yscores Yloadings
 #' @param object a fitted model to extract from.
+#' @param estimate optional character vector ("train", "CV", "test") used
+#'   by \code{scores} to select the desired estimate.
+#' @param newdata optional data frame passed to \code{scores}
+#'   when \code{estimate = "test"}.
 #' @param \dots extra arguments, currently not used.
 #' @return A matrix with scores or loadings.
 #' @note There is a \code{loadings} function in package \pkg{stats}.  It simply
@@ -313,14 +317,14 @@ scores.default <- function(object, estimate, newdata, ...){
   if("test" %in% estimate){
     if (missing(newdata))
       stop("Missing `newdata'.")
-    mat <- buildDesignMatrix(newdata)
-    centerX <- centerDesignMatrix(mat)
+    mat <- buildDesignMatrix(newdata, object)
+    centerX <- centerDesignMatrix(mat, object)
     totalXvar <- sum(centerX^2, na.rm = TRUE)
     S <- predict(object, newdata=newdata, type="scores")
     if (!(inherits(S, "scores") || inherits(S, "list")))
       class(S) <- "scores"
     contrib <- colSums(S^2) * colSums(object$loadings^2)
-    S <- attachExplvar(S, contrib, totalXvar)
+    S <- attachExplvar(S, contrib, totalXvar, object)
     scoreList$test <- S
   }
   if("CV" %in% estimate){
@@ -336,7 +340,7 @@ scores.default <- function(object, estimate, newdata, ...){
       cvfit <- update(object, subset=!((1:N)%in%rows))
       preds <- predict(cvfit, newdata = newd, type = "scores")
       S[rows,] <- preds
-      newres <- centerDesignMatrix(buildDesignMatrix(newd))
+      newres <- centerDesignMatrix(buildDesignMatrix(newd, object), object)
       prev_ss <- sum(newres^2)
       for(a in seq_len(ncol(S))){
         recon <- tcrossprod(preds[,a], cvfit$loadings[,a])
@@ -348,8 +352,8 @@ scores.default <- function(object, estimate, newdata, ...){
     if (!(inherits(S, "scores") || inherits(S, "list")))
       class(S) <- "scores"
     totalXvar <- if (!is.null(object$Xtotvar)) object$Xtotvar
-                 else sum(centerDesignMatrix(model.matrix(object))^2, na.rm = TRUE)
-    S <- attachExplvar(S, contrib_seg, totalXvar)
+                 else sum(centerDesignMatrix(model.matrix(object), object)^2, na.rm = TRUE)
+    S <- attachExplvar(S, contrib_seg, totalXvar, object)
     scoreList$CV <- S
   }
   if(length(scoreList) == 1){
@@ -502,40 +506,42 @@ explvar <- function(object)
   )
 
 
-# Internal functions
-  buildDesignMatrix <- function(data) {
-    if (is.matrix(data)) {
-      if (!is.null(object$Xmeans) && ncol(data) != length(object$Xmeans))
-        stop("'newdata' does not have the correct number of columns")
-      mat <- data
-    } else {
-      Terms <- delete.response(terms(object))
-      mf <- model.frame(Terms, data, na.action = na.pass)
-      if (!is.null(cl <- attr(Terms, "dataClasses")))
-        .checkMFClasses(cl, mf)
-      mat <- delete.intercept(model.matrix(Terms, mf))
-    }
-    if (!is.null(object$scale))
-      mat <- mat / rep(object$scale, each = nrow(mat))
-    mat
+## Internal functions
+buildDesignMatrix <- function(data, object) {
+  if (is.matrix(data)) {
+    if (!is.null(object$Xmeans) && ncol(data) != length(object$Xmeans))
+      stop("'newdata' does not have the correct number of columns")
+    mat <- data
+  } else {
+    Terms <- delete.response(terms(object))
+    mf <- model.frame(Terms, data, na.action = na.pass)
+    if (!is.null(cl <- attr(Terms, "dataClasses")))
+      .checkMFClasses(cl, mf)
+    mat <- delete.intercept(model.matrix(Terms, mf))
   }
-  centerDesignMatrix <- function(mat) {
-    if (is.null(object$Xmeans))
-      return(mat)
-    mat - rep(object$Xmeans, each = nrow(mat))
+  if (!is.null(object$scale))
+    mat <- mat / rep(object$scale, each = nrow(mat))
+  mat
+}
+
+centerDesignMatrix <- function(mat, object) {
+  if (is.null(object$Xmeans))
+    return(mat)
+  mat - rep(object$Xmeans, each = nrow(mat))
+}
+
+attachExplvar <- function(S, contribution, totalXvar, object) {
+  if (length(contribution) != ncol(S))
+    contribution <- contribution[seq_len(ncol(S))]
+  expl <- if (totalXvar > 0) contribution / totalXvar * 100
+          else rep(NA_real_, ncol(S))
+  if (!is.null(colnames(S)))
+    names(expl) <- colnames(S)
+  else if (inherits(object, "mvr")) {
+    cn <- if (!is.null(object$loading.weights)) colnames(object$loading.weights)
+          else paste("Comp", seq_len(ncol(S)))
+    names(expl) <- cn[seq_len(length(expl))]
   }
-  attachExplvar <- function(S, contribution, totalXvar) {
-    if (length(contribution) != ncol(S))
-      contribution <- contribution[seq_len(ncol(S))]
-    expl <- if (totalXvar > 0) contribution / totalXvar * 100
-            else rep(NA_real_, ncol(S))
-    if (!is.null(colnames(S)))
-      names(expl) <- colnames(S)
-    else if (inherits(object, "mvr")) {
-      cn <- if (!is.null(object$loading.weights)) colnames(object$loading.weights)
-            else paste("Comp", seq_len(ncol(S)))
-      names(expl) <- cn[seq_len(length(expl))]
-    }
-    attr(S, "explvar") <- expl
-    S
-  }
+  attr(S, "explvar") <- expl
+  S
+}

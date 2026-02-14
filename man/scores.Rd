@@ -28,6 +28,12 @@ Yloadings(object)
 \item{object}{a fitted model to extract from.}
 
 \item{\dots}{extra arguments, currently not used.}
+
+\item{estimate}{optional character vector ("train", "CV", "test") used
+by \code{scores} to select the desired estimate.}
+
+\item{newdata}{optional data frame passed to \code{scores}
+when \code{estimate = "test"}.}
 }
 \value{
 A matrix with scores or loadings.
