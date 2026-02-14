@@ -20,6 +20,8 @@ scoreplot(object, ...)
   type = "p",
   xlab,
   ylab,
+  estimate,
+  newdata,
   ...
 )
 
@@ -85,6 +87,13 @@ possible/meaningful for all plots).}
 \item{xlab, ylab}{titles for \eqn{x} and \eqn{y} axes.  Typically character
 strings, but can be expressions or lists.  See \code{\link{title}} for
 details.}
+
+\item{estimate}{optional character vector passed to \code{scores()} so
+\code{scoreplot()} can request the training, CV or test estimate when
+plotting.}
+
+\item{newdata}{optional data frame supplied to \code{scores()} when
+\code{estimate = "test"}.}
 
 \item{x}{a \code{scores} or \code{loadings} object.  The scores or loadings
 to plot.}

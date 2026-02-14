@@ -29,10 +29,11 @@
 %%     }
 %%   }
 %% }
-\section{Changes in pls version 2.8-6}{
+\section{Changes in pls version 2.9-0}{
   \subsection{New features}{
     \itemize{
       \item Added nipals() (NIPALS PLS) and nipalspcr() (NIPALS PCR) with robustness against missing data.
+      \item Added cross-validation and test set abilities for scores() and scoreplot()
     }
   }
   \subsection{User-visible changes}{

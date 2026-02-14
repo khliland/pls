@@ -16,7 +16,7 @@ loadings(object, ...)
 
 scores(object, ...)
 
-\method{scores}{default}(object, ...)
+\method{scores}{default}(object, estimate, newdata, ...)
 
 Yscores(object)
 
