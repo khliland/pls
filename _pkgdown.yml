@@ -2,75 +2,81 @@ url: https://khliland.github.io/pls/
 template:
   bootstrap: 5
 reference:
-  title: "Reference"
-  contents:
-    - title: "Model fitting"
-      contents:
-        - plsr
-        - pcr
-        - nipals
-        - mvr
-    - title: "Model summary"
-      contents:
-        - summary
-        - print
-    - title: "Plotting"
-      contents:
-        - plot
-        - scoreplot
-        - loadingplot
-        - corrplot
-        - biplot
-        - coefplot
-        - predplot
-        - validationplot
-    - title: "Extraction methods"
-      contents:
-        - coef
-        - fitted
-        - residuals
-        - scores
-        - loadings
-        - loading.weights
-        - Yscores
-        - Yloadings
-        - predict
-        - explvar
-    - title: "Validation"
-      contents:
-        - crossval
-        - mvrCv
-        - cvsegments
-        - fac2seg
-    - title: "Metrics"
-      contents:
-        - R2
-        - RMSEP
-        - MSEP
-        - mvrValstats
-        - explvar
-        - vcov
-    - title: "Algorithms"
-      contents:
-        - kernelpls.fit
-        - nipals.fit
-        - cpplsf.fit
-        - oscorespls.fit
-        - widekernelpls.fit
-        - simpls.fit
-        - svdpc.fit
-        - nipalspc.fit
-    - title: "Tests"
-      contents:
-        - jack.test
-        - var.jack
-        - selectNcomp
-    - title: "Utility functions"
-      contents:
-        - pls.options
-        - prednames
-        - respnames
-        - compnames
-        - preplotXy
-        - msc
-        - stdize
+  - title: "Model fitting"
+    desc: Functions for fitting PLSR and PCR models.
+    contents:
+      - plsr
+      - pcr
+      - nipals
+      - mvr
+      - mvrValstats
+  - title: "Model summary"
+    desc: Functions for summarizing fitted models.
+    contents:
+      - summary.mvr
+      - coefplot
+      - predplot
+  - title: "Plotting"
+    desc: Functions for plotting fitted models.
+    contents:
+      - plot.mvr
+      - scoreplot
+      - loadingplot
+      - corrplot
+      - biplot.mvr
+      - predplotXy
+      - predplot
+      - validationplot
+  - title: "Extraction methods"
+    desc: Functions for extracting information from fitted models.
+    contents:
+      - coef.mvr
+      - residuals.mvr
+      - scores
+      - loadings
+      - predict.mvr
+      - explvar
+      - vcov.mvr
+      - selectNcomp
+      - compnames
+      - prednames
+      - respnames
+      - loading.weights
+      - Yscores
+      - Yloadings
+      - pls.options
+  - title: "Validation"
+    desc: Functions for validating fitted models.
+    contents:
+      - crossval
+      - mvrCv
+      - cvsegments
+      - fac2seg
+      - R2
+      - RMSEP
+      - MSEP
+  - title: "Tests"
+    desc: Functions for testing fitted models.
+    contents:
+      - jack.test
+      - var.jack
+  - title: "Algorithms"
+    desc: Functions for fitting models using various algorithms.
+    contents:
+      - kernelpls.fit
+      - nipals.fit
+      - nipalspc.fit
+      - cppls.fit
+      - oscorespls.fit
+      - widekernelpls.fit
+      - simpls.fit
+      - svdpc.fit
+      - msc
+      - stdize
+  - title: "Data sets"
+    desc: Data sets included in the package.
+    contents:
+      - gasoline
+      - yarn
+      - oliveoil
+      - mayonnaise

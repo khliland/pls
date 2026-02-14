@@ -13,6 +13,7 @@ Regression (PCR) and Canonical Powered Partial Least Squares (CPPLS).
 Useful links:
 \itemize{
   \item \url{https://github.com/khliland/pls}
+  \item \url{https://khliland.github.io/pls/}
   \item Report bugs at \url{https://github.com/khliland/pls/issues}
 }
 
