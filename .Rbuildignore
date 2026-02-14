@@ -2,3 +2,7 @@ README.md
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^CRAN-SUBMISSION$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$

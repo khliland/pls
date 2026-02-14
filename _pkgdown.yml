@@ -1,0 +1,76 @@
+url: https://khliland.github.io/pls/
+template:
+  bootstrap: 5
+reference:
+  title: "Reference"
+  contents:
+    - title: "Model fitting"
+      contents:
+        - plsr
+        - pcr
+        - nipals
+        - mvr
+    - title: "Model summary"
+      contents:
+        - summary
+        - print
+    - title: "Plotting"
+      contents:
+        - plot
+        - scoreplot
+        - loadingplot
+        - corrplot
+        - biplot
+        - coefplot
+        - predplot
+        - validationplot
+    - title: "Extraction methods"
+      contents:
+        - coef
+        - fitted
+        - residuals
+        - scores
+        - loadings
+        - loading.weights
+        - Yscores
+        - Yloadings
+        - predict
+        - explvar
+    - title: "Validation"
+      contents:
+        - crossval
+        - mvrCv
+        - cvsegments
+        - fac2seg
+    - title: "Metrics"
+      contents:
+        - R2
+        - RMSEP
+        - MSEP
+        - mvrValstats
+        - explvar
+        - vcov
+    - title: "Algorithms"
+      contents:
+        - kernelpls.fit
+        - nipals.fit
+        - cpplsf.fit
+        - oscorespls.fit
+        - widekernelpls.fit
+        - simpls.fit
+        - svdpc.fit
+        - nipalspc.fit
+    - title: "Tests"
+      contents:
+        - jack.test
+        - var.jack
+        - selectNcomp
+    - title: "Utility functions"
+      contents:
+        - pls.options
+        - prednames
+        - respnames
+        - compnames
+        - preplotXy
+        - msc
+        - stdize
