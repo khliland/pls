@@ -34,6 +34,7 @@
     \itemize{
       \item Added nipals() (NIPALS PLS) and nipalspcr() (NIPALS PCR) with robustness against missing data.
       \item Added cross-validation and test set abilities for scores() and scoreplot()
+      \item Added pkgdown site with documentation and vignette.
     }
   }
   \subsection{User-visible changes}{

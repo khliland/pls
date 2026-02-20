@@ -32,6 +32,12 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/pls-manual.html">Introduction to the pls Package</a></li>
+  </ul>
+</li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -65,7 +71,16 @@
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
-<p>See the help pages in the package for instructions, or (if you installed from CRAN): <code>vignette("pls-manual")</code>.</p>
+<p>See the help pages in the package for instructions, or (if you installed from CRAN): <code><a href="articles/pls-manual.html">vignette("pls-manual")</a></code>. Documentation is also avaiable as a GitHub page at <a href="https://khliland.github.io/pls/">https://khliland.github.io/pls/</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="new-featuress">New featuress<a class="anchor" aria-label="anchor" href="#new-featuress"></a>
+</h2>
+<ul>
+<li>2.9.0: Added <code><a href="reference/mvr.html">nipals()</a></code> (NIPALS PLS) and <code><a href="reference/mvr.html">nipalspcr()</a></code> (NIPALS PCR) with robustness against missing data. Added cross-validation and test set abilities for <code><a href="reference/scores.html">scores()</a></code> and <code><a href="reference/scoreplot.html">scoreplot()</a></code>. Added <code>pkgdown</code> site with documentation and vignette.</li>
+<li>2.8-4: Added fac2seg() to create cross-validation segments from a factor.</li>
+<li>2.8-1: Added vcov() for computing variance-covariance matrices for PCR.</li>
+</ul>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

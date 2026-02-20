@@ -1,8 +1,9 @@
 pandoc: 3.6.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
-articles: {}
-last_built: 2026-02-14T23:07Z
+articles:
+  pls-manual: pls-manual.html
+last_built: 2026-02-20T20:11Z
 urls:
   reference: https://khliland.github.io/pls/reference
   article: https://khliland.github.io/pls/articles
