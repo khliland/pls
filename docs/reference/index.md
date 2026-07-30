@@ -32,9 +32,9 @@ Functions for summarizing fitted models.
   [`predplotXy()`](https://khliland.github.io/pls/reference/predplot.md)
   : Prediction Plots
 
-## Plotting
+## Base plotting
 
-Functions for plotting fitted models.
+Functions for plotting fitted models using base graphics.
 
 - [`plot(`*`<mvr>`*`)`](https://khliland.github.io/pls/reference/plot.mvr.md)
   : Plot Method for MVR objects
@@ -52,6 +52,39 @@ Functions for plotting fitted models.
 - [`validationplot()`](https://khliland.github.io/pls/reference/validationplot.md)
   [`plot(`*`<mvrVal>`*`)`](https://khliland.github.io/pls/reference/validationplot.md)
   : Validation Plots
+
+## Plotting using ggplot2
+
+Functions for plotting fitted models using ggplot2 graphics.
+
+- [`gg_scoreplot()`](https://khliland.github.io/pls/reference/gg_scoreplot.md)
+  :
+
+  ggiraph plot, and the selected sample IDs are returned.
+
+- [`gg_loadingplot()`](https://khliland.github.io/pls/reference/gg_loadingplot.md)
+  : ggplot-based Loading Plot for mvr Models
+
+- [`gg_corrplot()`](https://khliland.github.io/pls/reference/gg_corrplot.md)
+  : ggplot-based Correlation Loadings Plot for mvr Models
+
+- [`gg_biplot()`](https://khliland.github.io/pls/reference/gg_biplot.md)
+  : ggplot-based Biplot for mvr Models
+
+- [`gg_predplot()`](https://khliland.github.io/pls/reference/gg_predplot.md)
+  : ggplot-based Prediction Plot for mvr Models
+
+- [`gg_coefplot()`](https://khliland.github.io/pls/reference/gg_coefplot.md)
+  : ggplot-based Coefficient Plot for mvr Models
+
+- [`autoplot()`](https://khliland.github.io/pls/reference/autoplot.md) :
+  Autoplot for mvr Models
+
+- [`autoplot(`*`<mvr>`*`)`](https://khliland.github.io/pls/reference/autoplot.mvr.md)
+  : Autoplot Method for mvr Models
+
+- [`refit()`](https://khliland.github.io/pls/reference/refit.md) : Refit
+  a PLSR/PCR model after selecting observations
 
 ## Extraction methods
 
@@ -82,6 +115,17 @@ Functions for extracting information from fitted models.
   models
 - [`pls.options()`](https://khliland.github.io/pls/reference/pls.options.md)
   : Set or return options for the pls package
+
+## Broom-style long-format extraction and tabulation
+
+Tidy functions for extracting information from fitted models.
+
+- [`tidy()`](https://khliland.github.io/pls/reference/tidy.md) : Tidy
+  mvr Model Components
+- [`glance()`](https://khliland.github.io/pls/reference/glance.md) :
+  Glance Summary for mvr Models
+- [`augment()`](https://khliland.github.io/pls/reference/augment.md) :
+  Augment Data with mvr Fitted Values
 
 ## Validation
 

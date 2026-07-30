@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pls</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.9-0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0-0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +19,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/pls-manual.html">Introduction to the pls Package</a></li>
+    <li><a class="dropdown-item" href="../articles/pls-tidyverse.html">pls-tidyverse: Tidy workflows for pls</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -88,9 +89,9 @@
         </dt>
         <dd>Prediction Plots</dd>
       </dl></div><div class="section level2">
-      <h2 id="plotting">Plotting<a class="anchor" aria-label="anchor" href="#plotting"></a></h2>
+      <h2 id="base-plotting">Base plotting<a class="anchor" aria-label="anchor" href="#base-plotting"></a></h2>
 
-      <div class="section-desc"><p>Functions for plotting fitted models.</p></div>
+      <div class="section-desc"><p>Functions for plotting fitted models using base graphics.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -131,6 +132,78 @@
 
         </dt>
         <dd>Validation Plots</dd>
+      </dl></div><div class="section level2">
+      <h2 id="plotting-using-ggplot-">Plotting using ggplot2<a class="anchor" aria-label="anchor" href="#plotting-using-ggplot-"></a></h2>
+
+      <div class="section-desc"><p>Functions for plotting fitted models using ggplot2 graphics.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="gg_scoreplot.html">gg_scoreplot()</a></code>
+
+        </dt>
+        <dd><span class="pkg">ggiraph</span> plot, and the selected sample IDs are returned.</dd>
+
+        <dt>
+
+          <code><a href="gg_loadingplot.html">gg_loadingplot()</a></code>
+
+        </dt>
+        <dd>ggplot-based Loading Plot for mvr Models</dd>
+
+        <dt>
+
+          <code><a href="gg_corrplot.html">gg_corrplot()</a></code>
+
+        </dt>
+        <dd>ggplot-based Correlation Loadings Plot for mvr Models</dd>
+
+        <dt>
+
+          <code><a href="gg_biplot.html">gg_biplot()</a></code>
+
+        </dt>
+        <dd>ggplot-based Biplot for mvr Models</dd>
+
+        <dt>
+
+          <code><a href="gg_predplot.html">gg_predplot()</a></code>
+
+        </dt>
+        <dd>ggplot-based Prediction Plot for mvr Models</dd>
+
+        <dt>
+
+          <code><a href="gg_coefplot.html">gg_coefplot()</a></code>
+
+        </dt>
+        <dd>ggplot-based Coefficient Plot for mvr Models</dd>
+
+        <dt>
+
+          <code><a href="autoplot.html">autoplot()</a></code>
+
+        </dt>
+        <dd>Autoplot for mvr Models</dd>
+
+        <dt>
+
+          <code><a href="autoplot.mvr.html">autoplot(<i>&lt;mvr&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Autoplot Method for mvr Models</dd>
+
+        <dt>
+
+          <code><a href="refit.html">refit()</a></code>
+
+        </dt>
+        <dd>Refit a PLSR/PCR model after selecting observations</dd>
       </dl></div><div class="section level2">
       <h2 id="extraction-methods">Extraction methods<a class="anchor" aria-label="anchor" href="#extraction-methods"></a></h2>
 
@@ -182,6 +255,36 @@
 
         </dt>
         <dd>Set or return options for the pls package</dd>
+      </dl></div><div class="section level2">
+      <h2 id="broom-style-long-format-extraction-and-tabulation">Broom-style long-format extraction and tabulation<a class="anchor" aria-label="anchor" href="#broom-style-long-format-extraction-and-tabulation"></a></h2>
+
+      <div class="section-desc"><p>Tidy functions for extracting information from fitted models.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="tidy.html">tidy()</a></code>
+
+        </dt>
+        <dd>Tidy mvr Model Components</dd>
+
+        <dt>
+
+          <code><a href="glance.html">glance()</a></code>
+
+        </dt>
+        <dd>Glance Summary for mvr Models</dd>
+
+        <dt>
+
+          <code><a href="augment.html">augment()</a></code>
+
+        </dt>
+        <dd>Augment Data with mvr Fitted Values</dd>
       </dl></div><div class="section level2">
       <h2 id="validation">Validation<a class="anchor" aria-label="anchor" href="#validation"></a></h2>
 

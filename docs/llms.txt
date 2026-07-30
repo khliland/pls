@@ -23,13 +23,75 @@ install_github("khliland/pls")
 
 See the help pages in the package for instructions, or (if you installed
 from CRAN):
-[`vignette("pls-manual")`](https://khliland.github.io/pls/articles/pls-manual.md).
+[`vignette("pls-manual")`](https://khliland.github.io/pls/articles/pls-manual.md)
+and
+[`vignette("pls-tidyverse")`](https://khliland.github.io/pls/articles/pls-tidyverse.md).
 Documentation is also avaiable as a GitHub page at
 <https://khliland.github.io/pls/>.
 
-## New featuress
+### Lightweight tidy examples
 
-- 2.9.0: Added
+``` r
+
+library(pls)
+data(yarn)
+
+# Keep examples fast by using a small subset and few components.
+d <- yarn[1:20, , drop = FALSE]
+mod <- plsr(density ~ NIR, ncomp = 2, data = d, validation = "CV")
+
+# Long-format model components
+head(tidy(mod, what = c("weights", "loadings", "coefficients")))
+
+# Long-format validation metrics
+head(tidy(RMSEP(mod, estimate = c("train", "CV"))))
+
+# One-row model summary
+glance(mod)
+
+# Augment training data with fitted values and residuals
+head(augment(mod))
+
+# Augment new data with fitted values
+head(augment(mod, data = d[1:5, , drop = FALSE]))
+```
+
+### ggplot workflows
+
+``` r
+
+library(pls)
+data(yarn)
+d <- yarn[1:20, , drop = FALSE]
+mod <- plsr(density ~ NIR, ncomp = 2, data = d, validation = "CV")
+
+if (requireNamespace("ggplot2", quietly = TRUE)) {
+    gg_loadingplot(mod, scatter = TRUE)
+    gg_loadingplot(mod)
+    gg_predplot(mod, ncomp = 1:2)
+    gg_corrplot(mod)
+    gg_coefplot(mod, ncomp = 1:2)
+}
+```
+
+## New features
+
+- 3.0-0: Added tidyverse extensions:
+  [`tidy.mvr()`](https://khliland.github.io/pls/reference/tidy.md),
+  [`glance.mvr()`](https://khliland.github.io/pls/reference/glance.md),
+  [`augment.mvr()`](https://khliland.github.io/pls/reference/augment.md),
+  [`tidy.mvrVal()`](https://khliland.github.io/pls/reference/tidy.md),
+  ggplot2 graphics:
+  [`gg_scoreplot()`](https://khliland.github.io/pls/reference/gg_scoreplot.md),
+  [`gg_loadingplot()`](https://khliland.github.io/pls/reference/gg_loadingplot.md),
+  [`gg_biplot()`](https://khliland.github.io/pls/reference/gg_biplot.md),
+  [`gg_predplot()`](https://khliland.github.io/pls/reference/gg_predplot.md),
+  [`gg_corrplot()`](https://khliland.github.io/pls/reference/gg_corrplot.md),
+  [`gg_coefplot()`](https://khliland.github.io/pls/reference/gg_coefplot.md),
+  [`autoplot.mvr()`](https://khliland.github.io/pls/reference/autoplot.mvr.md),
+  and interactive data selection with
+  [`refit.mvr()`](https://khliland.github.io/pls/reference/refit.md).
+- 2.9-0: Added
   [`nipals()`](https://khliland.github.io/pls/reference/mvr.md) (NIPALS
   PLS) and
   [`nipalspcr()`](https://khliland.github.io/pls/reference/mvr.md)
@@ -77,9 +139,9 @@ Functions for summarizing fitted models.
   [`predplotXy()`](https://khliland.github.io/pls/reference/predplot.md)
   : Prediction Plots
 
-## Plotting
+## Base plotting
 
-Functions for plotting fitted models.
+Functions for plotting fitted models using base graphics.
 
 - [`plot(`*`<mvr>`*`)`](https://khliland.github.io/pls/reference/plot.mvr.md)
   : Plot Method for MVR objects
@@ -97,6 +159,39 @@ Functions for plotting fitted models.
 - [`validationplot()`](https://khliland.github.io/pls/reference/validationplot.md)
   [`plot(`*`<mvrVal>`*`)`](https://khliland.github.io/pls/reference/validationplot.md)
   : Validation Plots
+
+## Plotting using ggplot2
+
+Functions for plotting fitted models using ggplot2 graphics.
+
+- [`gg_scoreplot()`](https://khliland.github.io/pls/reference/gg_scoreplot.md)
+  :
+
+  ggiraph plot, and the selected sample IDs are returned.
+
+- [`gg_loadingplot()`](https://khliland.github.io/pls/reference/gg_loadingplot.md)
+  : ggplot-based Loading Plot for mvr Models
+
+- [`gg_corrplot()`](https://khliland.github.io/pls/reference/gg_corrplot.md)
+  : ggplot-based Correlation Loadings Plot for mvr Models
+
+- [`gg_biplot()`](https://khliland.github.io/pls/reference/gg_biplot.md)
+  : ggplot-based Biplot for mvr Models
+
+- [`gg_predplot()`](https://khliland.github.io/pls/reference/gg_predplot.md)
+  : ggplot-based Prediction Plot for mvr Models
+
+- [`gg_coefplot()`](https://khliland.github.io/pls/reference/gg_coefplot.md)
+  : ggplot-based Coefficient Plot for mvr Models
+
+- [`autoplot()`](https://khliland.github.io/pls/reference/autoplot.md) :
+  Autoplot for mvr Models
+
+- [`autoplot(`*`<mvr>`*`)`](https://khliland.github.io/pls/reference/autoplot.mvr.md)
+  : Autoplot Method for mvr Models
+
+- [`refit()`](https://khliland.github.io/pls/reference/refit.md) : Refit
+  a PLSR/PCR model after selecting observations
 
 ## Extraction methods
 
@@ -127,6 +222,17 @@ Functions for extracting information from fitted models.
   models
 - [`pls.options()`](https://khliland.github.io/pls/reference/pls.options.md)
   : Set or return options for the pls package
+
+## Broom-style long-format extraction and tabulation
+
+Tidy functions for extracting information from fitted models.
+
+- [`tidy()`](https://khliland.github.io/pls/reference/tidy.md) : Tidy
+  mvr Model Components
+- [`glance()`](https://khliland.github.io/pls/reference/glance.md) :
+  Glance Summary for mvr Models
+- [`augment()`](https://khliland.github.io/pls/reference/augment.md) :
+  Augment Data with mvr Fitted Values
 
 ## Validation
 
@@ -204,3 +310,5 @@ Data sets included in the package.
 
 - [Introduction to the pls
   Package](https://khliland.github.io/pls/articles/pls-manual.md):
+- [pls-tidyverse: Tidy workflows for
+  pls](https://khliland.github.io/pls/articles/pls-tidyverse.md):

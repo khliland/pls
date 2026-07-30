@@ -16,8 +16,8 @@ reference:
       - summary.mvr
       - coefplot
       - predplot
-  - title: "Plotting"
-    desc: Functions for plotting fitted models.
+  - title: "Base plotting"
+    desc: Functions for plotting fitted models using base graphics.
     contents:
       - plot.mvr
       - scoreplot
@@ -27,6 +27,18 @@ reference:
       - predplotXy
       - predplot
       - validationplot
+  - title: "Plotting using ggplot2"
+    desc: Functions for plotting fitted models using ggplot2 graphics.
+    contents:
+      - gg_scoreplot
+      - gg_loadingplot
+      - gg_corrplot
+      - gg_biplot
+      - gg_predplot
+      - gg_coefplot
+      - autoplot
+      - autoplot.mvr
+      - refit
   - title: "Extraction methods"
     desc: Functions for extracting information from fitted models.
     contents:
@@ -45,6 +57,12 @@ reference:
       - Yscores
       - Yloadings
       - pls.options
+  - title: "Broom-style long-format extraction and tabulation"
+    desc: Tidy functions for extracting information from fitted models.
+    contents:
+      - tidy
+      - glance
+      - augment
   - title: "Validation"
     desc: Functions for validating fitted models.
     contents:

@@ -110,6 +110,7 @@ Ron Wehrens, Hilko van der Voet and Gerie van der Heijden
 ## Examples
 
 ``` r
+
 data(yarn)
 yarn.pls <- plsr(density ~ NIR, data = yarn, scale = TRUE,
                  ncomp = 20, validation = "LOO")

@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">pls</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.9-0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0-0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/pls-manual.html">Introduction to the pls Package</a></li>
+    <li><a class="dropdown-item" href="articles/pls-tidyverse.html">pls-tidyverse: Tidy workflows for pls</a></li>
   </ul>
 </li>
       </ul>
@@ -71,13 +72,57 @@
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
-<p>See the help pages in the package for instructions, or (if you installed from CRAN): <code><a href="articles/pls-manual.html">vignette("pls-manual")</a></code>. Documentation is also avaiable as a GitHub page at <a href="https://khliland.github.io/pls/">https://khliland.github.io/pls/</a>.</p>
+<p>See the help pages in the package for instructions, or (if you installed from CRAN): <code><a href="articles/pls-manual.html">vignette("pls-manual")</a></code> and <code><a href="articles/pls-tidyverse.html">vignette("pls-tidyverse")</a></code>. Documentation is also avaiable as a GitHub page at <a href="https://khliland.github.io/pls/">https://khliland.github.io/pls/</a>.</p>
+<div class="section level3">
+<h3 id="lightweight-tidy-examples">Lightweight tidy examples<a class="anchor" aria-label="anchor" href="#lightweight-tidy-examples"></a>
+</h3>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/khliland/pls" class="external-link">pls</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">yarn</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Keep examples fast by using a small subset and few components.</span></span>
+<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="va">yarn</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
+<span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/mvr.html">plsr</a></span><span class="op">(</span><span class="va">density</span> <span class="op">~</span> <span class="va">NIR</span>, ncomp <span class="op">=</span> <span class="fl">2</span>, data <span class="op">=</span> <span class="va">d</span>, validation <span class="op">=</span> <span class="st">"CV"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Long-format model components</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="reference/tidy.html">tidy</a></span><span class="op">(</span><span class="va">mod</span>, what <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"weights"</span>, <span class="st">"loadings"</span>, <span class="st">"coefficients"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Long-format validation metrics</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="reference/tidy.html">tidy</a></span><span class="op">(</span><span class="fu"><a href="reference/mvrVal.html">RMSEP</a></span><span class="op">(</span><span class="va">mod</span>, estimate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"train"</span>, <span class="st">"CV"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># One-row model summary</span></span>
+<span><span class="fu"><a href="reference/glance.html">glance</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Augment training data with fitted values and residuals</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="reference/augment.html">augment</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Augment new data with fitted values</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="reference/augment.html">augment</a></span><span class="op">(</span><span class="va">mod</span>, data <span class="op">=</span> <span class="va">d</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="ggplot-workflows">ggplot workflows<a class="anchor" aria-label="anchor" href="#ggplot-workflows"></a>
+</h3>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/khliland/pls" class="external-link">pls</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">yarn</span><span class="op">)</span></span>
+<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="va">yarn</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
+<span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/mvr.html">plsr</a></span><span class="op">(</span><span class="va">density</span> <span class="op">~</span> <span class="va">NIR</span>, ncomp <span class="op">=</span> <span class="fl">2</span>, data <span class="op">=</span> <span class="va">d</span>, validation <span class="op">=</span> <span class="st">"CV"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ggplot2"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="reference/gg_loadingplot.html">gg_loadingplot</a></span><span class="op">(</span><span class="va">mod</span>, scatter <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="reference/gg_loadingplot.html">gg_loadingplot</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="reference/gg_predplot.html">gg_predplot</a></span><span class="op">(</span><span class="va">mod</span>, ncomp <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="reference/gg_corrplot.html">gg_corrplot</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="reference/gg_coefplot.html">gg_coefplot</a></span><span class="op">(</span><span class="va">mod</span>, ncomp <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
-<h2 id="new-featuress">New featuress<a class="anchor" aria-label="anchor" href="#new-featuress"></a>
+<h2 id="new-features">New features<a class="anchor" aria-label="anchor" href="#new-features"></a>
 </h2>
 <ul>
-<li>2.9.0: Added <code><a href="reference/mvr.html">nipals()</a></code> (NIPALS PLS) and <code><a href="reference/mvr.html">nipalspcr()</a></code> (NIPALS PCR) with robustness against missing data. Added cross-validation and test set abilities for <code><a href="reference/scores.html">scores()</a></code> and <code><a href="reference/scoreplot.html">scoreplot()</a></code>. Added <code>pkgdown</code> site with documentation and vignette.</li>
+<li>3.0-0: Added tidyverse extensions: <code><a href="reference/tidy.html">tidy.mvr()</a></code>, <code><a href="reference/glance.html">glance.mvr()</a></code>, <code><a href="reference/augment.html">augment.mvr()</a></code>, <code><a href="reference/tidy.html">tidy.mvrVal()</a></code>, ggplot2 graphics: <code><a href="reference/gg_scoreplot.html">gg_scoreplot()</a></code>, <code><a href="reference/gg_loadingplot.html">gg_loadingplot()</a></code>, <code><a href="reference/gg_biplot.html">gg_biplot()</a></code>, <code><a href="reference/gg_predplot.html">gg_predplot()</a></code>, <code><a href="reference/gg_corrplot.html">gg_corrplot()</a></code>, <code><a href="reference/gg_coefplot.html">gg_coefplot()</a></code>, <code><a href="reference/autoplot.mvr.html">autoplot.mvr()</a></code>, and interactive data selection with <code><a href="reference/refit.html">refit.mvr()</a></code>.</li>
+<li>2.9-0: Added <code><a href="reference/mvr.html">nipals()</a></code> (NIPALS PLS) and <code><a href="reference/mvr.html">nipalspcr()</a></code> (NIPALS PCR) with robustness against missing data. Added cross-validation and test set abilities for <code><a href="reference/scores.html">scores()</a></code> and <code><a href="reference/scoreplot.html">scoreplot()</a></code>. Added <code>pkgdown</code> site with documentation and vignette.</li>
 <li>2.8-4: Added fac2seg() to create cross-validation segments from a factor.</li>
 <li>2.8-1: Added vcov() for computing variance-covariance matrices for PCR.</li>
 </ul>

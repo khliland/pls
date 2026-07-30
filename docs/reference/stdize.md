@@ -92,6 +92,7 @@ Bjørn-Helge Mevik and Ron Wehrens
 ## Examples
 
 ``` r
+
 data(yarn)
 ## Direct standardization:
 Ztrain <- stdize(yarn$NIR[yarn$train,])

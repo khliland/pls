@@ -148,6 +148,7 @@ Ron Wehrens and Bjørn-Helge Mevik
 ## Examples
 
 ``` r
+
 data(yarn)
 mod <- pcr(density ~ NIR, data = yarn[yarn$train,], ncomp = 5)
 B <- coef(mod, ncomp = 3, intercept = TRUE)

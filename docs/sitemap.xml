@@ -2,8 +2,12 @@
 <url><loc>https://khliland.github.io/pls/404.html</loc></url>
 <url><loc>https://khliland.github.io/pls/articles/index.html</loc></url>
 <url><loc>https://khliland.github.io/pls/articles/pls-manual.html</loc></url>
+<url><loc>https://khliland.github.io/pls/articles/pls-tidyverse.html</loc></url>
 <url><loc>https://khliland.github.io/pls/authors.html</loc></url>
 <url><loc>https://khliland.github.io/pls/index.html</loc></url>
+<url><loc>https://khliland.github.io/pls/reference/augment.html</loc></url>
+<url><loc>https://khliland.github.io/pls/reference/autoplot.html</loc></url>
+<url><loc>https://khliland.github.io/pls/reference/autoplot.mvr.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/biplot.mvr.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/coef.mvr.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/coefplot.html</loc></url>
@@ -13,6 +17,13 @@
 <url><loc>https://khliland.github.io/pls/reference/delete.intercept.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/fac2seg.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/gasoline.html</loc></url>
+<url><loc>https://khliland.github.io/pls/reference/gg_biplot.html</loc></url>
+<url><loc>https://khliland.github.io/pls/reference/gg_coefplot.html</loc></url>
+<url><loc>https://khliland.github.io/pls/reference/gg_corrplot.html</loc></url>
+<url><loc>https://khliland.github.io/pls/reference/gg_loadingplot.html</loc></url>
+<url><loc>https://khliland.github.io/pls/reference/gg_predplot.html</loc></url>
+<url><loc>https://khliland.github.io/pls/reference/gg_scoreplot.html</loc></url>
+<url><loc>https://khliland.github.io/pls/reference/glance.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/index.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/jack.test.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/kernelpls.fit.html</loc></url>
@@ -31,6 +42,7 @@
 <url><loc>https://khliland.github.io/pls/reference/pls.options.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/predict.mvr.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/predplot.html</loc></url>
+<url><loc>https://khliland.github.io/pls/reference/refit.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/scoreplot.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/scores.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/selectNcomp.html</loc></url>
@@ -38,6 +50,7 @@
 <url><loc>https://khliland.github.io/pls/reference/stdize.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/summary.mvr.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/svdpc.fit.html</loc></url>
+<url><loc>https://khliland.github.io/pls/reference/tidy.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/validationplot.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/var.jack.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/vcov.mvr.html</loc></url>

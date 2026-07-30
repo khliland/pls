@@ -409,6 +409,31 @@ Regression coefficients can be extracted using the generic function `coef`; the 
 
 The `print` method for an object of class `"mvr"` shows the regression type used, perhaps indicating the form of validation employed, and shows the function call. The `summary` method gives more information: it also shows the amount of variance explained by the model (for all choices of $a$, the number of latent variables). The `summary` method has an additional argument (`what`) to be able to focus on the training phase or validation phase, respectively. Default is to print both types of information.
 
+## 7.4 Tidy outputs
+
+For workflows that use long-format data frames, **pls** provides `tidy`, `glance` and `augment` methods for `mvr` objects, and a `tidy` method for validation objects such as `RMSEP`.
+
+```{r tidy-outputs}
+data(yarn)
+d <- yarn[1:20, , drop = FALSE]
+mod_tidy <- plsr(density ~ NIR, ncomp = 2, data = d, validation = "CV")
+
+# Long-format model components
+head(tidy(mod_tidy, what = c("weights", "loadings", "coefficients")))
+
+# Long-format validation metrics
+head(tidy(RMSEP(mod_tidy, estimate = c("train", "CV"))))
+
+# One-row summary
+glance(mod_tidy)
+
+# Training data with fitted values and residuals
+head(augment(mod_tidy))
+
+# New data with fitted values
+head(augment(mod_tidy, data = d[1:5, , drop = FALSE]))
+```
+
 # 8 Predicting new observations
 
 Fitted models are often used to predict future observations, and **pls** implements a `predict` method for PLSR and PCR models. The most common way of calling this function is `predict(mymod, ncomp = myncomp, newdata = mynewdata)`, where `mymod` is a fitted model, `myncomp` specifies the model size(s) to use, and `mynewdata` is a data frame with new X observations. The data frame can also contain response measurements for the new observations, which can be used to compare the predicted values to the measured ones, or to estimate the overall prediction ability of the model. If `newdata` is missing, `predict` uses the data used to fit the model, i.e., it returns fitted values. If the argument `ncomp` is missing, `predict` returns predictions for models with 1 component, 2 components, $\ldots$, $A$ components, where $A$ is the number of components used when fitting the model. Otherwise, the model size(s) listed in `ncomp` are used. For instance, to get predictions from the model built in Section 3, with two and three components, one would use 

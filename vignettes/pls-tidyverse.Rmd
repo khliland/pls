@@ -1,0 +1,97 @@
+---
+title: "pls-tidyverse: Tidy workflows for pls"
+author:
+  - Kristian Hovde Liland
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{pls-tidyverse}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+library(pls)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+# Overview
+
+This vignette shows a compact, tidy-style workflow for `mvr` models in
+the **pls** package, using the new methods:
+
+- `tidy()` for long-format model components and validation outputs.
+- `glance()` for one-row model summaries.
+- `augment()` for sample-wise fitted values and residuals.
+
+# Fit a compact model
+
+```{r fit-model}
+data(yarn)
+d <- yarn[1:20, , drop = FALSE]
+mod <- plsr(density ~ NIR, ncomp = 2, data = d, validation = "CV")
+```
+
+# Tidy model components
+
+```{r tidy-components}
+comp_tbl <- tidy(mod, what = c("weights", "loadings", "coefficients"))
+head(comp_tbl)
+```
+
+# Tidy validation metrics
+
+```{r tidy-validation}
+rmsep_tbl <- tidy(RMSEP(mod, estimate = c("train", "CV")))
+head(rmsep_tbl)
+```
+
+# One-row summary with glance
+
+```{r glance-summary}
+glance(mod)
+```
+
+# Sample-wise outputs with augment
+
+```{r augment-train}
+aug_train <- augment(mod)
+head(aug_train)
+```
+
+```{r augment-newdata}
+aug_new <- augment(mod, data = d[1:5, , drop = FALSE])
+head(aug_new)
+```
+
+# Optional ggplot workflow
+
+If **ggplot2** is installed, the same model can be plotted through
+`autoplot()` or the dedicated ggplot helpers.
+
+```{r ggplot-workflow, eval=FALSE}
+gg_loadingplot(mod, scatter = TRUE)
+gg_loadingplot(mod)
+gg_predplot(mod, ncomp = 1:2)
+gg_corrplot(mod)
+gg_coefplot(mod, ncomp = 1:2)
+```
+
+```{r optional-ggplot, eval=FALSE}
+autoplot(mod, type = "scores")
+autoplot(mod, type = "loadings")
+autoplot(mod, type = "biplot")
+autoplot(mod, type = "prediction")
+autoplot(mod, type = "correlation")
+autoplot(mod, type = "coefficients")
+```
+
+# Optional interactive selection and refit
+
+If **ggiraph** and **shiny** are installed, selected sample IDs can be returned
+from `gg_scoreplot(select = TRUE)` and used with `refit()`.
+
+```{r optional-interactive, eval=FALSE}
+ids <- gg_scoreplot(mod, select = TRUE)
+mod_drop <- refit(mod, selection = ids, exclude = TRUE)
+mod_keep <- refit(mod, selection = ids, exclude = FALSE)
+```
