@@ -411,28 +411,7 @@ The `print` method for an object of class `"mvr"` shows the regression type used
 
 ## 7.4 Tidy outputs
 
-For workflows that use long-format data frames, **pls** provides `tidy`, `glance` and `augment` methods for `mvr` objects, and a `tidy` method for validation objects such as `RMSEP`.
-
-```{r tidy-outputs}
-data(yarn)
-d <- yarn[1:20, , drop = FALSE]
-mod_tidy <- plsr(density ~ NIR, ncomp = 2, data = d, validation = "CV")
-
-# Long-format model components
-head(tidy(mod_tidy, what = c("weights", "loadings", "coefficients")))
-
-# Long-format validation metrics
-head(tidy(RMSEP(mod_tidy, estimate = c("train", "CV"))))
-
-# One-row summary
-glance(mod_tidy)
-
-# Training data with fitted values and residuals
-head(augment(mod_tidy))
-
-# New data with fitted values
-head(augment(mod_tidy, data = d[1:5, , drop = FALSE]))
-```
+For workflows that use long-format data frames, **pls** provides `tidy`, `glance` and `augment` methods for `mvr` objects, and a `tidy` method for validation objects such as `RMSEP`. A full suite of ggplot2 methods is also available in the `pls` package. See `vignette("pls-ggplot2")` for details.
 
 # 8 Predicting new observations
 

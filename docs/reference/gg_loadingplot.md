@@ -14,6 +14,7 @@ gg_loadingplot(
   scatter = FALSE,
   labels = FALSE,
   pretty.xlabels = TRUE,
+  plotly = FALSE,
   ...
 )
 ```
@@ -45,6 +46,10 @@ gg_loadingplot(
 - pretty.xlabels:
 
   logical. If `TRUE`, line-plot x-axis labels are thinned when possible.
+
+- plotly:
+
+  logical. If `TRUE`, use plotly output.
 
 ## Value
 

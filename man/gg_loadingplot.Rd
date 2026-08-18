@@ -13,6 +13,7 @@ gg_loadingplot(object, ...)
   scatter = FALSE,
   labels = FALSE,
   pretty.xlabels = TRUE,
+  plotly = FALSE,
   ...
 )
 }
@@ -33,6 +34,8 @@ labels. In line mode, labels are used as x-axis labels.}
 
 \item{pretty.xlabels}{logical. If \code{TRUE}, line-plot x-axis labels are
 thinned when possible.}
+
+\item{plotly}{logical. If \code{TRUE}, use \pkg{plotly} output.}
 }
 \value{
 A \code{ggplot} object.

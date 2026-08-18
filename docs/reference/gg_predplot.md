@@ -22,6 +22,7 @@ gg_predplot(
   xlab = "measured",
   ylab = "predicted",
   main = NULL,
+  plotly = FALSE,
   ...
 )
 ```
@@ -73,6 +74,10 @@ gg_predplot(
 - main:
 
   optional plot title.
+
+- plotly:
+
+  logical. If `TRUE`, use plotly output.
 
 ## Value
 

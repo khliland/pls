@@ -20,6 +20,8 @@ Useful links:
 
 Authors:
 
+- Kristian Hovde Liland <kristian.liland@nmbu.no>
+
 - Bjørn-Helge Mevik <b-h@mevik.net>
 
 - Ron Wehrens

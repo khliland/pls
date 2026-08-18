@@ -15,11 +15,16 @@ test_that("autoplot.mvr delegates by type", {
   skip_if_not_installed("ggplot2")
   data(yarn)
 
-  mod <- plsr(density ~ NIR, ncomp = 6, data = yarn)
+  mod <- plsr(density ~ NIR, ncomp = 6, data = yarn, validation = "CV")
 
   expect_s3_class(ggplot2::autoplot(mod, type = "scores"), "ggplot")
   expect_s3_class(ggplot2::autoplot(mod, type = "loadings"), "ggplot")
   expect_s3_class(ggplot2::autoplot(mod, type = "biplot"), "ggplot")
+  expect_s3_class(
+    ggplot2::autoplot(mod, type = "validation", val.type = "RMSEP",
+                      estimate = "CV"),
+    "ggplot"
+  )
   expect_s3_class(autoplot(mod, type = "scores"), "ggplot")
 })
 

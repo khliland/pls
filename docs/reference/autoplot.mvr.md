@@ -9,7 +9,8 @@ objects.
 # S3 method for class 'mvr'
 autoplot(
   object,
-  type = c("scores", "loadings", "biplot", "prediction", "correlation", "coefficients"),
+  type = c("scores", "loadings", "biplot", "prediction", "correlation", "coefficients",
+    "validation"),
   ...
 )
 ```
@@ -23,7 +24,7 @@ autoplot(
 - type:
 
   plot type. One of `"scores"`, `"loadings"`, `"biplot"`,
-  `"prediction"`, `"correlation"` or `"coefficients"`.
+  `"prediction"`, `"correlation"` or `"coefficients"`, `"validation"`.
 
 - ...:
 
@@ -37,7 +38,7 @@ A `ggplot` object.
 
 ``` r
 data(yarn)
-mod <- plsr(density ~ NIR, ncomp = 6, data = yarn)
+mod <- plsr(density ~ NIR, ncomp = 6, data = yarn, validation = "CV")
 if (requireNamespace("ggplot2", quietly = TRUE)) {
   autoplot(mod, type = "scores")
   autoplot(mod, type = "loadings")
@@ -45,5 +46,6 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
   autoplot(mod, type = "prediction")
   autoplot(mod, type = "correlation")
   autoplot(mod, type = "coefficients")
+  autoplot(mod, type = "validation", val.type = "RMSEP", estimate = "CV")
 }
 ```

@@ -13,6 +13,7 @@ gg_biplot(object, ...)
   labels = FALSE,
   arrows = FALSE,
   loading.scale = 0.8,
+  plotly = FALSE,
   ...
 )
 }
@@ -29,6 +30,8 @@ gg_biplot(object, ...)
 \code{FALSE}.}
 
 \item{loading.scale}{numeric scaling factor for loadings.}
+
+\item{plotly}{logical. If \code{TRUE}, use \pkg{plotly} output.}
 }
 \value{
 A \code{ggplot} object.

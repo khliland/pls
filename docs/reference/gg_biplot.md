@@ -15,6 +15,7 @@ gg_biplot(
   labels = FALSE,
   arrows = FALSE,
   loading.scale = 0.8,
+  plotly = FALSE,
   ...
 )
 ```
@@ -44,6 +45,10 @@ gg_biplot(
 - loading.scale:
 
   numeric scaling factor for loadings.
+
+- plotly:
+
+  logical. If `TRUE`, use plotly output.
 
 ## Value
 

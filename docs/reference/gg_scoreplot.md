@@ -1,6 +1,6 @@
-# ggiraph plot, and the selected sample IDs are returned.
+# ggplot-based Score Plot for mvr Models
 
-ggiraph plot, and the selected sample IDs are returned.
+Create a score plot from an `mvr` model using `ggplot2`.
 
 ## Usage
 
@@ -8,7 +8,15 @@ ggiraph plot, and the selected sample IDs are returned.
 gg_scoreplot(object, ...)
 
 # S3 method for class 'mvr'
-gg_scoreplot(object, comps = 1:2, estimate, newdata, select = FALSE, ...)
+gg_scoreplot(
+  object,
+  comps = 1:2,
+  estimate,
+  newdata,
+  select = FALSE,
+  plotly = FALSE,
+  ...
+)
 ```
 
 ## Arguments
@@ -41,10 +49,17 @@ gg_scoreplot(object, comps = 1:2, estimate, newdata, select = FALSE, ...)
   logical. If `TRUE`, launch an interactive selection app and return
   selected IDs.
 
+- plotly:
+
+  logical. If `TRUE`, use plotly output. With `select = TRUE`, a Shiny
+  app is launched and selected IDs are returned from Plotly lasso/box
+  selection.
+
 ## Value
 
-For `select = FALSE`, a `ggplot` object. For `select = TRUE`, a
-character vector with selected sample IDs.
+For `select = FALSE`, a `ggplot` object (or a `plotly` object when
+`plotly = TRUE`). For `select = TRUE`, a character vector with selected
+sample IDs.
 
 ## Examples
 
@@ -58,12 +73,11 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
 }
 
 
-if (FALSE) { # \dontrun{
+if (FALSE)  # Requires an interactive session
 if (requireNamespace("ggplot2", quietly = TRUE) &&
     requireNamespace("ggiraph", quietly = TRUE) &&
     requireNamespace("shiny", quietly = TRUE)) {
   selected_ids <- gg_scoreplot(mod, select = TRUE)
   refit_mod <- refit(mod, selection = selected_ids, exclude = TRUE)
-}
-} # }
+} # \dontrun{}
 ```

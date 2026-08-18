@@ -6,9 +6,15 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Partial Least Squares and Principal Component Regression • pls</title>
-<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Partial Least Squares and Principal Component Regression">
 <meta name="description" content="Multivariate regression methods Partial Least Squares Regression (PLSR), Principal Component Regression (PCR) and Canonical Powered Partial Least Squares (CPPLS).">
@@ -74,7 +80,7 @@
 </h2>
 <p>See the help pages in the package for instructions, or (if you installed from CRAN): <code><a href="articles/pls-manual.html">vignette("pls-manual")</a></code> and <code><a href="articles/pls-tidyverse.html">vignette("pls-tidyverse")</a></code>. Documentation is also avaiable as a GitHub page at <a href="https://khliland.github.io/pls/">https://khliland.github.io/pls/</a>.</p>
 <div class="section level3">
-<h3 id="lightweight-tidy-examples">Lightweight tidy examples<a class="anchor" aria-label="anchor" href="#lightweight-tidy-examples"></a>
+<h3 id="tidy-examples">tidy examples<a class="anchor" aria-label="anchor" href="#tidy-examples"></a>
 </h3>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/khliland/pls" class="external-link">pls</a></span><span class="op">)</span></span>
@@ -109,6 +115,7 @@
 <span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/mvr.html">plsr</a></span><span class="op">(</span><span class="va">density</span> <span class="op">~</span> <span class="va">NIR</span>, ncomp <span class="op">=</span> <span class="fl">2</span>, data <span class="op">=</span> <span class="va">d</span>, validation <span class="op">=</span> <span class="st">"CV"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ggplot2"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="reference/gg_scoreplot.html">gg_scoreplot</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="reference/gg_loadingplot.html">gg_loadingplot</a></span><span class="op">(</span><span class="va">mod</span>, scatter <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="reference/gg_loadingplot.html">gg_loadingplot</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="reference/gg_predplot.html">gg_predplot</a></span><span class="op">(</span><span class="va">mod</span>, ncomp <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span>
@@ -121,7 +128,7 @@
 <h2 id="new-features">New features<a class="anchor" aria-label="anchor" href="#new-features"></a>
 </h2>
 <ul>
-<li>3.0-0: Added tidyverse extensions: <code><a href="reference/tidy.html">tidy.mvr()</a></code>, <code><a href="reference/glance.html">glance.mvr()</a></code>, <code><a href="reference/augment.html">augment.mvr()</a></code>, <code><a href="reference/tidy.html">tidy.mvrVal()</a></code>, ggplot2 graphics: <code><a href="reference/gg_scoreplot.html">gg_scoreplot()</a></code>, <code><a href="reference/gg_loadingplot.html">gg_loadingplot()</a></code>, <code><a href="reference/gg_biplot.html">gg_biplot()</a></code>, <code><a href="reference/gg_predplot.html">gg_predplot()</a></code>, <code><a href="reference/gg_corrplot.html">gg_corrplot()</a></code>, <code><a href="reference/gg_coefplot.html">gg_coefplot()</a></code>, <code><a href="reference/autoplot.mvr.html">autoplot.mvr()</a></code>, and interactive data selection with <code><a href="reference/refit.html">refit.mvr()</a></code>.</li>
+<li>3.0-0: Added tidyverse extensions: <code><a href="reference/tidy.html">tidy.mvr()</a></code>, <code><a href="reference/glance.html">glance.mvr()</a></code>, <code><a href="reference/augment.html">augment.mvr()</a></code>, <code><a href="reference/tidy.html">tidy.mvrVal()</a></code>, ggplot2 graphics: <code><a href="reference/gg_scoreplot.html">gg_scoreplot()</a></code>, <code><a href="reference/gg_loadingplot.html">gg_loadingplot()</a></code>, <code><a href="reference/gg_biplot.html">gg_biplot()</a></code>, <code><a href="reference/gg_predplot.html">gg_predplot()</a></code>, <code><a href="reference/gg_corrplot.html">gg_corrplot()</a></code>, <code><a href="reference/gg_coefplot.html">gg_coefplot()</a></code>, <code><a href="reference/gg_valplot.html">gg_valplot()</a></code>, <code><a href="reference/autoplot.mvr.html">autoplot.mvr()</a></code>, <code><a href="reference/gg_dashboard.html">gg_dashboard()</a></code>, and interactive data selection with <code><a href="reference/refit.html">refit.mvr()</a></code>.</li>
 <li>2.9-0: Added <code><a href="reference/mvr.html">nipals()</a></code> (NIPALS PLS) and <code><a href="reference/mvr.html">nipalspcr()</a></code> (NIPALS PCR) with robustness against missing data. Added cross-validation and test set abilities for <code><a href="reference/scores.html">scores()</a></code> and <code><a href="reference/scoreplot.html">scoreplot()</a></code>. Added <code>pkgdown</code> site with documentation and vignette.</li>
 <li>2.8-4: Added fac2seg() to create cross-validation segments from a factor.</li>
 <li>2.8-1: Added vcov() for computing variance-covariance matrices for PCR.</li>
@@ -173,7 +180,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

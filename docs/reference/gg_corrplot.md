@@ -18,6 +18,7 @@ gg_corrplot(
   xlab,
   ylab,
   main = NULL,
+  plotly = FALSE,
   ...
 )
 ```
@@ -60,6 +61,10 @@ gg_corrplot(
 - main:
 
   optional title.
+
+- plotly:
+
+  logical. If `TRUE`, use plotly output.
 
 ## Value
 

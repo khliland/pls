@@ -132,8 +132,7 @@ plot.mvr <- function(x, plottype = c("prediction", "validation",
 #' horisontal spacing.  If one has excluded parts of the spectral region, one
 #' might therefore want to use \code{pretty.xlabels = FALSE}.
 #'
-#' @aliases scoreplot scoreplot.default plot.scores loadingplot
-#' loadingplot.default plot.loadings corrplot
+#' @aliases scoreplot scoreplot.default plot.scores loadingplot loadingplot.default plot.loadings corrplot
 #' @param object an object.  The fitted model.
 #' @param estimate optional character vector passed to \code{scores()} so
 #'   \code{scoreplot()} can request the training, CV or test estimate when

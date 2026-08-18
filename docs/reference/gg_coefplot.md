@@ -20,6 +20,8 @@ gg_coefplot(
   xlab = "variable",
   ylab = "regression coefficient",
   main = NULL,
+  response = NULL,
+  plotly = FALSE,
   ...
 )
 ```
@@ -72,6 +74,15 @@ gg_coefplot(
 - main:
 
   optional title.
+
+- response:
+
+  optional response to plot. If `NULL`, all responses are shown. If
+  specified, only that response is plotted.
+
+- plotly:
+
+  logical. If `TRUE`, use plotly output.
 
 ## Value
 

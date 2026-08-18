@@ -17,6 +17,7 @@ gg_corrplot(object, ...)
   xlab,
   ylab,
   main = NULL,
+  plotly = FALSE,
   ...
 )
 }
@@ -40,6 +41,8 @@ row names are used; if \code{"numbers"}, row numbers are used.}
 \item{xlab, ylab}{axis labels.}
 
 \item{main}{optional title.}
+
+\item{plotly}{logical. If \code{TRUE}, use \pkg{plotly} output.}
 }
 \value{
 A \code{ggplot} object.

@@ -64,8 +64,7 @@
 #' loading matrices returned by \code{\link{scores}} and
 #' \code{\link{loadings}}.
 #'
-#' @aliases coef.mvr fitted.mvr residuals.mvr model.frame.mvr model.matrix.mvr
-#' prednames respnames compnames explvar
+#' @aliases coef.mvr fitted.mvr residuals.mvr model.frame.mvr model.matrix.mvr prednames respnames compnames explvar
 #' @param object,formula an \code{mvr} object.  The fitted model.
 #' @param ncomp,comps vector of positive integers.  The components to include
 #' in the coefficients or to extract the names of.  See below.
@@ -233,8 +232,7 @@ naExcludeMvr <- function(omit, x, ...) {
 #' with the variance explained by each component, if this is available.  (See
 #' \code{\link{explvar}} for details.)
 #'
-#' @aliases scores scores.default loadings loadings.default loading.weights
-#' Yscores Yloadings
+#' @aliases scores scores.default loadings loadings.default loading.weights Yscores Yloadings
 #' @param object a fitted model to extract from.
 #' @param estimate optional character vector ("train", "CV", "test") used
 #'   by \code{scores} to select the desired estimate.

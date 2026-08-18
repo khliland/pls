@@ -33,8 +33,8 @@
   \subsection{New features}{
     \itemize{
       \item Added ggplot-based plotting entrypoints for mvr models: gg_scoreplot(), gg_loadingplot(), gg_biplot(), gg_predplot(), gg_corrplot(), gg_coefplot(), and autoplot.mvr() routing via type = "scores", "loadings", "biplot", "prediction", "correlation" or "coefficients".
-      \item Added scatter-mode support to gg_loadingplot() and jackknife-based se.whiskers support to gg_coefplot().
       \item Added interactive score selection workflow in gg_scoreplot(select = TRUE) using ggiraph + shiny, returning selected sample IDs for downstream model updates.
+      \item Added gg_dashboard() plot for model overview.
       \item Added refit() generic and refit.mvr() for refitting after selected-observation include/exclude workflows.
       \item Added broom-style methods tidy.mvr(), glance.mvr(), augment.mvr(), and tidy.mvrVal() for long-format extraction and tabulation.
     }

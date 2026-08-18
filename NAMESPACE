@@ -14,6 +14,8 @@ S3method(gg_corrplot,mvr)
 S3method(gg_loadingplot,mvr)
 S3method(gg_predplot,mvr)
 S3method(gg_scoreplot,mvr)
+S3method(gg_valplot,mvr)
+S3method(gg_valplot,mvrVal)
 S3method(ggplot2::autoplot,mvr)
 S3method(glance,mvr)
 S3method(loadingplot,default)
@@ -61,9 +63,11 @@ export(fac2seg)
 export(gg_biplot)
 export(gg_coefplot)
 export(gg_corrplot)
+export(gg_dashboard)
 export(gg_loadingplot)
 export(gg_predplot)
 export(gg_scoreplot)
+export(gg_valplot)
 export(glance)
 export(jack.test)
 export(kernelpls.fit)
@@ -96,47 +100,53 @@ export(tidy)
 export(validationplot)
 export(var.jack)
 export(widekernelpls.fit)
-importFrom(grDevices,dev.interactive)
-importFrom(grDevices,devAskNewPage)
-importFrom(graphics,abline)
-importFrom(graphics,arrows)
-importFrom(graphics,axTicks)
-importFrom(graphics,axis)
-importFrom(graphics,legend)
-importFrom(graphics,matplot)
-importFrom(graphics,mtext)
-importFrom(graphics,pairs)
-importFrom(graphics,par)
-importFrom(graphics,plot)
-importFrom(graphics,points)
-importFrom(graphics,segments)
-importFrom(graphics,text)
-importFrom(graphics,title)
+importFrom(grDevices,
+  dev.interactive,
+  devAskNewPage
+)
+importFrom(graphics,
+  abline,
+  arrows,
+  axTicks,
+  axis,
+  legend,
+  matplot,
+  mtext,
+  pairs,
+  par,
+  plot,
+  points,
+  segments,
+  text,
+  title
+)
 importFrom(methods,hasArg)
-importFrom(stats,.checkMFClasses)
-importFrom(stats,coef)
-importFrom(stats,cor)
-importFrom(stats,delete.response)
-importFrom(stats,drop.terms)
-importFrom(stats,fitted)
-importFrom(stats,formula)
-importFrom(stats,makepredictcall)
-importFrom(stats,median)
-importFrom(stats,model.frame)
-importFrom(stats,model.matrix)
-importFrom(stats,model.response)
-importFrom(stats,na.omit)
-importFrom(stats,na.pass)
-importFrom(stats,napredict)
-importFrom(stats,optimize)
-importFrom(stats,predict)
-importFrom(stats,printCoefmat)
-importFrom(stats,pt)
-importFrom(stats,residuals)
-importFrom(stats,runif)
-importFrom(stats,sd)
-importFrom(stats,setNames)
-importFrom(stats,terms)
-importFrom(stats,update)
-importFrom(stats,var)
+importFrom(stats,
+  .checkMFClasses,
+  coef,
+  cor,
+  delete.response,
+  drop.terms,
+  fitted,
+  formula,
+  makepredictcall,
+  median,
+  model.frame,
+  model.matrix,
+  model.response,
+  na.omit,
+  na.pass,
+  napredict,
+  optimize,
+  predict,
+  printCoefmat,
+  pt,
+  residuals,
+  runif,
+  sd,
+  setNames,
+  terms,
+  update,
+  var
+)
 importFrom(utils,combn)

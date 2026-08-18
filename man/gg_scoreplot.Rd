@@ -3,11 +3,19 @@
 \name{gg_scoreplot}
 \alias{gg_scoreplot}
 \alias{gg_scoreplot.mvr}
-\title{\pkg{ggiraph} plot, and the selected sample IDs are returned.}
+\title{ggplot-based Score Plot for mvr Models}
 \usage{
 gg_scoreplot(object, ...)
 
-\method{gg_scoreplot}{mvr}(object, comps = 1:2, estimate, newdata, select = FALSE, ...)
+\method{gg_scoreplot}{mvr}(
+  object,
+  comps = 1:2,
+  estimate,
+  newdata,
+  select = FALSE,
+  plotly = FALSE,
+  ...
+)
 }
 \arguments{
 \item{object}{model object.}
@@ -24,13 +32,18 @@ plot.}
 
 \item{select}{logical. If \code{TRUE}, launch an interactive selection app
 and return selected IDs.}
+
+\item{plotly}{logical. If \code{TRUE}, use \pkg{plotly} output. With
+\code{select = TRUE}, a Shiny app is launched and selected IDs are
+returned from Plotly lasso/box selection.}
 }
 \value{
-For \code{select = FALSE}, a \code{ggplot} object. For
-\code{select = TRUE}, a character vector with selected sample IDs.
+For \code{select = FALSE}, a \code{ggplot} object (or a
+  \code{plotly} object when \code{plotly = TRUE}). For
+  \code{select = TRUE}, a character vector with selected sample IDs.
 }
 \description{
-\pkg{ggiraph} plot, and the selected sample IDs are returned.
+Create a score plot from an \code{mvr} model using \code{ggplot2}.
 }
 \examples{
 data(yarn)
@@ -41,12 +54,11 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
   print(p)
 }
 
-\dontrun{ # Requires interactive session
+\dontrun{ # Requires an interactive session
 if (requireNamespace("ggplot2", quietly = TRUE) &&
     requireNamespace("ggiraph", quietly = TRUE) &&
     requireNamespace("shiny", quietly = TRUE)) {
   selected_ids <- gg_scoreplot(mod, select = TRUE)
   refit_mod <- refit(mod, selection = selected_ids, exclude = TRUE)
-}
-}
+}}
 }

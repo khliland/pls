@@ -21,6 +21,7 @@ gg_predplot(object, ...)
   xlab = "measured",
   ylab = "predicted",
   main = NULL,
+  plotly = FALSE,
   ...
 )
 }
@@ -48,6 +49,8 @@ row names are used; if \code{"numbers"}, row numbers are used.}
 \item{xlab, ylab}{axis labels.}
 
 \item{main}{optional plot title.}
+
+\item{plotly}{logical. If \code{TRUE}, use \pkg{plotly} output.}
 }
 \value{
 A \code{ggplot} object.

@@ -5,8 +5,10 @@ author:
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{pls-tidyverse}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -55,12 +57,14 @@ glance(mod)
 
 ```{r augment-train}
 aug_train <- augment(mod)
-head(aug_train)
+# Skip NIR from print for compactness
+head(aug_train[, c("density", ".fitted_density", ".resid_density")])
 ```
 
 ```{r augment-newdata}
 aug_new <- augment(mod, data = d[1:5, , drop = FALSE])
-head(aug_new)
+# Skip NIR from print for compactness
+aug_new[, c("density", "train", ".fitted_density")]
 ```
 
 # Optional ggplot workflow
@@ -68,12 +72,30 @@ head(aug_new)
 If **ggplot2** is installed, the same model can be plotted through
 `autoplot()` or the dedicated ggplot helpers.
 
-```{r ggplot-workflow, eval=FALSE}
+```{r ggplot-workflow, eval=TRUE}
+gg_scoreplot(mod)
 gg_loadingplot(mod, scatter = TRUE)
 gg_loadingplot(mod)
+gg_biplot(mod)
 gg_predplot(mod, ncomp = 1:2)
 gg_corrplot(mod)
 gg_coefplot(mod, ncomp = 1:2)
+gg_valplot(mod, val.type = "R2", estimate = c("train", "CV"))
+```
+
+```{r ggplot-dashboard, eval=TRUE}
+# Static dashboard (draws in interactive sessions, returns a gtable invisibly)
+gg_dashboard(
+  mod,
+  panel_args = list(prediction = list(ncomp = 2))
+)
+
+# Plotly dashboard with independent panel widgets
+gg_dashboard(
+  mod,
+  plotly = TRUE,
+  panel_args = list(prediction = list(ncomp = 2))
+)
 ```
 
 ```{r optional-ggplot, eval=FALSE}
@@ -83,6 +105,7 @@ autoplot(mod, type = "biplot")
 autoplot(mod, type = "prediction")
 autoplot(mod, type = "correlation")
 autoplot(mod, type = "coefficients")
+autoplot(mod, type = "validation", val.type = "R2", estimate = c("train", "CV"))
 ```
 
 # Optional interactive selection and refit

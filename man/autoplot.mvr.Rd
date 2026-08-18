@@ -6,7 +6,8 @@
 \usage{
 \method{autoplot}{mvr}(
   object,
-  type = c("scores", "loadings", "biplot", "prediction", "correlation", "coefficients"),
+  type = c("scores", "loadings", "biplot", "prediction", "correlation", "coefficients",
+    "validation"),
   ...
 )
 }
@@ -15,7 +16,7 @@
 
 \item{type}{plot type. One of \code{"scores"}, \code{"loadings"},
 \code{"biplot"}, \code{"prediction"}, \code{"correlation"} or
-\code{"coefficients"}.}
+\code{"coefficients"}, \code{"validation"}.}
 
 \item{...}{further arguments passed to the selected plotting function.}
 }
@@ -28,7 +29,7 @@ A \code{ggplot} object.
 }
 \examples{
 data(yarn)
-mod <- plsr(density ~ NIR, ncomp = 6, data = yarn)
+mod <- plsr(density ~ NIR, ncomp = 6, data = yarn, validation = "CV")
 if (requireNamespace("ggplot2", quietly = TRUE)) {
   autoplot(mod, type = "scores")
   autoplot(mod, type = "loadings")
@@ -36,5 +37,6 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
   autoplot(mod, type = "prediction")
   autoplot(mod, type = "correlation")
   autoplot(mod, type = "coefficients")
+  autoplot(mod, type = "validation", val.type = "RMSEP", estimate = "CV")
 }
 }

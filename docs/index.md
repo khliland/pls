@@ -29,7 +29,7 @@ and
 Documentation is also avaiable as a GitHub page at
 <https://khliland.github.io/pls/>.
 
-### Lightweight tidy examples
+### tidy examples
 
 ``` r
 
@@ -66,6 +66,7 @@ d <- yarn[1:20, , drop = FALSE]
 mod <- plsr(density ~ NIR, ncomp = 2, data = d, validation = "CV")
 
 if (requireNamespace("ggplot2", quietly = TRUE)) {
+    gg_scoreplot(mod)
     gg_loadingplot(mod, scatter = TRUE)
     gg_loadingplot(mod)
     gg_predplot(mod, ncomp = 1:2)
@@ -88,7 +89,9 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
   [`gg_predplot()`](https://khliland.github.io/pls/reference/gg_predplot.md),
   [`gg_corrplot()`](https://khliland.github.io/pls/reference/gg_corrplot.md),
   [`gg_coefplot()`](https://khliland.github.io/pls/reference/gg_coefplot.md),
+  [`gg_valplot()`](https://khliland.github.io/pls/reference/gg_valplot.md),
   [`autoplot.mvr()`](https://khliland.github.io/pls/reference/autoplot.mvr.md),
+  [`gg_dashboard()`](https://khliland.github.io/pls/reference/gg_dashboard.md),
   and interactive data selection with
   [`refit.mvr()`](https://khliland.github.io/pls/reference/refit.md).
 - 2.9-0: Added

@@ -1,6 +1,7 @@
 url: https://khliland.github.io/pls/
 template:
   bootstrap: 5
+  math-rendering: mathjax
 reference:
   - title: "Model fitting"
     desc: Functions for fitting PLSR and PCR models.
@@ -36,8 +37,10 @@ reference:
       - gg_biplot
       - gg_predplot
       - gg_coefplot
+      - gg_valplot
       - autoplot
       - autoplot.mvr
+      - gg_dashboard
       - refit
   - title: "Extraction methods"
     desc: Functions for extracting information from fitted models.

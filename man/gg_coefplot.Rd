@@ -19,6 +19,8 @@ gg_coefplot(object, ...)
   xlab = "variable",
   ylab = "regression coefficient",
   main = NULL,
+  response = NULL,
+  plotly = FALSE,
   ...
 )
 }
@@ -48,6 +50,11 @@ dense spectral plots.}
 \item{xlab, ylab}{axis labels.}
 
 \item{main}{optional title.}
+
+\item{response}{optional response to plot. If \code{NULL}, all responses
+are shown. If specified, only that response is plotted.}
+
+\item{plotly}{logical. If \code{TRUE}, use \pkg{plotly} output.}
 }
 \value{
 A \code{ggplot} object.

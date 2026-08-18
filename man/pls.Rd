@@ -23,6 +23,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Kristian Hovde Liland \email{kristian.liland@nmbu.no}
   \item Bjørn-Helge Mevik \email{b-h@mevik.net}
   \item Ron Wehrens
 }

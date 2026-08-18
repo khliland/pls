@@ -1,87 +1,13 @@
 ### gg_plots.R: ggplot-based score plots, loading plots, biplots and autoplot for mvr models
 
-#' @title ggplot-based Score Plot for mvr Models
+#' ggplot-based Score Plot for mvr Models
 #'
-#' @description
-#' Create a score plot from an \code{mvr} model using \pkg{ggplot2}. When
-#' \code{select = TRUE}, a local Shiny app is launched with a selectable
-
-#' @noRd
-.resolve_gg_point_labels <- function(labels, default_names) {
-  if (isTRUE(labels))
-    labels <- "names"
-  if (identical(labels, FALSE) || is.null(labels))
-    return(NULL)
-  if (length(labels) == 1) {
-    labels <- switch(match.arg(labels, c("names", "numbers")),
-                     names = default_names,
-                     numbers = as.character(seq_along(default_names)))
-  }
-  as.character(labels)
-}
-.data = NULL
-
-#' @noRd
-.resolve_gg_axis_labels <- function(labels, default_names, pretty.xlabels = TRUE) {
-  # Define the default numerical axis (1, 2, 3...)
-  xnum <- seq_along(default_names)
-
-  # Determine what text vector we should draw from based on the 'labels' argument
-  if (identical(labels, FALSE) || is.null(labels)) {
-    # Default behavior: Use the indices as character labels
-    actual_labels <- as.character(xnum)
-  } else if (length(labels) == 1) {
-    # Match against the specified keywords
-    chosen <- match.arg(labels, c("names", "numbers"))
-
-    if (chosen == "names") {
-      actual_labels <- default_names
-    } else if (chosen == "numbers") {
-      parsed <- as.numeric(gsub("[^0-9.]", "", default_names))
-      if (any(is.na(parsed))) {
-        stop("Could not convert variable names to clean numbers.")
-      }
-      # Crucial: If we successfully parse clean numbers (e.g., wavelengths),
-      # the continuous axis itself should use these actual values as coordinates.
-      xnum <- parsed
-      actual_labels <- as.character(xnum)
-    }
-  } else {
-    # User supplied a custom vector of labels
-    actual_labels <- if (length(labels) == length(default_names)) labels else default_names
-  }
-
-  # Generate scale specification
-  if (isTRUE(pretty.xlabels)) {
-    # 1. Let R calculate a clean set of numeric breaks based on our axis range
-    my_breaks <- pretty(xnum)
-
-    # 2. Filter out breaks that fall outside our actual data range
-    my_breaks <- my_breaks[my_breaks >= min(xnum) & my_breaks <= max(xnum)]
-
-    # 3. Find the closest actual indices in xnum for these pretty breaks
-    idx <- sapply(my_breaks, function(b) which.min(abs(xnum - b)))
-
-    # 4. Extract the corresponding text labels
-    my_labels <- actual_labels[idx]
-
-    # 5. Supply BOTH explicit breaks and matching labels to ggplot2
-    scale_spec <- ggplot2::scale_x_continuous(breaks = my_breaks, labels = my_labels)
-
-  } else {
-    # If pretty is FALSE, map every single variable
-    scale_spec <- ggplot2::scale_x_continuous(breaks = xnum, labels = actual_labels)
-  }
-
-  list(xnum = xnum, scale_spec = scale_spec)
-}
-
-#' \pkg{ggiraph} plot, and the selected sample IDs are returned.
-#'
+#' @description Create a score plot from an \code{mvr} model using \code{ggplot2}.
 #' @param object model object.
 #' @param ... further arguments passed to methods.
-#' @return For \code{select = FALSE}, a \code{ggplot} object. For
-#' \code{select = TRUE}, a character vector with selected sample IDs.
+#' @return For \code{select = FALSE}, a \code{ggplot} object (or a
+#'   \code{plotly} object when \code{plotly = TRUE}). For
+#'   \code{select = TRUE}, a character vector with selected sample IDs.
 #' @export
 gg_scoreplot <- function(object, ...) UseMethod("gg_scoreplot")
 
@@ -94,6 +20,9 @@ gg_scoreplot <- function(object, ...) UseMethod("gg_scoreplot")
 #' \code{estimate = "test"}.
 #' @param select logical. If \code{TRUE}, launch an interactive selection app
 #' and return selected IDs.
+#' @param plotly logical. If \code{TRUE}, use \pkg{plotly} output. With
+#'   \code{select = TRUE}, a Shiny app is launched and selected IDs are
+#'   returned from Plotly lasso/box selection.
 #' @examples
 #' data(yarn)
 #' mod <- plsr(density ~ NIR, ncomp = 6, data = yarn)
@@ -103,19 +32,21 @@ gg_scoreplot <- function(object, ...) UseMethod("gg_scoreplot")
 #'   print(p)
 #' }
 #'
-#' \dontrun{ # Requires interactive session
+#' \dontrun{ # Requires an interactive session
 #' if (requireNamespace("ggplot2", quietly = TRUE) &&
 #'     requireNamespace("ggiraph", quietly = TRUE) &&
 #'     requireNamespace("shiny", quietly = TRUE)) {
 #'   selected_ids <- gg_scoreplot(mod, select = TRUE)
 #'   refit_mod <- refit(mod, selection = selected_ids, exclude = TRUE)
-#' }
-#' }
+#' }}
 #' @export
 gg_scoreplot.mvr <- function(object, comps = 1:2, estimate, newdata,
-                             select = FALSE, ...) {
+                             select = FALSE, plotly = FALSE, ...) {
   if (length(comps) != 2)
     stop("`comps` must contain exactly two components.")
+
+  if (!is.logical(plotly) || length(plotly) != 1 || is.na(plotly))
+    stop("`plotly` must be a single non-missing logical value.")
 
   score_args <- list(object)
   if (!missing(estimate)) score_args$estimate <- estimate
@@ -139,12 +70,66 @@ gg_scoreplot.mvr <- function(object, comps = 1:2, estimate, newdata,
   if (!requireNamespace("rlang", quietly = TRUE))
     stop("Package 'rlang' is required for gg_scoreplot().")
 
-  if (!isTRUE(select)) {
-    return(
-      ggplot2::ggplot(score_df, ggplot2::aes(x = .data$x, y = .data$y)) +
-        ggplot2::geom_point(...) +
-        ggplot2::labs(x = xlab, y = ylab)
+  base_plot <-
+    ggplot2::ggplot(score_df, ggplot2::aes(x = .data$x, y = .data$y)) +
+    ggplot2::geom_point(...) +
+    ggplot2::labs(x = xlab, y = ylab)
+
+  if (isTRUE(plotly)) {
+    if (!requireNamespace("plotly", quietly = TRUE))
+      stop("Package 'plotly' is required when plotly = TRUE.")
+
+    if (!isTRUE(select)) {
+      return(plotly::ggplotly(base_plot))
+    }
+
+    if (!requireNamespace("shiny", quietly = TRUE))
+      stop("Package 'shiny' is required when select = TRUE.")
+
+    app <- shiny::shinyApp(
+      ui = shiny::fluidPage(
+        shiny::h4("Select samples and click Done"),
+        shiny::actionButton("done", "Done"),
+        plotly::plotlyOutput("score_plot", width = "100%", height = "700px"),
+        shiny::p("Use box or lasso select. Closing the app window also returns the current selection.")
+      ),
+      server = function(input, output, session) {
+        selected_ids <- character(0)
+        app_done <- FALSE
+
+        output$score_plot <- plotly::renderPlotly({
+          plotly::ggplotly(base_plot, source = "score_plot")
+        })
+
+        shiny::observeEvent(plotly::event_data("plotly_selected", source = "score_plot"), {
+          sel <- plotly::event_data("plotly_selected", source = "score_plot")
+          if (is.null(sel) || !NROW(sel) || is.null(sel$pointNumber)) {
+            selected_ids <<- character(0)
+          } else {
+            idx <- unique(as.integer(sel$pointNumber) + 1L)
+            idx <- idx[is.finite(idx) & idx >= 1L & idx <= nrow(score_df)]
+            selected_ids <<- as.character(score_df$sample_id[idx])
+          }
+        }, ignoreNULL = FALSE)
+
+        shiny::observeEvent(input$done, {
+          app_done <<- TRUE
+          shiny::stopApp(selected_ids)
+        })
+
+        session$onSessionEnded(function() {
+          if (!isTRUE(app_done)) {
+            shiny::stopApp(selected_ids)
+          }
+        })
+      }
     )
+
+    return(shiny::runApp(app))
+  }
+
+  if (!isTRUE(select)) {
+    return(base_plot)
   }
 
   if (!requireNamespace("ggiraph", quietly = TRUE))
@@ -233,9 +218,11 @@ gg_loadingplot <- function(object, ...) UseMethod("gg_loadingplot")
 #'   labels. In line mode, labels are used as x-axis labels.
 #' @param pretty.xlabels logical. If \code{TRUE}, line-plot x-axis labels are
 #'   thinned when possible.
+#' @param plotly logical. If \code{TRUE}, use \pkg{plotly} output.
 #' @export
 gg_loadingplot.mvr <- function(object, comps = 1:2, scatter = FALSE,
-                               labels = FALSE, pretty.xlabels = TRUE, ...) {
+                               labels = FALSE, pretty.xlabels = TRUE,
+                               plotly = FALSE, ...) {
   if (length(comps) != 2)
     stop("`comps` must contain exactly two components.")
 
@@ -297,6 +284,11 @@ gg_loadingplot.mvr <- function(object, comps = 1:2, scatter = FALSE,
       axis_labels$scale_spec
   }
 
+  if(isTRUE(plotly)) {
+    if (!requireNamespace("plotly", quietly = TRUE))
+      stop("Package 'plotly' is required when plotly = TRUE.")
+    p <- plotly::ggplotly(p)
+  }
   p
 }
 
@@ -328,9 +320,11 @@ gg_biplot <- function(object, ...) UseMethod("gg_biplot")
 #' @param arrows logical. If \code{TRUE}, draw loadings as arrows. Defaults to
 #' \code{FALSE}.
 #' @param loading.scale numeric scaling factor for loadings.
+#' @param plotly logical. If \code{TRUE}, use \pkg{plotly} output.
 #' @export
 gg_biplot.mvr <- function(object, comps = 1:2, labels = FALSE,
-                          arrows = FALSE, loading.scale = 0.8, ...) {
+                          arrows = FALSE, loading.scale = 0.8,
+                          plotly = FALSE, ...) {
   if (length(comps) != 2)
     stop("`comps` must contain exactly two components.")
 
@@ -400,6 +394,11 @@ gg_biplot.mvr <- function(object, comps = 1:2, labels = FALSE,
     )
   }
 
+  if(isTRUE(plotly)) {
+    if (!requireNamespace("plotly", quietly = TRUE))
+      stop("Package 'plotly' is required when plotly = TRUE.")
+    p <- plotly::ggplotly(p)
+  }
   p
 }
 
@@ -435,12 +434,13 @@ gg_predplot <- function(object, ...) UseMethod("gg_predplot")
 #' @param line.col,line.lty,line.lwd graphical settings for the reference line.
 #' @param xlab,ylab axis labels.
 #' @param main optional plot title.
+#' @param plotly logical. If \code{TRUE}, use \pkg{plotly} output.
 #' @export
 gg_predplot.mvr <- function(object, ncomp = 1:object$ncomp, which, newdata,
                             labels = FALSE, type = "p", line = TRUE,
                             line.col = "grey50", line.lty = 2,
                             line.lwd = 0.5, xlab = "measured",
-                            ylab = "predicted", main = NULL, ...) {
+                            ylab = "predicted", main = NULL, plotly = FALSE, ...) {
   if (missing(which)) {
     if (!missing(newdata)) {
       which <- "test"
@@ -538,6 +538,11 @@ gg_predplot.mvr <- function(object, ncomp = 1:object$ncomp, which, newdata,
                                   colour = line.col, linetype = line.lty,
                                   linewidth = line.lwd)
   }
+  if(isTRUE(plotly)){
+    if (!requireNamespace("plotly", quietly = TRUE))
+      stop("Package 'plotly' is required when plotly = TRUE.")
+    p <- plotly::ggplotly(p)
+  }
   p
 }
 
@@ -574,11 +579,12 @@ gg_corrplot <- function(object, ...) UseMethod("gg_corrplot")
 #' @param main optional title.
 #' @importFrom utils combn
 #' @importFrom stats setNames
+#' @param plotly logical. If \code{TRUE}, use \pkg{plotly} output.
 #' @export
 gg_corrplot.mvr <- function(object, comps = 1:2, labels = FALSE,
                             plotx = TRUE, ploty = FALSE,
                             radii = c(sqrt(1 / 2), 1),
-                            xlab, ylab, main = NULL, ...) {
+                            xlab, ylab, main = NULL, plotly = FALSE, ...) {
   if (length(comps) < 2)
     stop("At least two components must be selected.")
 
@@ -660,8 +666,12 @@ gg_corrplot.mvr <- function(object, comps = 1:2, labels = FALSE,
     ggplot2::geom_vline(xintercept = 0, colour = "grey70") +
     ggplot2::geom_point(...) +
     ggplot2::facet_wrap(~ panel) +
-    ggplot2::coord_equal(xlim = c(-1, 1), ylim = c(-1, 1)) +
+    ggplot2::coord_cartesian(xlim = c(-1, 1), ylim = c(-1, 1)) +
     ggplot2::labs(x = xlab, y = ylab, title = main, colour = NULL)
+  # ggplotly-friendly aspect ratio
+  custom_coord <- ggplot2::coord_cartesian(xlim = c(-1, 1), ylim = c(-1, 1))
+  custom_coord$aspect <- function(details) { 1 }
+  p$coordinates <- custom_coord
 
   if (!is.null(plot_df$label))
     p <- p + ggplot2::geom_text(ggplot2::aes(label = .data$label), vjust = -0.6,
@@ -674,7 +684,14 @@ gg_corrplot.mvr <- function(object, comps = 1:2, labels = FALSE,
                                 linewidth = 0.3)
   }
 
-  p + ggplot2::scale_colour_manual(values = c(X = "steelblue", Y = "firebrick"))
+  p <- p + ggplot2::scale_colour_manual(values = c(X = "steelblue", Y = "firebrick"))
+
+  if (isTRUE(plotly)) {
+    if (!requireNamespace("plotly", quietly = TRUE))
+      stop("Package 'plotly' is required when plotly = TRUE.")
+    p <- plotly::ggplotly(p)
+  }
+  p
 }
 
 
@@ -711,12 +728,16 @@ gg_coefplot <- function(object, ...) UseMethod("gg_coefplot")
 #'   dense spectral plots.
 #' @param xlab,ylab axis labels.
 #' @param main optional title.
+#' @param response optional response to plot. If \code{NULL}, all responses
+#'   are shown. If specified, only that response is plotted.
+#' @param plotly logical. If \code{TRUE}, use \pkg{plotly} output.
 #' @export
 gg_coefplot.mvr <- function(object, ncomp = object$ncomp, comps,
                             intercept = FALSE, separate = FALSE,
                             se.whiskers = FALSE, labels = FALSE,
                             pretty.xlabels = TRUE, xlab = "variable",
-                            ylab = "regression coefficient", main = NULL, ...) {
+                            ylab = "regression coefficient", main = NULL,
+                            response = NULL, plotly = FALSE, ...) {
   if (missing(comps)) comps <- NULL
   separate <- isTRUE(separate)
   se.whiskers <- isTRUE(se.whiskers)
@@ -727,6 +748,21 @@ gg_coefplot.mvr <- function(object, ncomp = object$ncomp, comps,
     stop("Package 'rlang' is required for gg_coefplot().")
 
   coefs <- coef(object, ncomp = ncomp, comps = comps, intercept = intercept)
+  if (!is.null(response)) {
+    response_names <- dimnames(coefs)[[2]]
+    if (length(response) != 1L)
+      stop("`response` must be a single response name or index.")
+    if (is.numeric(response)) {
+      response <- as.integer(response)
+      if (is.na(response) || response < 1L || response > length(response_names))
+        stop("`response` is out of range.")
+    } else {
+      response <- match(response, response_names)
+      if (is.na(response))
+        stop("`response` was not found in the model response names.")
+    }
+    coefs <- coefs[, response, , drop = FALSE]
+  }
   complabs <- dimnames(coefs)[[3]]
   predlab <- dimnames(coefs)[[1]]
   respnames_vec <- dimnames(coefs)[[2]]
@@ -791,6 +827,91 @@ gg_coefplot.mvr <- function(object, ncomp = object$ncomp, comps,
   }
 
   p <- p + labels_info$scale_spec
+  if(isTRUE(plotly)){
+    if (!requireNamespace("plotly", quietly = TRUE))
+      stop("Package 'plotly' is required when plotly = TRUE.")
+    p <- plotly::ggplotly(p)
+  }
+  p
+}
+
+
+#' @title ggplot-based Validation Plot for mvr Models
+#'
+#' @description
+#' Create a validation-statistic plot from an \code{mvr} model or an
+#' \code{mvrVal} object using \pkg{ggplot2}.
+#'
+#' @param object model object.
+#' @param ... further arguments passed to methods.
+#' @return A \code{ggplot} object.
+#' @export
+#'
+#' @examples
+#' data(yarn)
+#' mod <- plsr(density ~ NIR, ncomp = 6, data = yarn, validation = "CV")
+#' if (requireNamespace("ggplot2", quietly = TRUE)) {
+#'   gg_valplot(mod, val.type = "RMSEP", estimate = c("train", "CV"))
+#' }
+gg_valplot <- function(object, ...) UseMethod("gg_valplot")
+
+
+#' @rdname gg_valplot
+#' @param val.type character. Validation metric to plot. One of
+#'   \code{"RMSEP"}, \code{"MSEP"} or \code{"R2"}.
+#' @param estimate optional character vector of estimators passed to
+#'   \code{RMSEP()}, \code{MSEP()} or \code{R2()}.
+#' @param newdata optional data frame used for test-set validation estimates.
+#' @param ncomp,comps model size specification passed to validation metrics.
+#' @param intercept logical. Whether to include zero-component model in
+#'   validation metrics.
+#' @param xlab,ylab axis labels.
+#' @param main optional title.
+#' @export
+gg_valplot.mvr <- function(object, val.type = c("RMSEP", "MSEP", "R2"),
+                           estimate, newdata, ncomp, comps, intercept,
+                           xlab = "number of components", ylab, main = NULL,
+                           ...) {
+  val.type <- match.arg(val.type)
+
+  metric_call <- list(as.name(val.type), object = object)
+  if (!missing(estimate)) metric_call$estimate <- estimate
+  if (!missing(newdata)) metric_call$newdata <- newdata
+  if (!missing(ncomp)) metric_call$ncomp <- ncomp
+  if (!missing(comps)) metric_call$comps <- comps
+  if (!missing(intercept)) metric_call$intercept <- intercept
+
+  val_obj <- eval(as.call(metric_call), parent.frame())
+
+  gg_valplot(val_obj, xlab = xlab, ylab = ylab, main = main, ...)
+}
+
+
+#' @rdname gg_valplot
+#' @export
+gg_valplot.mvrVal <- function(object, xlab = "number of components", ylab,
+                              main = NULL, ...) {
+  if (!requireNamespace("ggplot2", quietly = TRUE))
+    stop("Package 'ggplot2' is required for gg_valplot().")
+  if (!requireNamespace("rlang", quietly = TRUE))
+    stop("Package 'rlang' is required for gg_valplot().")
+
+  if (missing(ylab)) ylab <- object$type
+
+  plot_df <- tidy(object)
+  plot_df$estimate <- factor(plot_df$estimate, levels = unique(plot_df$estimate))
+
+  p <- ggplot2::ggplot(plot_df,
+                       ggplot2::aes(x = .data$component, y = .data$value,
+                                    colour = .data$estimate,
+                                    group = .data$estimate)) +
+    ggplot2::geom_line(...) +
+    ggplot2::labs(x = xlab, y = ylab, title = main, colour = "Estimate")
+
+  if (length(unique(plot_df$response)) > 1L) {
+    p <- p + ggplot2::facet_wrap(~ response, scales = "free_y")
+  }
+
   p
 }
 
@@ -834,14 +955,14 @@ autoplot <- function(object, ...) {
 #' @param object an \code{mvr} object.
 #' @param type plot type. One of \code{"scores"}, \code{"loadings"},
 #'   \code{"biplot"}, \code{"prediction"}, \code{"correlation"} or
-#'   \code{"coefficients"}.
+#'   \code{"coefficients"}, \code{"validation"}.
 #' @param ... further arguments passed to the selected plotting function.
 #' @return A \code{ggplot} object.
 #' @exportS3Method ggplot2::autoplot
 #'
 #' @examples
 #' data(yarn)
-#' mod <- plsr(density ~ NIR, ncomp = 6, data = yarn)
+#' mod <- plsr(density ~ NIR, ncomp = 6, data = yarn, validation = "CV")
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
 #'   autoplot(mod, type = "scores")
 #'   autoplot(mod, type = "loadings")
@@ -849,10 +970,11 @@ autoplot <- function(object, ...) {
 #'   autoplot(mod, type = "prediction")
 #'   autoplot(mod, type = "correlation")
 #'   autoplot(mod, type = "coefficients")
+#'   autoplot(mod, type = "validation", val.type = "RMSEP", estimate = "CV")
 #' }
 autoplot.mvr <- function(object, type = c("scores", "loadings", "biplot",
                                           "prediction", "correlation",
-                                          "coefficients"), ...) {
+            "coefficients", "validation"), ...) {
   type <- match.arg(type)
   switch(type,
          scores = gg_scoreplot(object, ...),
@@ -860,5 +982,259 @@ autoplot.mvr <- function(object, type = c("scores", "loadings", "biplot",
          biplot = gg_biplot(object, ...),
          prediction = gg_predplot(object, ...),
          correlation = gg_corrplot(object, ...),
-         coefficients = gg_coefplot(object, ...))
+    coefficients = gg_coefplot(object, ...),
+    validation = gg_valplot(object, ...))
+}
+
+#' @title ggplot-based Score Plot for mvr Models
+#'
+#' @description
+#' Create a score plot from an \code{mvr} model using \pkg{ggplot2}. When
+#' \code{select = TRUE}, a local Shiny app is launched with a selectable
+
+#' @noRd
+.resolve_gg_point_labels <- function(labels, default_names) {
+  if (isTRUE(labels))
+    labels <- "names"
+  if (identical(labels, FALSE) || is.null(labels))
+    return(NULL)
+  if (length(labels) == 1) {
+    labels <- switch(match.arg(labels, c("names", "numbers")),
+                     names = default_names,
+                     numbers = as.character(seq_along(default_names)))
+  }
+  as.character(labels)
+}
+.data = NULL
+
+#' @title ggplot-based Dashboard for mvr Models
+#'
+#' @description
+#' Create a multi-panel dashboard from existing ggplot-based model views.
+#' The default dashboard uses score, loading, validation (R2), and prediction
+#' panels. Alternative panels can be selected with \code{panels}.
+#'
+#' @param object an \code{mvr} object.
+#' @param panels character vector of panel names. Supported panels are
+#'   \code{"score"}, \code{"loading"}, \code{"validation"},
+#'   \code{"prediction"}, \code{"biplot"}, \code{"corr"} and
+#'   \code{"coef"}.
+#' @param plotly logical. If \code{TRUE}, return an HTML dashboard containing
+#'   independent Plotly widgets. If \code{FALSE}, return a static dashboard
+#'   composed with gridExtra.
+#' @param panel_args named list of named lists. Each element provides
+#'   arguments passed to the corresponding panel function.
+#' @param height positive numeric height in pixels for each Plotly panel.
+#' @return A composed dashboard object. In static mode, a \code{gtable}
+#'   (drawn automatically in interactive sessions, returned invisibly); in
+#'   plotly mode, an \code{htmltools} HTML container.
+#' @examples
+#' data(yarn)
+#' mod <- plsr(density ~ NIR, ncomp = 6, data = yarn, validation = "CV")
+#'
+#' if (requireNamespace("ggplot2", quietly = TRUE) &&
+#'     requireNamespace("gridExtra", quietly = TRUE)) {
+#'   gg_dashboard(mod, panel_args = list(prediction = list(ncomp = 3)))
+#' }
+#'
+#' if (requireNamespace("ggplot2", quietly = TRUE) &&
+#'     requireNamespace("plotly", quietly = TRUE)) {
+#'   gg_dashboard(mod, plotly = TRUE)
+#' }
+#' @export
+gg_dashboard <- function(object,
+                         panels = c("scores", "loadings", "prediction", "validation"),
+                         plotly = FALSE,
+                         panel_args = list(),
+                         height = 300) {
+  if (!inherits(object, "mvr"))
+    stop("`object` must be an mvr model.")
+
+  if (!is.logical(plotly) || length(plotly) != 1L || is.na(plotly))
+    stop("`plotly` must be a single non-missing logical value.")
+
+  if (!is.numeric(height) || length(height) != 1L ||
+      !is.finite(height) || height <= 0)
+    stop("`height` must be a single positive finite number.")
+
+  panels <- as.character(panels)
+  if (!length(panels))
+    stop("`panels` must contain at least one panel name.")
+  if (anyDuplicated(panels))
+    stop("`panels` must not contain duplicates.")
+
+  supported_panels <- c("scores", "loadings", "validation", "prediction",
+                        "biplot", "corr", "coef")
+  unknown_panels <- setdiff(panels, supported_panels)
+  if (length(unknown_panels))
+    stop("Unknown dashboard panel(s): ", paste(unknown_panels, collapse = ", "))
+
+  if (!is.list(panel_args))
+    stop("`panel_args` must be a named list.")
+  if (length(panel_args) && is.null(names(panel_args)))
+    stop("`panel_args` must be a named list.")
+
+  unknown_args <- setdiff(names(panel_args), supported_panels)
+  if (length(unknown_args))
+    stop("Unknown panel_args entry(ies): ", paste(unknown_args, collapse = ", "))
+
+  prediction_ncomp <- if (is.null(object$validation)) {
+    warning("No validation data available; using 1 component for the prediction panel.")
+    1L
+  } else {
+    rmsep <- RMSEP(object, estimate = "CV")
+    estimate_index <- match("CV", dimnames(rmsep$val)[[1]])
+    if (is.na(estimate_index)) {
+      warning("Could not determine a CV RMSEP minimum; using 1 component for the prediction panel.")
+      1L
+    } else {
+      mean_rmsep <- apply(rmsep$val[estimate_index, , , drop = FALSE], 3, mean)
+      comps <- rmsep$comps
+      positive <- comps > 0
+      if (!any(positive)) {
+        warning("Could not determine a positive CV RMSEP component; using 1 component for the prediction panel.")
+        1L
+      } else {
+        as.integer(comps[positive][which.min(mean_rmsep[positive])][1])
+      }
+    }
+  }
+
+  response_names <- respnames(object)
+  coef_response <- if (length(response_names) <= 1L) NULL else response_names[1]
+  validation_estimate <- if (is.null(object$validation)) "train" else c("train", "CV")
+
+  panel_plots <- lapply(panels, function(panel) {
+    defaults <- switch(
+      panel,
+      scores = list(comps = 1:2),
+      loadings = list(comps = 1:2),
+      validation = list(val.type = "R2", estimate = validation_estimate),
+      prediction = list(ncomp = prediction_ncomp),
+      biplot = list(comps = 1:2),
+      corr = list(comps = 1:2),
+      coef = list(response = coef_response),
+      stop("Unknown dashboard panel: ", panel)
+    )
+
+    panel_override <- panel_args[[panel]]
+    if (is.null(panel_override)) {
+      panel_override <- list()
+    }
+
+    args <- modifyList(defaults, panel_override, keep.null = TRUE)
+    if (panel == "scores") {
+      args$select <- FALSE
+    }
+
+    call <- switch(
+      panel,
+      scores = gg_scoreplot,
+      loadings = gg_loadingplot,
+      validation = gg_valplot,
+      prediction = gg_predplot,
+      biplot = gg_biplot,
+      corr = gg_corrplot,
+      coef = gg_coefplot
+    )
+
+    plot <- do.call(call, c(list(object = object), args))
+    plot + ggplot2::labs(title = panel)
+  })
+
+  if (isTRUE(plotly)) {
+    if (!requireNamespace("plotly", quietly = TRUE))
+      stop("Package 'plotly' is required when plotly = TRUE.")
+    if (!requireNamespace("htmltools", quietly = TRUE))
+      stop("Package 'htmltools' is required when plotly = TRUE.")
+
+    widgets <- lapply(panel_plots, function(panel_plot) {
+      plotly::ggplotly(panel_plot, height = height)
+    })
+    cells <- lapply(widgets, function(widget) {
+      htmltools::tags$div(class = "pls-dashboard-panel", widget)
+    })
+    return(htmltools::browsable(htmltools::tags$div(
+      class = "pls-dashboard",
+      style = paste(
+        "display: grid;",
+        "grid-template-columns: repeat(2, minmax(0, 1fr));",
+        "gap: 1rem;",
+        "width: 100%;"
+      ),
+      do.call(htmltools::tagList, cells)
+    )))
+
+  }
+
+  if (!requireNamespace("gridExtra", quietly = TRUE))
+    stop("Package 'gridExtra' is required for the static dashboard.")
+
+  dashboard <- gridExtra::arrangeGrob(
+    grobs = panel_plots,
+    ncol = min(2L, length(panel_plots))
+  )
+
+  if (interactive()) {
+    grid::grid.newpage()
+    grid::grid.draw(dashboard)
+  }
+
+  invisible(dashboard)
+}
+
+
+#' @noRd
+.resolve_gg_axis_labels <- function(labels, default_names, pretty.xlabels = TRUE) {
+  # Define the default numerical axis (1, 2, 3...)
+  xnum <- seq_along(default_names)
+
+  # Determine what text vector we should draw from based on the 'labels' argument
+  if (identical(labels, FALSE) || is.null(labels)) {
+    # Default behavior: Use the indices as character labels
+    actual_labels <- as.character(xnum)
+  } else if (length(labels) == 1) {
+    # Match against the specified keywords
+    chosen <- match.arg(labels, c("names", "numbers"))
+
+    if (chosen == "names") {
+      actual_labels <- default_names
+    } else if (chosen == "numbers") {
+      parsed <- as.numeric(gsub("[^0-9.]", "", default_names))
+      if (any(is.na(parsed))) {
+        stop("Could not convert variable names to clean numbers.")
+      }
+      # Crucial: If we successfully parse clean numbers (e.g., wavelengths),
+      # the continuous axis itself should use these actual values as coordinates.
+      xnum <- parsed
+      actual_labels <- as.character(xnum)
+    }
+  } else {
+    # User supplied a custom vector of labels
+    actual_labels <- if (length(labels) == length(default_names)) labels else default_names
+  }
+
+  # Generate scale specification
+  if (isTRUE(pretty.xlabels)) {
+    # 1. Let R calculate a clean set of numeric breaks based on our axis range
+    my_breaks <- pretty(xnum)
+
+    # 2. Filter out breaks that fall outside our actual data range
+    my_breaks <- my_breaks[my_breaks >= min(xnum) & my_breaks <= max(xnum)]
+
+    # 3. Find the closest actual indices in xnum for these pretty breaks
+    idx <- sapply(my_breaks, function(b) which.min(abs(xnum - b)))
+
+    # 4. Extract the corresponding text labels
+    my_labels <- actual_labels[idx]
+
+    # 5. Supply BOTH explicit breaks and matching labels to ggplot2
+    scale_spec <- ggplot2::scale_x_continuous(breaks = my_breaks, labels = my_labels)
+
+  } else {
+    # If pretty is FALSE, map every single variable
+    scale_spec <- ggplot2::scale_x_continuous(breaks = xnum, labels = actual_labels)
+  }
+
+  list(xnum = xnum, scale_spec = scale_spec)
 }
