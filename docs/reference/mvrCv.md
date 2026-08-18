@@ -206,6 +206,7 @@ Ron Wehrens and Bjørn-Helge Mevik
 ## Examples
 
 ``` r
+
 data(yarn)
 yarn.pcr <- pcr(density ~ NIR, 6, data = yarn, validation = "CV", segments = 10)
 if (FALSE) plot(MSEP(yarn.pcr)) # \dontrun{}

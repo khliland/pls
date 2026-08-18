@@ -216,6 +216,7 @@ Ron Wehrens and Bjørn-Helge Mevik
 ## Examples
 
 ``` r
+
 data(yarn)
 mod.nir <- plsr(density ~ NIR, ncomp = 8, data = yarn)
 if (FALSE) { # \dontrun{

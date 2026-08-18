@@ -336,6 +336,7 @@ Ron Wehrens and Bjørn-Helge Mevik
 ## Examples
 
 ``` r
+
 data(yarn)
 ## Default methods:
 yarn.pcr <- pcr(density ~ NIR, 6, data = yarn, validation = "CV")

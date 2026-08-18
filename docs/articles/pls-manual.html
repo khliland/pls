@@ -6,9 +6,15 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Introduction to the pls Package • pls</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Introduction to the pls Package">
 </head>
@@ -135,7 +141,7 @@ there are many, possibly correlated, predictor variables, and relatively
 few samples—a situation that is common, especially in chemistry where
 developments in spectroscopy since the seventies have revolutionised
 chemical analysis. In fact, the origin of PLSR lies in chemistry (see,
-e.g., <span class="citation">(Wold 2001; H. Martens 2001)</span>). The
+e.g., <span class="citation">(Wold 2001; Martens 2001)</span>). The
 field of <em>near-infrared</em> (NIR) spectroscopy, with its highly
 overlapping lines and difficult to interpret overtones, would not have
 existed but for a method to obtain quantitative information from the
@@ -144,226 +150,138 @@ regression methods like PLSR and PCR. In medicinal chemistry, for
 example, one likes to derive molecular properties from the molecular
 structure. Most of these Quantitative Structure-Activity Relations
 (QSAR, and also Quantitative Structure-Property Relations, QSPR), and in
-particular, Comparative Molecular Field Analysis (ComFA) <span class="citation">(Cramer, Patterson, and Bunce 1988)</span>, use PLSR.
-Other applications range from statistical process control <span class="citation">(Kresta, MacGregor, and Marlin 1991)</span> to tumour
-classification <span class="citation">(Nguyen and Rocke 2002)</span> to
-spatial analysis in brain images <span class="citation">(McIntosh et al.
+particular, Comparative Molecular Field Analysis (ComFA) <span class="citation">(Cramer et al. 1988)</span>, use PLSR. Other
+applications range from statistical process control <span class="citation">(Kresta et al. 1991)</span> to tumour classification
+<span class="citation">(Nguyen and Rocke 2002)</span> to spatial
+analysis in brain images <span class="citation">(McIntosh et al.
 1996)</span> to marketing <span class="citation">(Fornell and Bookstein
 1982)</span>.</p>
 <p>In the usual multiple linear regression (MLR) context, the
 least-squares solution for</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐘</mi><mo>=</mo><mi>𝐗</mi><mi>𝐁</mi><mo>+</mo><mi>Ε</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
+<p><span class="math display">\[\begin{equation}
 \mathbf{Y} = \mathbf{X}\mathbf{B} + \Epsilon
-\end{equation}</annotation></semantics></math></p>
+\end{equation}\]</span></p>
 <p>is given by</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐁</mi><mo>=</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>𝐗</mi><mi>T</mi></msup><mi>𝐗</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>−</mi><mn>1</mn></mrow></msup><msup><mi>𝐗</mi><mi>T</mi></msup><mi>𝐘</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
+<p><span class="math display">\[\begin{equation}
 \mathbf{B} = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathbf{Y}
 \label{eq:lsq}
-\end{equation}</annotation></semantics></math></p>
-<p>The problem often is that
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>𝐗</mi><mi>T</mi></msup><mi>𝐗</mi></mrow><annotation encoding="application/x-tex">\mathbf{X}^T \mathbf{X}</annotation></semantics></math>
-is singular, either because the number of variables (columns) in
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
-exceeds the number of objects (rows), or because of collinearities. Both
-PCR and PLSR circumvent this by decomposing
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
-into orthogonal scores
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐓</mi><annotation encoding="application/x-tex">\mathbf{T}</annotation></semantics></math>
-and loadings
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐏</mi><annotation encoding="application/x-tex">\mathbf{P}</annotation></semantics></math></p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐗</mi><mo>=</mo><mi>𝐓</mi><msup><mi>𝐏</mi><mi>T</mi></msup></mrow><annotation encoding="application/x-tex">\begin{equation}
+\end{equation}\]</span></p>
+<p>The problem often is that <span class="math inline">\(\mathbf{X}^T
+\mathbf{X}\)</span> is singular, either because the number of variables
+(columns) in <span class="math inline">\(\mathbf{X}\)</span> exceeds the
+number of objects (rows), or because of collinearities. Both PCR and
+PLSR circumvent this by decomposing <span class="math inline">\(\mathbf{X}\)</span> into orthogonal scores <span class="math inline">\(\mathbf{T}\)</span> and loadings <span class="math inline">\(\mathbf{P}\)</span></p>
+<p><span class="math display">\[\begin{equation}
 \mathbf{X} = \mathbf{T} \mathbf{P}^T
-\end{equation}</annotation></semantics></math></p>
-<p>and regressing
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
-not on
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
-itself but on the first
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
-columns of the scores
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐓</mi><annotation encoding="application/x-tex">\mathbf{T}</annotation></semantics></math>.
-In PCR, the scores are given by the left singular vectors of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>,
-multiplied with the corresponding singular values, and the loadings are
-the right singular vectors of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>.
-This, however, only takes into account information about
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>,
-and therefore may be suboptimal for prediction purposes. PLSR aims to
-incorporate information on both
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
-in the definition of the scores and loadings. In fact, for one specific
-version of PLSR, called SIMPLS <span class="citation">(Jong
-1993)</span>, it can be shown that the scores and loadings are chosen in
-such a way to describe as much as possible of the <em>covariance</em>
-between
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>,
-where PCR concentrates on the <em>variance</em> of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>.
+\end{equation}\]</span></p>
+<p>and regressing <span class="math inline">\(\mathbf{Y}\)</span> not on
+<span class="math inline">\(\mathbf{X}\)</span> itself but on the first
+<span class="math inline">\(a\)</span> columns of the scores <span class="math inline">\(\mathbf{T}\)</span>. In PCR, the scores are given
+by the left singular vectors of <span class="math inline">\(\mathbf{X}\)</span>, multiplied with the
+corresponding singular values, and the loadings are the right singular
+vectors of <span class="math inline">\(\mathbf{X}\)</span>. This,
+however, only takes into account information about <span class="math inline">\(\mathbf{X}\)</span>, and therefore may be
+suboptimal for prediction purposes. PLSR aims to incorporate information
+on both <span class="math inline">\(\mathbf{X}\)</span> and <span class="math inline">\(\mathbf{Y}\)</span> in the definition of the
+scores and loadings. In fact, for one specific version of PLSR, called
+SIMPLS <span class="citation">(Jong 1993)</span>, it can be shown that
+the scores and loadings are chosen in such a way to describe as much as
+possible of the <em>covariance</em> between <span class="math inline">\(\mathbf{X}\)</span> and <span class="math inline">\(\mathbf{Y}\)</span>, where PCR concentrates on the
+<em>variance</em> of <span class="math inline">\(\mathbf{X}\)</span>.
 Other PLSR algorithms give identical results to SIMPLS in the case of
-one
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
-variable, but deviate slightly for the multivariate
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
-case ; the differences are not likely to be important in practice.</p>
+one <span class="math inline">\(\mathbf{Y}\)</span> variable, but
+deviate slightly for the multivariate <span class="math inline">\(\mathbf{Y}\)</span> case ; the differences are not
+likely to be important in practice.</p>
 <div class="section level3">
 <h3 id="algorithms">2.1 Algorithms<a class="anchor" aria-label="anchor" href="#algorithms"></a>
 </h3>
-<p>In PCR, we approximate the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
-matrix by the first
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
-Principal Components (PCs), usually obtained from the singular value
-decomposition (SVD):</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐗</mi><mo>=</mo><msub><mover><mi>𝐗</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></msub><mo>+</mo><msub><mi>Ε</mi><mi>X</mi></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐔</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></msub><msub><mi>𝐃</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><msubsup><mi>𝐕</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>T</mi></msubsup><mo>+</mo><msub><mi>Ε</mi><mi>X</mi></msub><mo>=</mo><msub><mi>𝐓</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></msub><msubsup><mi>𝐏</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>T</mi></msubsup><mo>+</mo><msub><mi>Ε</mi><mi>X</mi></msub></mrow><annotation encoding="application/x-tex">\begin{equation}
+<p>In PCR, we approximate the <span class="math inline">\(\mathbf{X}\)</span> matrix by the first <span class="math inline">\(a\)</span> Principal Components (PCs), usually
+obtained from the singular value decomposition (SVD):</p>
+<p><span class="math display">\[\begin{equation}
 \mathbf{X} = \tilde{\mathbf{X}}_{(a)} + \Epsilon_X
-    = (\mathbf{U}_{(a)} \mathbf{D}_{(a)} ) \mathbf{V}^T_{(a)} + \Epsilon_X
+    = (\mathbf{U}_{(a)} \mathbf{D}_{(a)} ) \mathbf{V}^T_{(a)} +
+\Epsilon_X
     = \mathbf{T}_{(a)} \mathbf{P}_{(a)}^T + \Epsilon_X
-\end{equation}</annotation></semantics></math></p>
-<p>Next, we regress
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
-on the scores, which leads to regression coefficients</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐁</mi><mo>=</mo><mi>𝐏</mi><msup><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>𝐓</mi><mi>T</mi></msup><mi>𝐓</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>−</mi><mn>1</mn></mrow></msup><msup><mi>𝐓</mi><mi>T</mi></msup><mi>𝐘</mi><mo>=</mo><mi>𝐕</mi><msup><mi>𝐃</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><msup><mi>𝐔</mi><mi>T</mi></msup><mi>𝐘</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
-\mathbf{B} = \mathbf{P} (\mathbf{T}^T \mathbf{T})^{-1} \mathbf{T}^T \mathbf{Y}
+\end{equation}\]</span></p>
+<p>Next, we regress <span class="math inline">\(\mathbf{Y}\)</span> on
+the scores, which leads to regression coefficients</p>
+<p><span class="math display">\[\begin{equation}
+\mathbf{B} = \mathbf{P} (\mathbf{T}^T \mathbf{T})^{-1} \mathbf{T}^T
+\mathbf{Y}
     = \mathbf{V} \mathbf{D}^{-1} \mathbf{U}^T \mathbf{Y}
-\end{equation}</annotation></semantics></math></p>
-<p>where the subscripts
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
-have been dropped for clarity. For PLSR, the components, called Latent
-Variables (LVs) in this context, are obtained iteratively. One starts
-with the SVD of the crossproduct matrix
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐒</mi><mo>=</mo><msup><mi>𝐗</mi><mi>T</mi></msup><mi>𝐘</mi></mrow><annotation encoding="application/x-tex">\mathbf{S} = \mathbf{X}^T \mathbf{Y}</annotation></semantics></math>,
-thereby including information on variation in both
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>,
-and on the correlation between them. The first left and right singular
-vectors,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>w</mi><annotation encoding="application/x-tex">w</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math>,
-are used as weight vectors for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>,
-respectively, to obtain scores
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>u</mi><annotation encoding="application/x-tex">u</annotation></semantics></math>:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mi>𝐗</mi><mi>w</mi><mo>=</mo><mi>𝐄</mi><mi>w</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
+\end{equation}\]</span></p>
+<p>where the subscripts <span class="math inline">\(a\)</span> have been
+dropped for clarity. For PLSR, the components, called Latent Variables
+(LVs) in this context, are obtained iteratively. One starts with the SVD
+of the crossproduct matrix <span class="math inline">\(\mathbf{S} =
+\mathbf{X}^T \mathbf{Y}\)</span>, thereby including information on
+variation in both <span class="math inline">\(\mathbf{X}\)</span> and
+<span class="math inline">\(\mathbf{Y}\)</span>, and on the correlation
+between them. The first left and right singular vectors, <span class="math inline">\(w\)</span> and <span class="math inline">\(q\)</span>, are used as weight vectors for <span class="math inline">\(\mathbf{X}\)</span> and <span class="math inline">\(\mathbf{Y}\)</span>, respectively, to obtain
+scores <span class="math inline">\(t\)</span> and <span class="math inline">\(u\)</span>:</p>
+<p><span class="math display">\[\begin{equation}
 t = \mathbf{X} w = \mathbf{E} w
-\end{equation}</annotation></semantics></math></p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>u</mi><mo>=</mo><mi>𝐘</mi><mi>q</mi><mo>=</mo><mi>𝐅</mi><mi>q</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
+\end{equation}\]</span></p>
+<p><span class="math display">\[\begin{equation}
 u = \mathbf{Y} q = \mathbf{F} q
-\end{equation}</annotation></semantics></math></p>
-<p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐄</mi><annotation encoding="application/x-tex">\mathbf{E}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐅</mi><annotation encoding="application/x-tex">\mathbf{F}</annotation></semantics></math>
-are initialised as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>,
-respectively. The X scores
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
-are often normalised:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mi>t</mi><mi>/</mi><msqrt><mrow><msup><mi>t</mi><mi>T</mi></msup><mi>t</mi></mrow></msqrt></mrow><annotation encoding="application/x-tex">\begin{equation}
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(\mathbf{E}\)</span> and <span class="math inline">\(\mathbf{F}\)</span> are initialised as <span class="math inline">\(\mathbf{X}\)</span> and <span class="math inline">\(\mathbf{Y}\)</span>, respectively. The X scores
+<span class="math inline">\(t\)</span> are often normalised:</p>
+<p><span class="math display">\[\begin{equation}
 t =  t / \sqrt{t^Tt}
-\end{equation}</annotation></semantics></math></p>
-<p>The Y scores
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>u</mi><annotation encoding="application/x-tex">u</annotation></semantics></math>
-are not actually necessary in the regression but are often saved for
-interpretation purposes. Next, X and Y loadings are obtained by
-regressing against the <em>same</em> vector
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><msup><mi>𝐄</mi><mi>T</mi></msup><mi>t</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
+\end{equation}\]</span></p>
+<p>The Y scores <span class="math inline">\(u\)</span> are not actually
+necessary in the regression but are often saved for interpretation
+purposes. Next, X and Y loadings are obtained by regressing against the
+<em>same</em> vector <span class="math inline">\(t\)</span>:</p>
+<p><span class="math display">\[\begin{equation}
 \label{eq:plspt}
 p = \mathbf{E}^T t
-\end{equation}</annotation></semantics></math><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><msup><mi>𝐅</mi><mi>T</mi></msup><mi>t</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
+\end{equation}\]</span> <span class="math display">\[\begin{equation}
 \label{eq:plsqt}
 q = \mathbf{F}^T t
-\end{equation}</annotation></semantics></math></p>
+\end{equation}\]</span></p>
 <p>Finally, the data matrices are ‘deflated’: the information related to
-this latent variable, in the form of the outer products
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><msup><mi>p</mi><mi>T</mi></msup></mrow><annotation encoding="application/x-tex">t p^T</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><msup><mi>q</mi><mi>T</mi></msup></mrow><annotation encoding="application/x-tex">t q^T</annotation></semantics></math>,
-is subtracted from the (current) data matrices
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐄</mi><annotation encoding="application/x-tex">\mathbf{E}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐅</mi><annotation encoding="application/x-tex">\mathbf{F}</annotation></semantics></math>.</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐄</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><msub><mi>𝐄</mi><mi>n</mi></msub><mo>−</mo><mi>t</mi><msup><mi>p</mi><mi>T</mi></msup></mrow><annotation encoding="application/x-tex">\begin{equation}
+this latent variable, in the form of the outer products <span class="math inline">\(t p^T\)</span> and <span class="math inline">\(t
+q^T\)</span>, is subtracted from the (current) data matrices <span class="math inline">\(\mathbf{E}\)</span> and <span class="math inline">\(\mathbf{F}\)</span>.</p>
+<p><span class="math display">\[\begin{equation}
 \mathbf{E}_{n+1} = \mathbf{E}_n - t p^T
-\end{equation}</annotation></semantics></math><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐅</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><msub><mi>𝐅</mi><mi>n</mi></msub><mo>−</mo><mi>t</mi><msup><mi>q</mi><mi>T</mi></msup></mrow><annotation encoding="application/x-tex">\begin{equation}
+\end{equation}\]</span> <span class="math display">\[\begin{equation}
 \mathbf{F}_{n+1} = \mathbf{F}_n - t q^T
-\end{equation}</annotation></semantics></math></p>
+\end{equation}\]</span></p>
 <p>The estimation of the next component then can start from the SVD of
-the crossproduct matrix
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>𝐄</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow><mi>T</mi></msubsup><msub><mi>𝐅</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">\mathbf{E}_{n+1}^T\mathbf{F}_{n+1}</annotation></semantics></math>.
-After every iteration, vectors
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>w</mi><annotation encoding="application/x-tex">w</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math>
-are saved as columns in matrices
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐖</mi><annotation encoding="application/x-tex">\mathbf{W}</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐓</mi><annotation encoding="application/x-tex">\mathbf{T}</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐏</mi><annotation encoding="application/x-tex">\mathbf{P}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐐</mi><annotation encoding="application/x-tex">\mathbf{Q}</annotation></semantics></math>,
-respectively. One complication is that columns of matrix
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐖</mi><annotation encoding="application/x-tex">\mathbf{W}</annotation></semantics></math>
-can not be compared directly: they are derived from successively
-deflated matrices
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐄</mi><annotation encoding="application/x-tex">\mathbf{E}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐅</mi><annotation encoding="application/x-tex">\mathbf{F}</annotation></semantics></math>.
-It has been shown that an alternative way to represent the weights, in
-such a way that all columns relate to the original
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
+the crossproduct matrix <span class="math inline">\(\mathbf{E}_{n+1}^T\mathbf{F}_{n+1}\)</span>. After
+every iteration, vectors <span class="math inline">\(w\)</span>, <span class="math inline">\(t\)</span>, <span class="math inline">\(p\)</span>
+and <span class="math inline">\(q\)</span> are saved as columns in
+matrices <span class="math inline">\(\mathbf{W}\)</span>, <span class="math inline">\(\mathbf{T}\)</span>, <span class="math inline">\(\mathbf{P}\)</span> and <span class="math inline">\(\mathbf{Q}\)</span>, respectively. One
+complication is that columns of matrix <span class="math inline">\(\mathbf{W}\)</span> can not be compared directly:
+they are derived from successively deflated matrices <span class="math inline">\(\mathbf{E}\)</span> and <span class="math inline">\(\mathbf{F}\)</span>. It has been shown that an
+alternative way to represent the weights, in such a way that all columns
+relate to the original <span class="math inline">\(\mathbf{X}\)</span>
 matrix, is given by</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐑</mi><mo>=</mo><mi>𝐖</mi><msup><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>𝐏</mi><mi>T</mi></msup><mi>𝐖</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>−</mi><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">\begin{equation}
+<p><span class="math display">\[\begin{equation}
 \mathbf{R} = \mathbf{W} (\mathbf{P}^T \mathbf{W})^{-1}
-\end{equation}</annotation></semantics></math></p>
+\end{equation}\]</span></p>
 <p>Now, we are in the same position as in the PCR case: instead of
-regressing
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
-on
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>,
-we use scores
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐓</mi><annotation encoding="application/x-tex">\mathbf{T}</annotation></semantics></math>
-to calculate the regression coefficients, and later convert these back
-to the realm of the original variables by pre-multiplying with matrix
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐑</mi><annotation encoding="application/x-tex">\mathbf{R}</annotation></semantics></math>
-(since
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐓</mi><mo>=</mo><mi>𝐗</mi><mi>𝐑</mi></mrow><annotation encoding="application/x-tex">\mathbf{T} = \mathbf{X} \mathbf{R}</annotation></semantics></math>):</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐁</mi><mo>=</mo><mi>𝐑</mi><msup><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>𝐓</mi><mi>T</mi></msup><mi>𝐓</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>−</mi><mn>1</mn></mrow></msup><msup><mi>𝐓</mi><mi>T</mi></msup><mi>𝐘</mi><mo>=</mo><mi>𝐑</mi><msup><mi>𝐓</mi><mi>T</mi></msup><mi>𝐘</mi><mo>=</mo><mi>𝐑</mi><msup><mi>𝐐</mi><mi>T</mi></msup></mrow><annotation encoding="application/x-tex">\begin{equation}
-\mathbf{B} = \mathbf{R} (\mathbf{T}^T \mathbf{T})^{-1} \mathbf{T}^T \mathbf{Y}
+regressing <span class="math inline">\(\mathbf{Y}\)</span> on <span class="math inline">\(\mathbf{X}\)</span>, we use scores <span class="math inline">\(\mathbf{T}\)</span> to calculate the regression
+coefficients, and later convert these back to the realm of the original
+variables by pre-multiplying with matrix <span class="math inline">\(\mathbf{R}\)</span> (since <span class="math inline">\(\mathbf{T} = \mathbf{X} \mathbf{R}\)</span>):</p>
+<p><span class="math display">\[\begin{equation}
+\mathbf{B} = \mathbf{R} (\mathbf{T}^T \mathbf{T})^{-1} \mathbf{T}^T
+\mathbf{Y}
     = \mathbf{R} \mathbf{T}^T \mathbf{Y}
     = \mathbf{R} \mathbf{Q}^T
-\end{equation}</annotation></semantics></math></p>
-<p>Again, here, only the first
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+\end{equation}\]</span></p>
+<p>Again, here, only the first <span class="math inline">\(a\)</span>
 components are used. How many components are optimal has to be
 determined, usually by cross-validation.</p>
 <p>Many alternative formulations can be found in literature. It has been
-shown, for instance, that only one of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
-needs to be deflated ; alternatively, one can directly deflate the
-crossproduct matrix
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐒</mi><annotation encoding="application/x-tex">\mathbf{S}</annotation></semantics></math>
-(as is done in SIMPLS, for example). Moreover, there are many equivalent
-ways of scaling. In the example above, the scores
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
-have been normalised, but one can also choose to introduce normalisation
-at another point in the algorithm. Unfortunately, this can make it
+shown, for instance, that only one of <span class="math inline">\(\mathbf{X}\)</span> and <span class="math inline">\(\mathbf{Y}\)</span> needs to be deflated ;
+alternatively, one can directly deflate the crossproduct matrix <span class="math inline">\(\mathbf{S}\)</span> (as is done in SIMPLS, for
+example). Moreover, there are many equivalent ways of scaling. In the
+example above, the scores <span class="math inline">\(t\)</span> have
+been normalised, but one can also choose to introduce normalisation at
+another point in the algorithm. Unfortunately, this can make it
 difficult to directly compare the scores and loadings of different PLSR
 implementations.</p>
 </div>
@@ -371,26 +289,23 @@ implementations.</p>
 <h3 id="on-the-use-of-plsr-and-pcr">2.2 On the use of PLSR and PCR<a class="anchor" aria-label="anchor" href="#on-the-use-of-plsr-and-pcr"></a>
 </h3>
 <p>In theory, PLSR should have an advantage over PCR. One could imagine
-a situation where a minor component in
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
-is highly correlated with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
-; not selecting enough components would then lead to very bad
-predictions. In PLSR, such a component would be automatically present in
-the first LV. In practice, however, there is hardly any difference
-between the use of PLSR and PCR ; in most situations, the methods
-achieve similar prediction accuracies, although PLSR usually needs fewer
-latent variables than PCR. Put the other way around: with the same
-number of latent variables, PLSR will cover more of the variation in
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
-and PCR will cover more of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>.
-In turn, both behave very similar to ridge regression <span class="citation">(Frank and Friedman 1993)</span>.</p>
+a situation where a minor component in <span class="math inline">\(\mathbf{X}\)</span> is highly correlated with
+<span class="math inline">\(\mathbf{Y}\)</span> ; not selecting enough
+components would then lead to very bad predictions. In PLSR, such a
+component would be automatically present in the first LV. In practice,
+however, there is hardly any difference between the use of PLSR and PCR
+; in most situations, the methods achieve similar prediction accuracies,
+although PLSR usually needs fewer latent variables than PCR. Put the
+other way around: with the same number of latent variables, PLSR will
+cover more of the variation in <span class="math inline">\(\mathbf{Y}\)</span> and PCR will cover more of
+<span class="math inline">\(\mathbf{X}\)</span>. In turn, both behave
+very similar to ridge regression <span class="citation">(Frank and
+Friedman 1993)</span>.</p>
 <p>It can also be shown that both PCR and PLSR behave as shrinkage
-methods <span class="citation">(Hastie, Tibshirani, and Friedman
-2001)</span>, although in some cases PLSR seems to increase the variance
-of individual regression coefficients, one possible explanation of why
-PLSR is not always better than PCR.</p>
+methods <span class="citation">(Hastie et al. 2001)</span>, although in
+some cases PLSR seems to increase the variance of individual regression
+coefficients, one possible explanation of why PLSR is not always better
+than PCR.</p>
 </div>
 </div>
 <div class="section level2">
@@ -555,15 +470,13 @@ Loading plot for the gasoline data
 </p>
 </div>
 <p>The <code>labels = "numbers"</code> argument makes the plot function
-try to interpret the variable names as numbers, and use them as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
-axis labels. Score and loading plots also have their own plotting
-functions, <code>scoreplot</code> and <code>loadingplot</code>, which
-have more options for plotting scores and loadings, respectively. For
-instance, <code>scoreplot</code>and its companion extractor
-<code>scores</code> has the same argument as <code>RMSEP/MSEP/R2</code>
-called <code>estimate</code>, which can be used to plot cross-validated
-scores or test data scores, e.g.,</p>
+try to interpret the variable names as numbers, and use them as <span class="math inline">\(x\)</span> axis labels. Score and loading plots
+also have their own plotting functions, <code>scoreplot</code> and
+<code>loadingplot</code>, which have more options for plotting scores
+and loadings, respectively. For instance, <code>scoreplot</code>and its
+companion extractor <code>scores</code> has the same argument as
+<code>RMSEP/MSEP/R2</code> called <code>estimate</code>, which can be
+used to plot cross-validated scores or test data scores, e.g.,</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">par.old</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/scoreplot.html">scoreplot</a></span><span class="op">(</span><span class="va">gas1</span><span class="op">)</span></span>
@@ -637,14 +550,14 @@ transformations of the variables. For instance,
 <code>log(y) ~ msc(Z)</code> specifies a regression of the logarithm of
 <code>y</code> onto <code>Z</code> after <code>Z</code> has been
 transformed by <em>Multiplicative Scatter (or Signal) Correction</em>
-(MSC) <span class="citation">(Geladi, MacDougall, and Martens
-1985)</span>, a pre-treatment that is very common in infrared
-spectroscopy. If the transformations contain symbols that are
-interpreted in the formula handling, e.g., <code>+</code>,
-<code>*</code> or <code>^</code>, the terms should be protected with the
-<code><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I()</a></code> function, like this: <code>y ~ x1 + I(x2 + x3)</code>.
-This specifies <em>two</em> regressors: <code>x1</code>, and the sum of
-<code>x2</code> and <code>x3</code>.</p>
+(MSC) <span class="citation">(Geladi et al. 1985)</span>, a
+pre-treatment that is very common in infrared spectroscopy. If the
+transformations contain symbols that are interpreted in the formula
+handling, e.g., <code>+</code>, <code>*</code> or <code>^</code>, the
+terms should be protected with the <code><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I()</a></code> function, like this:
+<code>y ~ x1 + I(x2 + x3)</code>. This specifies <em>two</em>
+regressors: <code>x1</code>, and the sum of <code>x2</code> and
+<code>x3</code>.</p>
 </div>
 <div class="section level3">
 <h3 id="data-frames">4.2 Data frames<a class="anchor" aria-label="anchor" href="#data-frames"></a>
@@ -763,9 +676,9 @@ variable is divided by the corresponding number. For instance, this will
 fit a model with standardised chemical measurements:</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">olive1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mvr.html">plsr</a></span><span class="op">(</span><span class="va">sensory</span> <span class="op">~</span> <span class="va">chemical</span>, scale <span class="op">=</span> <span class="cn">TRUE</span>, data <span class="op">=</span> <span class="va">oliveoil</span><span class="op">)</span></span></code></pre></div>
-<p>As mentioned earlier, MSC <span class="citation">(Geladi, MacDougall,
-and Martens 1985)</span> is implemented in <strong>pls</strong> as a
-function <code>msc</code> that can be used in formulas:</p>
+<p>As mentioned earlier, MSC <span class="citation">(Geladi et al.
+1985)</span> is implemented in <strong>pls</strong> as a function
+<code>msc</code> that can be used in formulas:</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gas2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mvr.html">plsr</a></span><span class="op">(</span><span class="va">octane</span> <span class="op">~</span> <span class="fu"><a href="../reference/msc.html">msc</a></span><span class="op">(</span><span class="va">NIR</span><span class="op">)</span>, ncomp <span class="op">=</span> <span class="fl">10</span>, data <span class="op">=</span> <span class="va">gasTrain</span><span class="op">)</span></span></code></pre></div>
 <p>This scatter corrects <code>NIR</code> prior to the fitting, and
@@ -810,18 +723,17 @@ subjective. However, especially when building large numbers of models
 (e.g., in simulation studies), it can be crucial to have a consistent
 strategy on how to choose the “optimal” number of components. Two such
 strategies have been implemented in function <code>selectNcomp</code>.
-The first is based on the so-called one-sigma heuristic <span class="citation">(Hastie, Friedman, and Tibshirani 2013)</span> and
-consists of choosing the model with fewest components that is still less
-than one standard error away from the overall best model. The second
-strategy employs a permutation approach, and basically tests whether
-adding a new component is beneficial at all <span class="citation">(Voet
-1994)</span>. It is implemented backwards, again taking the global
-minimum in the crossvalidation curve as a starting point, and assessing
-models with fewer and fewer components: as long as no significant
-deterioration in performance is found (by default on the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>0.01</mn></mrow><annotation encoding="application/x-tex">\alpha = 0.01</annotation></semantics></math>
-level), the algorithm continues to remove components. Applying the
-function is quite straightforward:</p>
+The first is based on the so-called one-sigma heuristic <span class="citation">(Hastie et al. 2013)</span> and consists of choosing
+the model with fewest components that is still less than one standard
+error away from the overall best model. The second strategy employs a
+permutation approach, and basically tests whether adding a new component
+is beneficial at all <span class="citation">(Voet 1994)</span>. It is
+implemented backwards, again taking the global minimum in the
+crossvalidation curve as a starting point, and assessing models with
+fewer and fewer components: as long as no significant deterioration in
+performance is found (by default on the <span class="math inline">\(\alpha = 0.01\)</span> level), the algorithm
+continues to remove components. Applying the function is quite
+straightforward:</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ncomp.onesigma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/selectNcomp.html">selectNcomp</a></span><span class="op">(</span><span class="va">gas2</span>, method <span class="op">=</span> <span class="st">"onesigma"</span>, plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                              ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.18</span>, <span class="fl">.6</span><span class="op">)</span><span class="op">)</span></span>
@@ -859,7 +771,7 @@ summarised in numbers.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gas2.cv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crossval.html">crossval</a></span><span class="op">(</span><span class="va">gas2</span>, segments <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="../reference/mvrVal.html">MSEP</a></span><span class="op">(</span><span class="va">gas2.cv</span><span class="op">)</span>, legendpos<span class="op">=</span><span class="st">"topright"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pls-manual_files/figure-html/crossval-1.png" class="r-plt" width="700" style="display: block; margin: auto;"></p>
+<p><img src="pls-manual_files/figure-html/crossval-1.png" class="r-plt" alt="" width="700" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">gas2.cv</span>, what <span class="op">=</span> <span class="st">"validation"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Data:    X dimension: 50 401 </span></span>
@@ -911,17 +823,15 @@ be used to indicate how many components should be included in the
 prediction. To assess how many components are optimal, a validation plot
 (<code>validationplot</code>) can be used such as the one shown in
 Figure 2; this shows a measure of prediction performance (either RMSEP,
-MSEP, or
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math>)
-against the number of components. Usually, one takes the first local
-minimum rather than the absolute minimum in the curve, to avoid
-over-fitting. The regression coefficients can be visualised using
-<code>plottype = "coef"</code> in the <code>plot</code> method, or
-directly through function <code>coefplot</code>. This allows
-simultaneous plotting of the regression vectors for several different
-numbers of components at once. The regression vectors for the
-<code>gasoline</code> data set using MSC are shown in Figure 7 using the
-command</p>
+MSEP, or <span class="math inline">\(R^2\)</span>) against the number of
+components. Usually, one takes the first local minimum rather than the
+absolute minimum in the curve, to avoid over-fitting. The regression
+coefficients can be visualised using <code>plottype = "coef"</code> in
+the <code>plot</code> method, or directly through function
+<code>coefplot</code>. This allows simultaneous plotting of the
+regression vectors for several different numbers of components at once.
+The regression vectors for the <code>gasoline</code> data set using MSC
+are shown in Figure 7 using the command</p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gas1</span>, plottype <span class="op">=</span> <span class="st">"coef"</span>, ncomp<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, legendpos <span class="op">=</span> <span class="st">"bottomleft"</span>,</span>
 <span>     labels <span class="op">=</span> <span class="st">"numbers"</span>, xlab <span class="op">=</span> <span class="st">"nm"</span><span class="op">)</span></span></code></pre></div>
@@ -993,12 +903,11 @@ exactly the same plots as using <code>scoreplot</code>. The
 <code>"mvr"</code> shows the regression type used, perhaps indicating
 the form of validation employed, and shows the function call. The
 <code>summary</code> method gives more information: it also shows the
-amount of variance explained by the model (for all choices of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>,
-the number of latent variables). The <code>summary</code> method has an
-additional argument (<code>what</code>) to be able to focus on the
-training phase or validation phase, respectively. Default is to print
-both types of information.</p>
+amount of variance explained by the model (for all choices of <span class="math inline">\(a\)</span>, the number of latent variables). The
+<code>summary</code> method has an additional argument
+(<code>what</code>) to be able to focus on the training phase or
+validation phase, respectively. Default is to print both types of
+information.</p>
 </div>
 </div>
 <div class="section level2">
@@ -1017,15 +926,11 @@ prediction ability of the model. If <code>newdata</code> is missing,
 <code>predict</code> uses the data used to fit the model, i.e., it
 returns fitted values. If the argument <code>ncomp</code> is missing,
 <code>predict</code> returns predictions for models with 1 component, 2
-components,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>…</mi><annotation encoding="application/x-tex">\ldots</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
-components, where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
-is the number of components used when fitting the model. Otherwise, the
-model size(s) listed in <code>ncomp</code> are used. For instance, to
-get predictions from the model built in Section 3, with two and three
-components, one would use</p>
+components, <span class="math inline">\(\ldots\)</span>, <span class="math inline">\(A\)</span> components, where <span class="math inline">\(A\)</span> is the number of components used when
+fitting the model. Otherwise, the model size(s) listed in
+<code>ncomp</code> are used. For instance, to get predictions from the
+model built in Section 3, with two and three components, one would
+use</p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">gas1</span>, ncomp <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">3</span>, newdata <span class="op">=</span> <span class="va">gasTest</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## , , 2 comps</span></span>
@@ -1068,21 +973,14 @@ use</p>
 in the predictions. It can be removed by subtracting
 <code>mymod$Ymeans</code> from the predicted values.)</p>
 <p>The <code>predict</code> method returns a three-dimensional array, in
-which the entry
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>k</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(i,j,k)</annotation></semantics></math>
-is the predicted value for observation
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>,
-response
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
-and model size
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>.
-Note that singleton dimensions are not dropped, so predicting five
-observations for a uni-response model with <code>ncomp = 3</code> gives
-an
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mo>×</mo><mn>1</mn><mo>×</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">5 \times 1 \times 1</annotation></semantics></math>
-array, not a vector of length five. This is to make it easier to
-distinguish between predictions from models with one response and
-predictions with one model size. (When using the <code>comps</code>
+which the entry <span class="math inline">\((i,j,k)\)</span> is the
+predicted value for observation <span class="math inline">\(i\)</span>,
+response <span class="math inline">\(j\)</span> and model size <span class="math inline">\(k\)</span>. Note that singleton dimensions are not
+dropped, so predicting five observations for a uni-response model with
+<code>ncomp = 3</code> gives an <span class="math inline">\(5 \times 1
+\times 1\)</span> array, not a vector of length five. This is to make it
+easier to distinguish between predictions from models with one response
+and predictions with one model size. (When using the <code>comps</code>
 argument, the last dimension is dropped, because the predictions are
 always from a single model.) One can drop the singleton dimensions
 explicitly by using <code>drop(predict(...))</code>:</p>
@@ -1148,12 +1046,12 @@ advanced use of the package.</p>
 <p>There are several PLSR algorithms, and the <strong>pls</strong>
 package currently implements three of them: the kernel algorithm for
 tall matrices (many observations, few variables) <span class="citation">(Dayal and MacGregor 1997)</span>, the classic
-orthogonal scores algorithm (A.K.A. NIPALS algorithm) <span class="citation">(Harald Martens and Næs 1989)</span> and the SIMPLS
-algorithm <span class="citation">(Jong 1993)</span>. The kernel and
-orthogonal scores algorithms produce the same results (the kernel
-algorithm being the fastest of them for most problems). SIMPLS produces
-the same fit for single-response models, but slightly different results
-for multi-response models. It is also usually faster than the NIPALS
+orthogonal scores algorithm (A.K.A. NIPALS algorithm) <span class="citation">(Martens and Næs 1989)</span> and the SIMPLS algorithm
+<span class="citation">(Jong 1993)</span>. The kernel and orthogonal
+scores algorithms produce the same results (the kernel algorithm being
+the fastest of them for most problems). SIMPLS produces the same fit for
+single-response models, but slightly different results for
+multi-response models. It is also usually faster than the NIPALS
 algorithm.</p>
 <p>The factory default is to use the kernel algorithm. One can specify a
 different algorithm with the <code>method</code> argument; i.e.,
@@ -1214,7 +1112,7 @@ the extra argument <code>Y.add</code>. Weighting of samples is also
 possible using the <code>weights</code>argument. Finally, focused
 loading weights can be enabled or forced throught the
 <code>lower</code>and <code>upper</code>arguments (see the example in
-<code><a href="../reference/mvr.html">?cppls</a></code> and <span class="citation">(Indahl, Liland, and Næs
+<code><a href="../reference/mvr.html">?cppls</a></code> and <span class="citation">(Indahl et al.
 2009)</span>)</p>
 </div>
 <div class="section level4">
@@ -1259,8 +1157,7 @@ parallel specification has effect until it is changed.</p>
 <p>The default value for <code>parallel</code> is <code>NULL</code>,
 which specifies that the calculations are done serially, using one CPU.
 Specifying the value 1 has the same effect.</p>
-<p>Specifying an integer
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&gt;</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">&gt; 1</annotation></semantics></math>
+<p>Specifying an integer <span class="math inline">\(&gt; 1\)</span>
 makes the calculations use the function <code>mclapply</code> with the
 given number as the number of CPUs to use. Note: <code>mclapply</code>
 depends on ‘forking’ which does not exist on MS Windows, so
@@ -1352,19 +1249,12 @@ of (an earlier version of) the SIMPLS fit function
 methods, and <code>svdpc.fit</code> for the PCR method. They all take
 arguments <code>X</code>, <code>Y</code>, <code>ncomp</code>, and
 <code>stripped</code>. Arguments <code>X</code>, <code>Y</code>, and
-<code>ncomp</code> specify
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
-(as matrices, not data frames), and the number of components to fit,
-respectively. The argument <code>stripped</code> defaults to
-<code>FALSE</code>. When it is <code>TRUE</code>, the calculations are
-stripped down to the bare minimum required for returning the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
-means,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
-means, and the regression coefficients. This is used to speed up
-cross-validation procedures.</p>
+<code>ncomp</code> specify <span class="math inline">\(\mathbf{X}\)</span> and <span class="math inline">\(\mathbf{Y}\)</span> (as matrices, not data
+frames), and the number of components to fit, respectively. The argument
+<code>stripped</code> defaults to <code>FALSE</code>. When it is
+<code>TRUE</code>, the calculations are stripped down to the bare
+minimum required for returning the <span class="math inline">\(\mathbf{X}\)</span> means, <span class="math inline">\(\mathbf{Y}\)</span> means, and the regression
+coefficients. This is used to speed up cross-validation procedures.</p>
 <p>The fit functions can be called directly, for instance when one wants
 to avoid the overhead of formula and data handling in repeated fits. As
 an example, this is how a simple leave-one-out cross-validation for a
@@ -1414,10 +1304,10 @@ be fitted.</p>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-R:Chambers+Hastie:1992" class="csl-entry">
 Chambers, John M., and Trevor J. Hastie. 1992. <em>Statistical Models in
-<span>S</span></em>. London: Chapman &amp; Hall.
+<span>S</span></em>. Chapman &amp; Hall.
 </div>
 <div id="ref-Cramer1988" class="csl-entry">
 Cramer, R. D., D. E. Patterson, and J. D. Bunce. 1988.
@@ -1453,7 +1343,7 @@ Springer.
 </div>
 <div id="ref-TESL" class="csl-entry">
 Hastie, T., R. Tibshirani, and J. H. Friedman, eds. 2001. <em>The
-Elements of Statistical Learning</em>. New York: Springer.
+Elements of Statistical Learning</em>. Springer.
 </div>
 <div id="ref-indahl2009canonical" class="csl-entry">
 Indahl, Ulf G, Kristian Hovde Liland, and Tormod Næs. 2009.
@@ -1497,7 +1387,7 @@ Systems</em> 58 (2): 85–95.
 </div>
 <div id="ref-MarNaes:MultCal" class="csl-entry">
 Martens, Harald, and Tormod Næs. 1989. <em>Multivariate
-Calibration</em>. Chichester: Wiley.
+Calibration</em>. Wiley.
 </div>
 <div id="ref-Mas_etal_HandChemQualB" class="csl-entry">
 Massart, D. L., B. G. M. Vandeginste, L. M. C. Buydens, S. de Jong, P.
@@ -1555,7 +1445,7 @@ Systems</em> 58 (2): 83–84.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

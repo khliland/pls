@@ -115,9 +115,8 @@ The recognised options are:
 
 ## Note
 
-The function is a slight modification of the function
-[`sm.options`](https://rdrr.io/pkg/sm/man/sm.options.html) from the
-package sm.
+The function is a slight modification of the function `sm.options` from
+the package sm.
 
 ## Author
 
@@ -126,6 +125,7 @@ Bjørn-Helge Mevik and Ron Wehrens
 ## Examples
 
 ``` r
+
 ## Return current options:
 pls.options()
 #> $mvralg

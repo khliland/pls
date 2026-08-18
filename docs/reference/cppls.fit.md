@@ -211,6 +211,7 @@ Kristian Hovde Liland
 ## Examples
 
 ``` r
+
 data(mayonnaise)
 # Create dummy response
 mayonnaise$dummy <-

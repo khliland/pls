@@ -106,6 +106,7 @@ Bjørn-Helge Mevik
 ## Examples
 
 ``` r
+
 data(oliveoil)
 mod <- pcr(sensory ~ chemical, data = oliveoil, validation = "LOO",
            jackknife = TRUE)

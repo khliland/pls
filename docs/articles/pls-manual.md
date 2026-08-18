@@ -64,7 +64,7 @@ there are many, possibly correlated, predictor variables, and relatively
 few samples—a situation that is common, especially in chemistry where
 developments in spectroscopy since the seventies have revolutionised
 chemical analysis. In fact, the origin of PLSR lies in chemistry (see,
-e.g., (Wold 2001; H. Martens 2001)). The field of *near-infrared* (NIR)
+e.g., (Wold 2001; Martens 2001)). The field of *near-infrared* (NIR)
 spectroscopy, with its highly overlapping lines and difficult to
 interpret overtones, would not have existed but for a method to obtain
 quantitative information from the spectra. Also other fields have
@@ -73,189 +73,135 @@ PCR. In medicinal chemistry, for example, one likes to derive molecular
 properties from the molecular structure. Most of these Quantitative
 Structure-Activity Relations (QSAR, and also Quantitative
 Structure-Property Relations, QSPR), and in particular, Comparative
-Molecular Field Analysis (ComFA) (Cramer, Patterson, and Bunce 1988),
-use PLSR. Other applications range from statistical process control
-(Kresta, MacGregor, and Marlin 1991) to tumour classification (Nguyen
-and Rocke 2002) to spatial analysis in brain images (McIntosh et al.
-1996) to marketing (Fornell and Bookstein 1982).
+Molecular Field Analysis (ComFA) (Cramer et al. 1988), use PLSR. Other
+applications range from statistical process control (Kresta et al. 1991)
+to tumour classification (Nguyen and Rocke 2002) to spatial analysis in
+brain images (McIntosh et al. 1996) to marketing (Fornell and Bookstein
+1982).
 
 In the usual multiple linear regression (MLR) context, the least-squares
 solution for
 
-``` math
-\begin{equation}
-\mathbf{Y} = \mathbf{X}\mathbf{B} + \Epsilon
-\end{equation}
-```
+\\\begin{equation} \mathbf{Y} = \mathbf{X}\mathbf{B} + \Epsilon
+\end{equation}\\
 
 is given by
 
-``` math
-\begin{equation}
-\mathbf{B} = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathbf{Y}
-\label{eq:lsq}
-\end{equation}
-```
+\\\begin{equation} \mathbf{B} = (\mathbf{X}^T \mathbf{X})^{-1}
+\mathbf{X}^T \mathbf{Y} \label{eq:lsq} \end{equation}\\
 
-The problem often is that $`\mathbf{X}^T \mathbf{X}`$ is singular,
-either because the number of variables (columns) in $`\mathbf{X}`$
+The problem often is that \\\mathbf{X}^T \mathbf{X}\\ is singular,
+either because the number of variables (columns) in \\\mathbf{X}\\
 exceeds the number of objects (rows), or because of collinearities. Both
-PCR and PLSR circumvent this by decomposing $`\mathbf{X}`$ into
-orthogonal scores $`\mathbf{T}`$ and loadings $`\mathbf{P}`$
+PCR and PLSR circumvent this by decomposing \\\mathbf{X}\\ into
+orthogonal scores \\\mathbf{T}\\ and loadings \\\mathbf{P}\\
 
-``` math
-\begin{equation}
-\mathbf{X} = \mathbf{T} \mathbf{P}^T
-\end{equation}
-```
+\\\begin{equation} \mathbf{X} = \mathbf{T} \mathbf{P}^T \end{equation}\\
 
-and regressing $`\mathbf{Y}`$ not on $`\mathbf{X}`$ itself but on the
-first $`a`$ columns of the scores $`\mathbf{T}`$. In PCR, the scores are
-given by the left singular vectors of $`\mathbf{X}`$, multiplied with
+and regressing \\\mathbf{Y}\\ not on \\\mathbf{X}\\ itself but on the
+first \\a\\ columns of the scores \\\mathbf{T}\\. In PCR, the scores are
+given by the left singular vectors of \\\mathbf{X}\\, multiplied with
 the corresponding singular values, and the loadings are the right
-singular vectors of $`\mathbf{X}`$. This, however, only takes into
-account information about $`\mathbf{X}`$, and therefore may be
+singular vectors of \\\mathbf{X}\\. This, however, only takes into
+account information about \\\mathbf{X}\\, and therefore may be
 suboptimal for prediction purposes. PLSR aims to incorporate information
-on both $`\mathbf{X}`$ and $`\mathbf{Y}`$ in the definition of the
+on both \\\mathbf{X}\\ and \\\mathbf{Y}\\ in the definition of the
 scores and loadings. In fact, for one specific version of PLSR, called
 SIMPLS (Jong 1993), it can be shown that the scores and loadings are
 chosen in such a way to describe as much as possible of the *covariance*
-between $`\mathbf{X}`$ and $`\mathbf{Y}`$, where PCR concentrates on the
-*variance* of $`\mathbf{X}`$. Other PLSR algorithms give identical
-results to SIMPLS in the case of one $`\mathbf{Y}`$ variable, but
-deviate slightly for the multivariate $`\mathbf{Y}`$ case ; the
+between \\\mathbf{X}\\ and \\\mathbf{Y}\\, where PCR concentrates on the
+*variance* of \\\mathbf{X}\\. Other PLSR algorithms give identical
+results to SIMPLS in the case of one \\\mathbf{Y}\\ variable, but
+deviate slightly for the multivariate \\\mathbf{Y}\\ case ; the
 differences are not likely to be important in practice.
 
 ### 2.1 Algorithms
 
-In PCR, we approximate the $`\mathbf{X}`$ matrix by the first $`a`$
+In PCR, we approximate the \\\mathbf{X}\\ matrix by the first \\a\\
 Principal Components (PCs), usually obtained from the singular value
 decomposition (SVD):
 
-``` math
-\begin{equation}
-\mathbf{X} = \tilde{\mathbf{X}}_{(a)} + \Epsilon_X
-    = (\mathbf{U}_{(a)} \mathbf{D}_{(a)} ) \mathbf{V}^T_{(a)} + \Epsilon_X
-    = \mathbf{T}_{(a)} \mathbf{P}_{(a)}^T + \Epsilon_X
-\end{equation}
-```
+\\\begin{equation} \mathbf{X} = \tilde{\mathbf{X}}\_{(a)} + \Epsilon_X =
+(\mathbf{U}\_{(a)} \mathbf{D}\_{(a)} ) \mathbf{V}^T\_{(a)} + \Epsilon_X
+= \mathbf{T}\_{(a)} \mathbf{P}\_{(a)}^T + \Epsilon_X \end{equation}\\
 
-Next, we regress $`\mathbf{Y}`$ on the scores, which leads to regression
+Next, we regress \\\mathbf{Y}\\ on the scores, which leads to regression
 coefficients
 
-``` math
-\begin{equation}
-\mathbf{B} = \mathbf{P} (\mathbf{T}^T \mathbf{T})^{-1} \mathbf{T}^T \mathbf{Y}
-    = \mathbf{V} \mathbf{D}^{-1} \mathbf{U}^T \mathbf{Y}
-\end{equation}
-```
+\\\begin{equation} \mathbf{B} = \mathbf{P} (\mathbf{T}^T
+\mathbf{T})^{-1} \mathbf{T}^T \mathbf{Y} = \mathbf{V} \mathbf{D}^{-1}
+\mathbf{U}^T \mathbf{Y} \end{equation}\\
 
-where the subscripts $`a`$ have been dropped for clarity. For PLSR, the
+where the subscripts \\a\\ have been dropped for clarity. For PLSR, the
 components, called Latent Variables (LVs) in this context, are obtained
 iteratively. One starts with the SVD of the crossproduct matrix
-$`\mathbf{S} = \mathbf{X}^T \mathbf{Y}`$, thereby including information
-on variation in both $`\mathbf{X}`$ and $`\mathbf{Y}`$, and on the
+\\\mathbf{S} = \mathbf{X}^T \mathbf{Y}\\, thereby including information
+on variation in both \\\mathbf{X}\\ and \\\mathbf{Y}\\, and on the
 correlation between them. The first left and right singular vectors,
-$`w`$ and $`q`$, are used as weight vectors for $`\mathbf{X}`$ and
-$`\mathbf{Y}`$, respectively, to obtain scores $`t`$ and $`u`$:
+\\w\\ and \\q\\, are used as weight vectors for \\\mathbf{X}\\ and
+\\\mathbf{Y}\\, respectively, to obtain scores \\t\\ and \\u\\:
 
-``` math
-\begin{equation}
-t = \mathbf{X} w = \mathbf{E} w
-\end{equation}
-```
+\\\begin{equation} t = \mathbf{X} w = \mathbf{E} w \end{equation}\\
 
-``` math
-\begin{equation}
-u = \mathbf{Y} q = \mathbf{F} q
-\end{equation}
-```
+\\\begin{equation} u = \mathbf{Y} q = \mathbf{F} q \end{equation}\\
 
-where $`\mathbf{E}`$ and $`\mathbf{F}`$ are initialised as
-$`\mathbf{X}`$ and $`\mathbf{Y}`$, respectively. The X scores $`t`$ are
+where \\\mathbf{E}\\ and \\\mathbf{F}\\ are initialised as
+\\\mathbf{X}\\ and \\\mathbf{Y}\\, respectively. The X scores \\t\\ are
 often normalised:
 
-``` math
-\begin{equation}
-t =  t / \sqrt{t^Tt}
-\end{equation}
-```
+\\\begin{equation} t = t / \sqrt{t^Tt} \end{equation}\\
 
-The Y scores $`u`$ are not actually necessary in the regression but are
+The Y scores \\u\\ are not actually necessary in the regression but are
 often saved for interpretation purposes. Next, X and Y loadings are
-obtained by regressing against the *same* vector $`t`$:
+obtained by regressing against the *same* vector \\t\\:
 
-``` math
-\begin{equation}
-\label{eq:plspt}
-p = \mathbf{E}^T t
-\end{equation}
-```
-``` math
-\begin{equation}
-\label{eq:plsqt}
-q = \mathbf{F}^T t
-\end{equation}
-```
+\\\begin{equation} \label{eq:plspt} p = \mathbf{E}^T t \end{equation}\\
+\\\begin{equation} \label{eq:plsqt} q = \mathbf{F}^T t \end{equation}\\
 
 Finally, the data matrices are ‘deflated’: the information related to
-this latent variable, in the form of the outer products $`t p^T`$ and
-$`t q^T`$, is subtracted from the (current) data matrices $`\mathbf{E}`$
-and $`\mathbf{F}`$.
+this latent variable, in the form of the outer products \\t p^T\\ and
+\\t q^T\\, is subtracted from the (current) data matrices \\\mathbf{E}\\
+and \\\mathbf{F}\\.
 
-``` math
-\begin{equation}
-\mathbf{E}_{n+1} = \mathbf{E}_n - t p^T
-\end{equation}
-```
-``` math
-\begin{equation}
-\mathbf{F}_{n+1} = \mathbf{F}_n - t q^T
-\end{equation}
-```
+\\\begin{equation} \mathbf{E}\_{n+1} = \mathbf{E}\_n - t p^T
+\end{equation}\\ \\\begin{equation} \mathbf{F}\_{n+1} = \mathbf{F}\_n -
+t q^T \end{equation}\\
 
 The estimation of the next component then can start from the SVD of the
-crossproduct matrix $`\mathbf{E}_{n+1}^T\mathbf{F}_{n+1}`$. After every
-iteration, vectors $`w`$, $`t`$, $`p`$ and $`q`$ are saved as columns in
-matrices $`\mathbf{W}`$, $`\mathbf{T}`$, $`\mathbf{P}`$ and
-$`\mathbf{Q}`$, respectively. One complication is that columns of matrix
-$`\mathbf{W}`$ can not be compared directly: they are derived from
-successively deflated matrices $`\mathbf{E}`$ and $`\mathbf{F}`$. It has
+crossproduct matrix \\\mathbf{E}\_{n+1}^T\mathbf{F}\_{n+1}\\. After
+every iteration, vectors \\w\\, \\t\\, \\p\\ and \\q\\ are saved as
+columns in matrices \\\mathbf{W}\\, \\\mathbf{T}\\, \\\mathbf{P}\\ and
+\\\mathbf{Q}\\, respectively. One complication is that columns of matrix
+\\\mathbf{W}\\ can not be compared directly: they are derived from
+successively deflated matrices \\\mathbf{E}\\ and \\\mathbf{F}\\. It has
 been shown that an alternative way to represent the weights, in such a
-way that all columns relate to the original $`\mathbf{X}`$ matrix, is
+way that all columns relate to the original \\\mathbf{X}\\ matrix, is
 given by
 
-``` math
-\begin{equation}
-\mathbf{R} = \mathbf{W} (\mathbf{P}^T \mathbf{W})^{-1}
-\end{equation}
-```
+\\\begin{equation} \mathbf{R} = \mathbf{W} (\mathbf{P}^T
+\mathbf{W})^{-1} \end{equation}\\
 
 Now, we are in the same position as in the PCR case: instead of
-regressing $`\mathbf{Y}`$ on $`\mathbf{X}`$, we use scores
-$`\mathbf{T}`$ to calculate the regression coefficients, and later
+regressing \\\mathbf{Y}\\ on \\\mathbf{X}\\, we use scores
+\\\mathbf{T}\\ to calculate the regression coefficients, and later
 convert these back to the realm of the original variables by
-pre-multiplying with matrix $`\mathbf{R}`$ (since
-$`\mathbf{T} = \mathbf{X} \mathbf{R}`$):
+pre-multiplying with matrix \\\mathbf{R}\\ (since \\\mathbf{T} =
+\mathbf{X} \mathbf{R}\\):
 
-``` math
-\begin{equation}
-\mathbf{B} = \mathbf{R} (\mathbf{T}^T \mathbf{T})^{-1} \mathbf{T}^T \mathbf{Y}
-    = \mathbf{R} \mathbf{T}^T \mathbf{Y}
-    = \mathbf{R} \mathbf{Q}^T
-\end{equation}
-```
+\\\begin{equation} \mathbf{B} = \mathbf{R} (\mathbf{T}^T
+\mathbf{T})^{-1} \mathbf{T}^T \mathbf{Y} = \mathbf{R} \mathbf{T}^T
+\mathbf{Y} = \mathbf{R} \mathbf{Q}^T \end{equation}\\
 
-Again, here, only the first $`a`$ components are used. How many
+Again, here, only the first \\a\\ components are used. How many
 components are optimal has to be determined, usually by
 cross-validation.
 
 Many alternative formulations can be found in literature. It has been
-shown, for instance, that only one of $`\mathbf{X}`$ and $`\mathbf{Y}`$
+shown, for instance, that only one of \\\mathbf{X}\\ and \\\mathbf{Y}\\
 needs to be deflated ; alternatively, one can directly deflate the
-crossproduct matrix $`\mathbf{S}`$ (as is done in SIMPLS, for example).
+crossproduct matrix \\\mathbf{S}\\ (as is done in SIMPLS, for example).
 Moreover, there are many equivalent ways of scaling. In the example
-above, the scores $`t`$ have been normalised, but one can also choose to
+above, the scores \\t\\ have been normalised, but one can also choose to
 introduce normalisation at another point in the algorithm.
 Unfortunately, this can make it difficult to directly compare the scores
 and loadings of different PLSR implementations.
@@ -263,22 +209,22 @@ and loadings of different PLSR implementations.
 ### 2.2 On the use of PLSR and PCR
 
 In theory, PLSR should have an advantage over PCR. One could imagine a
-situation where a minor component in $`\mathbf{X}`$ is highly correlated
-with $`\mathbf{Y}`$ ; not selecting enough components would then lead to
+situation where a minor component in \\\mathbf{X}\\ is highly correlated
+with \\\mathbf{Y}\\ ; not selecting enough components would then lead to
 very bad predictions. In PLSR, such a component would be automatically
 present in the first LV. In practice, however, there is hardly any
 difference between the use of PLSR and PCR ; in most situations, the
 methods achieve similar prediction accuracies, although PLSR usually
 needs fewer latent variables than PCR. Put the other way around: with
 the same number of latent variables, PLSR will cover more of the
-variation in $`\mathbf{Y}`$ and PCR will cover more of $`\mathbf{X}`$.
+variation in \\\mathbf{Y}\\ and PCR will cover more of \\\mathbf{X}\\.
 In turn, both behave very similar to ridge regression (Frank and
 Friedman 1993).
 
 It can also be shown that both PCR and PLSR behave as shrinkage methods
-(Hastie, Tibshirani, and Friedman 2001), although in some cases PLSR
-seems to increase the variance of individual regression coefficients,
-one possible explanation of why PLSR is not always better than PCR.
+(Hastie et al. 2001), although in some cases PLSR seems to increase the
+variance of individual regression coefficients, one possible explanation
+of why PLSR is not always better than PCR.
 
 ## 3 Example session
 
@@ -287,6 +233,7 @@ overview of the package. To be able to use the package, one first has to
 load it:
 
 ``` r
+
 library(pls)
 ```
 
@@ -326,6 +273,7 @@ These will be used in the examples that follow. To use the data sets,
 they must first be loaded:
 
 ``` r
+
 data(yarn)
 data(oliveoil)
 data(gasoline)
@@ -345,6 +293,7 @@ the use of **pls**. The spectra are shown in Figure 1. We first divide
 the data set into train and test data sets:
 
 ``` r
+
 gasTrain <- gasoline[1:50,]
 gasTest <- gasoline[51:60,]
 ```
@@ -352,6 +301,7 @@ gasTest <- gasoline[51:60,]
 A typical way of fitting a PLSR model is
 
 ``` r
+
 gas1 <- plsr(octane ~ NIR, ncomp = 10, data = gasTrain, validation = "LOO")
 ```
 
@@ -360,6 +310,7 @@ cross-validated predictions (Lachenbruch and Mickey 1968). We can get an
 overview of the fit and validation results with the `summary` method:
 
 ``` r
+
 summary(gas1)
 ```
 
@@ -393,6 +344,7 @@ Cederkvist 2004). (For a LOO CV, there is virtually no difference) .
 It is often simpler to judge the RMSEPs by plotting them:
 
 ``` r
+
 plot(RMSEP(gas1), legendpos = "topright")
 ```
 
@@ -415,6 +367,7 @@ by plotting predictions, scores, loadings, etc. The default plot is a
 prediction plot:
 
 ``` r
+
 plot(gas1, ncomp = 2, asp = 1, line = TRUE)
 ```
 
@@ -430,6 +383,7 @@ there is no indication of a curvature or other anomalies. Other plots
 can be selected with the argument `plottype`:
 
 ``` r
+
 plot(gas1, plottype = "scores", comps = 1:3)
 ```
 
@@ -448,6 +402,7 @@ component labels are the relative amount of X variance explained by each
 component. The explained variances can be extracted explicitly with
 
 ``` r
+
 explvar(gas1)
 ```
 
@@ -458,6 +413,7 @@ The loading plot (Figure 5) is much used for interpretation purposes,
 for instance to look for known spectral peaks or profiles:
 
 ``` r
+
 par(mar = c(4, 4, 0.3, 1) + 0.1)
 plot(gas1, "loadings", comps = 1:2, legendpos = "topleft",
      labels = "numbers", xlab = "nm")
@@ -470,7 +426,7 @@ data](pls-manual_files/figure-html/fig-loadings-1.png)
 Loading plot for the gasoline data
 
 The `labels = "numbers"` argument makes the plot function try to
-interpret the variable names as numbers, and use them as $`x`$ axis
+interpret the variable names as numbers, and use them as \\x\\ axis
 labels. Score and loading plots also have their own plotting functions,
 `scoreplot` and `loadingplot`, which have more options for plotting
 scores and loadings, respectively. For instance, `scoreplot`and its
@@ -479,6 +435,7 @@ called `estimate`, which can be used to plot cross-validated scores or
 test data scores, e.g.,
 
 ``` r
+
 par.old <- par(mfrow=c(1,2))
 scoreplot(gas1)
 scoreplot(gas1, estimate="CV")
@@ -490,6 +447,7 @@ data](pls-manual_files/figure-html/fig-scores-cv-1.png)
 Calibrated and cross-validated score plots for the gasoline data
 
 ``` r
+
 par(par.old)
 ```
 
@@ -498,6 +456,7 @@ observations. The following predicts the responses for the ten
 observations in `gasTest`, using two components:
 
 ``` r
+
 predict(gas1, ncomp = 2, newdata = gasTest)
 ```
 
@@ -519,6 +478,7 @@ Because we know the true response values for these samples, we can
 calculate the test set RMSEP:
 
 ``` r
+
 RMSEP(gas1, newdata = gasTest)
 ```
 
@@ -557,13 +517,12 @@ a matrix regressor: `y ~ X`. It is also possible to specify
 transformations of the variables. For instance, `log(y) ~ msc(Z)`
 specifies a regression of the logarithm of `y` onto `Z` after `Z` has
 been transformed by *Multiplicative Scatter (or Signal) Correction*
-(MSC) (Geladi, MacDougall, and Martens 1985), a pre-treatment that is
-very common in infrared spectroscopy. If the transformations contain
-symbols that are interpreted in the formula handling, e.g., `+`, `*` or
-`^`, the terms should be protected with the
-[`I()`](https://rdrr.io/r/base/AsIs.html) function, like this:
-`y ~ x1 + I(x2 + x3)`. This specifies *two* regressors: `x1`, and the
-sum of `x2` and `x3`.
+(MSC) (Geladi et al. 1985), a pre-treatment that is very common in
+infrared spectroscopy. If the transformations contain symbols that are
+interpreted in the formula handling, e.g., `+`, `*` or `^`, the terms
+should be protected with the [`I()`](https://rdrr.io/r/base/AsIs.html)
+function, like this: `y ~ x1 + I(x2 + x3)`. This specifies *two*
+regressors: `x1`, and the sum of `x2` and `x3`.
 
 ### 4.2 Data frames
 
@@ -611,6 +570,7 @@ inspected (Section 7) or used for predicting new observations (Section
 8). For instance:
 
 ``` r
+
 dens1 <- plsr(density ~ NIR, ncomp = 5, data = yarn)
 ```
 
@@ -618,12 +578,14 @@ If the response term of the formula is a matrix, a multi-response model
 is fit, e.g.,:
 
 ``` r
+
 dim(oliveoil$sensory)
 ```
 
     ## [1] 16  6
 
 ``` r
+
 plsr(sensory ~ chemical, data = oliveoil)
 ```
 
@@ -649,6 +611,7 @@ set, for instance the first 20, one can use arguments `subset = 1:20` or
 of the model, one can use the function `update`. For instance
 
 ``` r
+
 trainind <- which(yarn$train == TRUE)
 dens2 <- update(dens1, subset = trainind)
 ```
@@ -657,6 +620,7 @@ will refit the model `dens1` using only the observations which are
 marked as `TRUE` in `yarn$train`, and
 
 ``` r
+
 dens3 <- update(dens1, ncomp = 10)
 ```
 
@@ -690,13 +654,15 @@ For instance, this will fit a model with standardised chemical
 measurements:
 
 ``` r
+
 olive1 <- plsr(sensory ~ chemical, scale = TRUE, data = oliveoil)
 ```
 
-As mentioned earlier, MSC (Geladi, MacDougall, and Martens 1985) is
-implemented in **pls** as a function `msc` that can be used in formulas:
+As mentioned earlier, MSC (Geladi et al. 1985) is implemented in **pls**
+as a function `msc` that can be used in formulas:
 
 ``` r
+
 gas2 <- plsr(octane ~ msc(NIR), ncomp = 10, data = gasTrain)
 ```
 
@@ -705,6 +671,7 @@ spectra to be automatically scatter corrected (using the same reference
 spectrum as when fitting) in `predict`:
 
 ``` r
+
 predict(gas2, ncomp = 3, newdata = gasTest)
 ```
 
@@ -742,19 +709,19 @@ especially when building large numbers of models (e.g., in simulation
 studies), it can be crucial to have a consistent strategy on how to
 choose the “optimal” number of components. Two such strategies have been
 implemented in function `selectNcomp`. The first is based on the
-so-called one-sigma heuristic (Hastie, Friedman, and Tibshirani 2013)
-and consists of choosing the model with fewest components that is still
-less than one standard error away from the overall best model. The
-second strategy employs a permutation approach, and basically tests
-whether adding a new component is beneficial at all (Voet 1994). It is
-implemented backwards, again taking the global minimum in the
-crossvalidation curve as a starting point, and assessing models with
-fewer and fewer components: as long as no significant deterioration in
-performance is found (by default on the $`\alpha = 0.01`$ level), the
-algorithm continues to remove components. Applying the function is quite
-straightforward:
+so-called one-sigma heuristic (Hastie et al. 2013) and consists of
+choosing the model with fewest components that is still less than one
+standard error away from the overall best model. The second strategy
+employs a permutation approach, and basically tests whether adding a new
+component is beneficial at all (Voet 1994). It is implemented backwards,
+again taking the global minimum in the crossvalidation curve as a
+starting point, and assessing models with fewer and fewer components: as
+long as no significant deterioration in performance is found (by default
+on the \\\alpha = 0.01\\ level), the algorithm continues to remove
+components. Applying the function is quite straightforward:
 
 ``` r
+
 ncomp.onesigma <- selectNcomp(gas2, method = "onesigma", plot = TRUE,
                               ylim = c(.18, .6))
 ncomp.permut <- selectNcomp(gas2, method = "randomization", plot = TRUE,
@@ -793,6 +760,7 @@ for each segment. The results can be shown in a plot (which looks very
 similar to Figure 2) or summarised in numbers.
 
 ``` r
+
 gas2.cv <- crossval(gas2, segments = 10)
 plot(MSEP(gas2.cv), legendpos="topright")
 ```
@@ -800,6 +768,7 @@ plot(MSEP(gas2.cv), legendpos="topright")
 ![](pls-manual_files/figure-html/crossval-1.png)
 
 ``` r
+
 summary(gas2.cv, what = "validation")
 ```
 
@@ -850,7 +819,7 @@ can be seen in Figure 3. An optional argument can be used to indicate
 how many components should be included in the prediction. To assess how
 many components are optimal, a validation plot (`validationplot`) can be
 used such as the one shown in Figure 2; this shows a measure of
-prediction performance (either RMSEP, MSEP, or $`R^2`$) against the
+prediction performance (either RMSEP, MSEP, or \\R^2\\) against the
 number of components. Usually, one takes the first local minimum rather
 than the absolute minimum in the curve, to avoid over-fitting. The
 regression coefficients can be visualised using `plottype = "coef"` in
@@ -860,6 +829,7 @@ numbers of components at once. The regression vectors for the `gasoline`
 data set using MSC are shown in Figure 7 using the command
 
 ``` r
+
 plot(gas1, plottype = "coef", ncomp=1:3, legendpos = "bottomleft",
      labels = "numbers", xlab = "nm")
 ```
@@ -927,7 +897,7 @@ The `print` method for an object of class `"mvr"` shows the regression
 type used, perhaps indicating the form of validation employed, and shows
 the function call. The `summary` method gives more information: it also
 shows the amount of variance explained by the model (for all choices of
-$`a`$, the number of latent variables). The `summary` method has an
+\\a\\, the number of latent variables). The `summary` method has an
 additional argument (`what`) to be able to focus on the training phase
 or validation phase, respectively. Default is to print both types of
 information.
@@ -945,13 +915,14 @@ be used to compare the predicted values to the measured ones, or to
 estimate the overall prediction ability of the model. If `newdata` is
 missing, `predict` uses the data used to fit the model, i.e., it returns
 fitted values. If the argument `ncomp` is missing, `predict` returns
-predictions for models with 1 component, 2 components, $`\ldots`$, $`A`$
-components, where $`A`$ is the number of components used when fitting
+predictions for models with 1 component, 2 components, \\\ldots\\, \\A\\
+components, where \\A\\ is the number of components used when fitting
 the model. Otherwise, the model size(s) listed in `ncomp` are used. For
 instance, to get predictions from the model built in Section 3, with two
 and three components, one would use
 
 ``` r
+
 predict(gas1, ncomp = 2:3, newdata = gasTest[1:5,])
 ```
 
@@ -984,6 +955,7 @@ instance, to get predictions from a model with only component 2, one can
 use
 
 ``` r
+
 predict(gas1, comps = 2, newdata = gasTest[1:5,])
 ```
 
@@ -1000,10 +972,10 @@ in the predictions. It can be removed by subtracting `mymod$Ymeans` from
 the predicted values.)
 
 The `predict` method returns a three-dimensional array, in which the
-entry $`(i,j,k)`$ is the predicted value for observation $`i`$, response
-$`j`$ and model size $`k`$. Note that singleton dimensions are not
+entry \\(i,j,k)\\ is the predicted value for observation \\i\\, response
+\\j\\ and model size \\k\\. Note that singleton dimensions are not
 dropped, so predicting five observations for a uni-response model with
-`ncomp = 3` gives an $`5 \times 1 \times 1`$ array, not a vector of
+`ncomp = 3` gives an \\5 \times 1 \times 1\\ array, not a vector of
 length five. This is to make it easier to distinguish between
 predictions from models with one response and predictions with one model
 size. (When using the `comps` argument, the last dimension is dropped,
@@ -1011,6 +983,7 @@ because the predictions are always from a single model.) One can drop
 the singleton dimensions explicitly by using `drop(predict(...))`:
 
 ``` r
+
 drop(predict(gas1, ncomp = 2:3, newdata = gasTest[1:5,]))
 ```
 
@@ -1055,6 +1028,7 @@ other types of models, such as `lm`. Typically, `predplot` is called
 like this:
 
 ``` r
+
 predplot(gas1, ncomp = 2, newdata = gasTest, asp = 1, line = TRUE)
 ```
 
@@ -1077,12 +1051,12 @@ advanced use of the package.
 There are several PLSR algorithms, and the **pls** package currently
 implements three of them: the kernel algorithm for tall matrices (many
 observations, few variables) (Dayal and MacGregor 1997), the classic
-orthogonal scores algorithm (A.K.A. NIPALS algorithm) (Harald Martens
-and Næs 1989) and the SIMPLS algorithm (Jong 1993). The kernel and
-orthogonal scores algorithms produce the same results (the kernel
-algorithm being the fastest of them for most problems). SIMPLS produces
-the same fit for single-response models, but slightly different results
-for multi-response models. It is also usually faster than the NIPALS
+orthogonal scores algorithm (A.K.A. NIPALS algorithm) (Martens and Næs
+1989) and the SIMPLS algorithm (Jong 1993). The kernel and orthogonal
+scores algorithms produce the same results (the kernel algorithm being
+the fastest of them for most problems). SIMPLS produces the same fit for
+single-response models, but slightly different results for
+multi-response models. It is also usually faster than the NIPALS
 algorithm.
 
 The factory default is to use the kernel algorithm. One can specify a
@@ -1096,6 +1070,7 @@ matching). Therefore, the defaults can be changed, with the function
 as a named list:
 
 ``` r
+
 pls.options()
 ```
 
@@ -1126,6 +1101,7 @@ The options specify the default fit algorithm of `mvr`, `plsr`, and
 rest of the session, one can use, e.g.:
 
 ``` r
+
 pls.options(plsralg = "oscorespls")
 ```
 
@@ -1148,8 +1124,8 @@ fitting, but not when predicting. These are enabled throught the extra
 argument `Y.add`. Weighting of samples is also possible using the
 `weights`argument. Finally, focused loading weights can be enabled or
 forced throught the `lower`and `upper`arguments (see the example in
-[`?cppls`](https://khliland.github.io/pls/reference/mvr.md) and (Indahl,
-Liland, and Næs 2009))
+[`?cppls`](https://khliland.github.io/pls/reference/mvr.md) and (Indahl
+et al. 2009))
 
 #### 9.1.2 Missing data handling
 
@@ -1190,12 +1166,13 @@ The default value for `parallel` is `NULL`, which specifies that the
 calculations are done serially, using one CPU. Specifying the value 1
 has the same effect.
 
-Specifying an integer $`> 1`$ makes the calculations use the function
+Specifying an integer \\\> 1\\ makes the calculations use the function
 `mclapply` with the given number as the number of CPUs to use. Note:
 `mclapply` depends on ‘forking’ which does not exist on MS Windows, so
 `mclapply` cannot be used there. Example:
 
 ``` r
+
 pls.options(parallel = 4) # Use mclapply with 4 CPUs
 gas1.cv <- plsr(octane ~ NIR, ncomp = 10, data = gasTrain, validation = "LOO")
 ```
@@ -1208,6 +1185,7 @@ used. The user should stop the cluster with
 `stopCluster(pls.options()$parallel)` when it is no longer needed.
 
 ``` r
+
 library(parallel) # Needed for the makeCluster call
 pls.options(parallel = makeCluster(4, type = "PSOCK")) # PSOCK cluster, 4 CPUs
 gas1.cv <- plsr(octane ~ NIR, ncomp = 10, data = gasTrain, validation = "LOO")
@@ -1273,6 +1251,7 @@ and loading matrices. Thus there are several ways to get some plots,
 e.g.:
 
 ``` r
+
 plot(mymod, plottype = "scores", ...)
 scoreplot(mymod, ...)
 plot(scores(mymod), ...)
@@ -1290,12 +1269,12 @@ earlier version of) the SIMPLS fit function `simpls.fit`.
 The underlying fit functions are called `kernelpls.fit`,
 `oscorespls.fit`, and `simpls.fit` for the PLSR methods, and `svdpc.fit`
 for the PCR method. They all take arguments `X`, `Y`, `ncomp`, and
-`stripped`. Arguments `X`, `Y`, and `ncomp` specify $`\mathbf{X}`$ and
-$`\mathbf{Y}`$ (as matrices, not data frames), and the number of
+`stripped`. Arguments `X`, `Y`, and `ncomp` specify \\\mathbf{X}\\ and
+\\\mathbf{Y}\\ (as matrices, not data frames), and the number of
 components to fit, respectively. The argument `stripped` defaults to
 `FALSE`. When it is `TRUE`, the calculations are stripped down to the
-bare minimum required for returning the $`\mathbf{X}`$ means,
-$`\mathbf{Y}`$ means, and the regression coefficients. This is used to
+bare minimum required for returning the \\\mathbf{X}\\ means,
+\\\mathbf{Y}\\ means, and the regression coefficients. This is used to
 speed up cross-validation procedures.
 
 The fit functions can be called directly, for instance when one wants to
@@ -1304,6 +1283,7 @@ example, this is how a simple leave-one-out cross-validation for a
 uni-response-model could be implemented, using the SIMPLS:
 
 ``` r
+
 X <- gasTrain$NIR
 Y <- gasTrain$octane
 ncomp <- 5
@@ -1318,6 +1298,7 @@ for (i in 1:nrow(X)) {
 The RMSEP of the cross-validated predictions are
 
 ``` r
+
 sqrt(colMeans((cvPreds - Y)^2))
 ```
 
@@ -1350,7 +1331,7 @@ is that explicitly specifying formulas without the intercept (e.g.,
 ## References
 
 Chambers, John M., and Trevor J. Hastie. 1992. *Statistical Models in
-S*. London: Chapman & Hall.
+S*. Chapman & Hall.
 
 Cramer, R. D., D. E. Patterson, and J. D. Bunce. 1988. “Comparative
 Molecular-Field Analysis (ComFA). 1. Effect of Shape on Binding of
@@ -1376,7 +1357,7 @@ Hastie, T., J. Friedman, and R. Tibshirani. 2013. *The Elements of
 Statistical Learning: Data Mining, Inference, and Prediction*. Springer.
 
 Hastie, T., R. Tibshirani, and J. H. Friedman, eds. 2001. *The Elements
-of Statistical Learning*. New York: Springer.
+of Statistical Learning*. Springer.
 
 Indahl, Ulf G, Kristian Hovde Liland, and Tormod Næs. 2009. “Canonical
 Partial Least Squares—a Unified PLS Approach to Classification and
@@ -1407,7 +1388,7 @@ Personal Account of the Development of PLS Regression.” *Chemometrics
 and Intelligent Laboratory Systems* 58 (2): 85–95.
 
 Martens, Harald, and Tormod Næs. 1989. *Multivariate Calibration*.
-Chichester: Wiley.
+Wiley.
 
 Massart, D. L., B. G. M. Vandeginste, L. M. C. Buydens, S. de Jong, P.
 J. Lewi, and J. Smeyers-Verbeke. 1998. *Handbook of Chemometrics and

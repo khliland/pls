@@ -171,6 +171,7 @@ Ron Wehrens and Bjørn-Helge Mevik
 ## Examples
 
 ``` r
+
 data(yarn)
 yarn.pcr <- pcr(density ~ msc(NIR), 6, data = yarn)
 yarn.cv <- crossval(yarn.pcr, segments = 10)

@@ -77,6 +77,7 @@ Ron Wehrens and Bjørn-Helge Mevik
 ## Examples
 
 ``` r
+
 data(yarn)
 plsmod <- plsr(density ~ NIR, 6, data = yarn)
 scores(plsmod)

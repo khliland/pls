@@ -207,6 +207,7 @@ Ron Wehrens and Bjørn-Helge Mevik
 ## Examples
 
 ``` r
+
 data(oliveoil)
 mod <- plsr(sensory ~ chemical, ncomp = 4, data = oliveoil, validation = "LOO")
 RMSEP(mod)

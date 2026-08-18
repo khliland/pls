@@ -65,6 +65,7 @@ Ron Wehrens and Bjørn-Helge Mevik
 ## Examples
 
 ``` r
+
 data(yarn)
 nir.pcr <- pcr(density ~ NIR, ncomp = 9, data = yarn, validation = "CV")
 if (FALSE) { # \dontrun{

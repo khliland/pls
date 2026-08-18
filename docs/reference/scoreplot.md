@@ -298,6 +298,7 @@ Ron Wehrens and Bjørn-Helge Mevik
 ## Examples
 
 ``` r
+
 data(yarn)
 mod <- plsr(density ~ NIR, ncomp = 10, data = yarn)
 ## These three are equivalent:

@@ -85,6 +85,7 @@ Ron Wehrens and Bjørn-Helge Mevik
 ## Examples
 
 ``` r
+
 data(yarn)
 nir.mvr <- mvr(density ~ NIR, ncomp = 8, validation = "LOO", data = yarn)
 nir.mvr

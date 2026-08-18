@@ -192,6 +192,7 @@ Ron Wehrens and Bjørn-Helge Mevik
 ## Examples
 
 ``` r
+
 data(oliveoil)
 mod <- plsr(sensory ~ chemical, data = oliveoil, validation = "LOO")
 if (FALSE) { # \dontrun{

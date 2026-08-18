@@ -76,6 +76,7 @@ Bjørn-Helge Mevik and Ron Wehrens
 ## Examples
 
 ``` r
+
 data(yarn)
 ## Direct correction:
 Ztrain <- msc(yarn$NIR[yarn$train,])
