@@ -1,0 +1,154 @@
+# Package index
+
+## Model fitting
+
+Functions for fitting PLSR and PCR models.
+
+- [`mvr()`](https://khliland.github.io/pls/reference/mvr.md)
+  [`plsr()`](https://khliland.github.io/pls/reference/mvr.md)
+  [`pcr()`](https://khliland.github.io/pls/reference/mvr.md)
+  [`cppls()`](https://khliland.github.io/pls/reference/mvr.md)
+  [`nipals()`](https://khliland.github.io/pls/reference/mvr.md)
+  [`nipalspcr()`](https://khliland.github.io/pls/reference/mvr.md) :
+  Partial Least Squares and Principal Component Regression
+- [`mvrValstats()`](https://khliland.github.io/pls/reference/mvrVal.md)
+  [`R2()`](https://khliland.github.io/pls/reference/mvrVal.md)
+  [`MSEP()`](https://khliland.github.io/pls/reference/mvrVal.md)
+  [`RMSEP()`](https://khliland.github.io/pls/reference/mvrVal.md) :
+  MSEP, RMSEP and R2 of PLSR and PCR models
+
+## Model summary
+
+Functions for summarizing fitted models.
+
+- [`print(`*`<mvr>`*`)`](https://khliland.github.io/pls/reference/summary.mvr.md)
+  [`summary(`*`<mvr>`*`)`](https://khliland.github.io/pls/reference/summary.mvr.md)
+  [`print(`*`<mvrVal>`*`)`](https://khliland.github.io/pls/reference/summary.mvr.md)
+  [`as.data.frame(`*`<mvrVal>`*`)`](https://khliland.github.io/pls/reference/summary.mvr.md)
+  : Summary and Print Methods for PLSR and PCR objects
+- [`coefplot()`](https://khliland.github.io/pls/reference/coefplot.md) :
+  Plot Regression Coefficients of PLSR and PCR models
+- [`predplot()`](https://khliland.github.io/pls/reference/predplot.md)
+  [`predplotXy()`](https://khliland.github.io/pls/reference/predplot.md)
+  : Prediction Plots
+
+## Plotting
+
+Functions for plotting fitted models.
+
+- [`plot(`*`<mvr>`*`)`](https://khliland.github.io/pls/reference/plot.mvr.md)
+  : Plot Method for MVR objects
+- [`scoreplot()`](https://khliland.github.io/pls/reference/scoreplot.md)
+  [`plot(`*`<scores>`*`)`](https://khliland.github.io/pls/reference/scoreplot.md)
+  [`loadingplot()`](https://khliland.github.io/pls/reference/scoreplot.md)
+  [`plot(`*`<loadings>`*`)`](https://khliland.github.io/pls/reference/scoreplot.md)
+  [`corrplot()`](https://khliland.github.io/pls/reference/scoreplot.md)
+  : Plots of Scores, Loadings and Correlation Loadings
+- [`biplot(`*`<mvr>`*`)`](https://khliland.github.io/pls/reference/biplot.mvr.md)
+  : Biplots of PLSR and PCR Models.
+- [`predplot()`](https://khliland.github.io/pls/reference/predplot.md)
+  [`predplotXy()`](https://khliland.github.io/pls/reference/predplot.md)
+  : Prediction Plots
+- [`validationplot()`](https://khliland.github.io/pls/reference/validationplot.md)
+  [`plot(`*`<mvrVal>`*`)`](https://khliland.github.io/pls/reference/validationplot.md)
+  : Validation Plots
+
+## Extraction methods
+
+Functions for extracting information from fitted models.
+
+- [`coef(`*`<mvr>`*`)`](https://khliland.github.io/pls/reference/coef.mvr.md)
+  [`fitted(`*`<mvr>`*`)`](https://khliland.github.io/pls/reference/coef.mvr.md)
+  [`residuals(`*`<mvr>`*`)`](https://khliland.github.io/pls/reference/coef.mvr.md)
+  [`model.frame(`*`<mvr>`*`)`](https://khliland.github.io/pls/reference/coef.mvr.md)
+  [`model.matrix(`*`<mvr>`*`)`](https://khliland.github.io/pls/reference/coef.mvr.md)
+  [`respnames()`](https://khliland.github.io/pls/reference/coef.mvr.md)
+  [`prednames()`](https://khliland.github.io/pls/reference/coef.mvr.md)
+  [`compnames()`](https://khliland.github.io/pls/reference/coef.mvr.md)
+  [`explvar()`](https://khliland.github.io/pls/reference/coef.mvr.md) :
+  Extract Information From a Fitted PLSR or PCR Model
+- [`loadings()`](https://khliland.github.io/pls/reference/scores.md)
+  [`scores()`](https://khliland.github.io/pls/reference/scores.md)
+  [`Yscores()`](https://khliland.github.io/pls/reference/scores.md)
+  [`loading.weights()`](https://khliland.github.io/pls/reference/scores.md)
+  [`Yloadings()`](https://khliland.github.io/pls/reference/scores.md) :
+  Extract Scores and Loadings from PLSR and PCR Models
+- [`predict(`*`<mvr>`*`)`](https://khliland.github.io/pls/reference/predict.mvr.md)
+  : Predict Method for PLSR and PCR
+- [`vcov(`*`<mvr>`*`)`](https://khliland.github.io/pls/reference/vcov.mvr.md)
+  : Calculate Variance-Covariance Matrix for a Fitted Model Object
+- [`selectNcomp()`](https://khliland.github.io/pls/reference/selectNcomp.md)
+  : Suggestions for the optimal number of components in PCR and PLSR
+  models
+- [`pls.options()`](https://khliland.github.io/pls/reference/pls.options.md)
+  : Set or return options for the pls package
+
+## Validation
+
+Functions for validating fitted models.
+
+- [`crossval()`](https://khliland.github.io/pls/reference/crossval.md) :
+  Cross-validation of PLSR and PCR models
+- [`mvrCv()`](https://khliland.github.io/pls/reference/mvrCv.md) :
+  Cross-validation
+- [`cvsegments()`](https://khliland.github.io/pls/reference/cvsegments.md)
+  : Generate segments for cross-validation
+- [`fac2seg()`](https://khliland.github.io/pls/reference/fac2seg.md) :
+  Factor to Segments
+- [`mvrValstats()`](https://khliland.github.io/pls/reference/mvrVal.md)
+  [`R2()`](https://khliland.github.io/pls/reference/mvrVal.md)
+  [`MSEP()`](https://khliland.github.io/pls/reference/mvrVal.md)
+  [`RMSEP()`](https://khliland.github.io/pls/reference/mvrVal.md) :
+  MSEP, RMSEP and R2 of PLSR and PCR models
+
+## Tests
+
+Functions for testing fitted models.
+
+- [`jack.test()`](https://khliland.github.io/pls/reference/jack.test.md)
+  [`print(`*`<jacktest>`*`)`](https://khliland.github.io/pls/reference/jack.test.md)
+  : Jackknife approximate t tests of regression coefficients
+- [`var.jack()`](https://khliland.github.io/pls/reference/var.jack.md) :
+  Jackknife Variance Estimates of Regression Coefficients
+
+## Algorithms
+
+Functions for fitting models using various algorithms.
+
+- [`kernelpls.fit()`](https://khliland.github.io/pls/reference/kernelpls.fit.md)
+  : Kernel PLS (Dayal and MacGregor)
+- [`nipals.fit()`](https://khliland.github.io/pls/reference/nipals.fit.md)
+  : NIPALS PLS with missing values
+- [`nipalspc.fit()`](https://khliland.github.io/pls/reference/nipalspc.fit.md)
+  : NIPALS PCR with missing values
+- [`cppls.fit()`](https://khliland.github.io/pls/reference/cppls.fit.md)
+  : CPPLS (Indahl et al.)
+- [`oscorespls.fit()`](https://khliland.github.io/pls/reference/oscorespls.fit.md)
+  : Orthogonal scores PLSR
+- [`widekernelpls.fit()`](https://khliland.github.io/pls/reference/widekernelpls.fit.md)
+  : Wide Kernel PLS (Rännar et al.)
+- [`simpls.fit()`](https://khliland.github.io/pls/reference/simpls.fit.md)
+  : Sijmen de Jong's SIMPLS
+- [`svdpc.fit()`](https://khliland.github.io/pls/reference/svdpc.fit.md)
+  : Principal Component Regression
+- [`msc()`](https://khliland.github.io/pls/reference/msc.md)
+  [`predict(`*`<msc>`*`)`](https://khliland.github.io/pls/reference/msc.md)
+  [`makepredictcall(`*`<msc>`*`)`](https://khliland.github.io/pls/reference/msc.md)
+  : Multiplicative Scatter Correction
+- [`stdize()`](https://khliland.github.io/pls/reference/stdize.md)
+  [`predict(`*`<stdized>`*`)`](https://khliland.github.io/pls/reference/stdize.md)
+  [`makepredictcall(`*`<stdized>`*`)`](https://khliland.github.io/pls/reference/stdize.md)
+  : Standardization of Data Matrices
+
+## Data sets
+
+Data sets included in the package.
+
+- [`gasoline`](https://khliland.github.io/pls/reference/gasoline.md) :
+  Octane numbers and NIR spectra of gasoline
+- [`yarn`](https://khliland.github.io/pls/reference/yarn.md) : NIR
+  spectra and density measurements of PET yarns
+- [`oliveoil`](https://khliland.github.io/pls/reference/oliveoil.md) :
+  Sensory and physico-chemical data of olive oils
+- [`mayonnaise`](https://khliland.github.io/pls/reference/mayonnaise.md)
+  : NIR measurements and oil types of mayonnaise
