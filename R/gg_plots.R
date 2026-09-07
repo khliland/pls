@@ -1025,6 +1025,7 @@ autoplot.mvr <- function(object, type = c("scores", "loadings", "biplot",
 #' @param panel_args named list of named lists. Each element provides
 #'   arguments passed to the corresponding panel function.
 #' @param height positive numeric height in pixels for each Plotly panel.
+#' @importFrom utils modifyList
 #' @return A composed dashboard object. In static mode, a \code{gtable}
 #'   (drawn automatically in interactive sessions, returned invisibly); in
 #'   plotly mode, an \code{htmltools} HTML container.

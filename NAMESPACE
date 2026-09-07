@@ -149,4 +149,7 @@ importFrom(stats,
   update,
   var
 )
-importFrom(utils,combn)
+importFrom(utils,
+  combn,
+  modifyList
+)

@@ -1,0 +1,176 @@
+---
+title: "ggplot2-tidyverse"
+author:
+  - Kristian Hovde Liland
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ggplot2-tidyverse}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+library(pls)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+# Fit a compact model
+
+```{r fit-model-gg}
+data(yarn)
+d <- yarn[1:20, , drop = FALSE]
+mod <- plsr(density ~ NIR, ncomp = 2, data = d, validation = "CV")
+```
+
+# Optional ggplot workflow
+
+If **ggplot2** is installed, the model can be plotted through
+`autoplot()` or the dedicated ggplot helpers.
+
+## Score and loading plots
+
+These are the basic plots for viewing the observations and variables through
+subspace windows. While score plots are always in the form of scatter plots,
+scatter can be turned on and off for loading plots depending on what type
+of data are analysed.
+
+```{r ggplot-score-loadings, eval=TRUE}
+gg_scoreplot(mod)
+gg_loadingplot(mod, scatter = TRUE)
+gg_loadingplot(mod)
+```
+
+## Optional interactive selection and refit
+
+If **ggiraph** and **shiny** are installed, selected sample IDs can be returned
+from `gg_scoreplot(select = TRUE)` and used with `refit()`. This makes for an
+intuitive, visual selection and refit procedure.
+
+```{r optional-interactive, eval=FALSE}
+ids <- gg_scoreplot(mod, select = TRUE)
+mod_drop <- refit(mod, selection = ids, exclude = TRUE)
+mod_keep <- refit(mod, selection = ids, exclude = FALSE)
+```
+
+## Biplot and correlation plot
+
+Scores and loadings can also be overlayed in joint scatter
+plots called biplots. One can also show how much the variables are correlated
+to the scores through correlation plots.
+
+```{r ggplot-bi-corr, eval=TRUE}
+gg_biplot(mod)
+gg_corrplot(mod)
+```
+
+## Prediction plot
+
+Plots of predicted values vs measured values are obtained through
+prediction plots.
+
+```{r ggplot-pred, eval=TRUE}
+gg_predplot(mod, ncomp = 1:2)
+```
+
+## Coefficient plot
+
+Regression coefficients can be visualised through coefficient plots.
+
+```{r ggplot-coef, eval=TRUE}
+gg_coefplot(mod, ncomp = 1:2)
+```
+
+## Validation plot
+
+Finally, validation metrics can be shown using validation plots.
+
+```{r ggplot-val, eval=TRUE}
+gg_valplot(mod, val.type = "R2", estimate = c("train", "CV"))
+```
+
+## autplot()
+
+All the plots above can also be produced using the autoplot() function
+associated with ggplot2. 
+
+```{r optional-autoplot, eval=FALSE}
+autoplot(mod, type = "scores")
+autoplot(mod, type = "loadings")
+autoplot(mod, type = "biplot")
+autoplot(mod, type = "correlation")
+autoplot(mod, type = "prediction")
+autoplot(mod, type = "coefficients")
+autoplot(mod, type = "validation", val.type = "R2", estimate = c("train", "CV"))
+```
+
+## Dashboards
+
+The dashboard plots combine a set of plots to give an overview of the main
+aspects of the model. The default is to show scores, loadings, prediction 
+and validation metrics as a ggplot2 or plotly panel.
+
+```{r ggplot-dashboard, eval=TRUE}
+# Static dashboard (draws in interactive sessions, returns a gtable invisibly)
+gg_dashboard(
+  mod,
+  panel_args = list(prediction = list(ncomp = 2))
+)
+
+# HTML dashboard with Plotly panels
+# The rendered object is an htmltools HTML container, not a raw plotly object.
+gg_dashboard(
+  mod,
+  plotly = TRUE,
+  panel_args = list(prediction = list(ncomp = 2))
+)
+```
+
+# Tidyverse workflow
+
+A compact, tidy-style workflow for `mvr` models is also supported by
+the **pls** package, using the new methods:
+
+- `tidy()` for long-format model components and validation outputs.
+- `glance()` for one-row model summaries.
+- `augment()` for sample-wise fitted values and residuals.
+
+## Fit a compact model
+
+```{r fit-model}
+data(yarn)
+d <- yarn[1:20, , drop = FALSE]
+mod <- plsr(density ~ NIR, ncomp = 2, data = d, validation = "CV")
+```
+
+## Tidy model components
+
+```{r tidy-components}
+comp_tbl <- tidy(mod, what = c("weights", "loadings", "coefficients"))
+head(comp_tbl)
+```
+
+## Tidy validation metrics
+
+```{r tidy-validation}
+rmsep_tbl <- tidy(RMSEP(mod, estimate = c("train", "CV")))
+head(rmsep_tbl)
+```
+
+## One-row summary with glance
+
+```{r glance-summary}
+glance(mod)
+```
+
+## Sample-wise outputs with augment
+
+```{r augment-train}
+aug_train <- augment(mod)
+aug_train[1:5, -2]
+```
+
+```{r augment-newdata}
+aug_new <- augment(mod, data = d[1:5, , drop = FALSE])
+aug_new[, -1]
+```
+
