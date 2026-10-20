@@ -243,23 +243,19 @@ gg_loadingplot.mvr <- function(object, comps = 1:2, scatter = FALSE,
   )
 
   if (isTRUE(scatter)) {
+    point_labels <- .resolve_gg_point_labels(labels, vars)
+    if (!is.null(point_labels)) load_df$label <- point_labels
+
     p <- ggplot2::ggplot(load_df, ggplot2::aes(x = .data$x, y = .data$y)) +
-      ggplot2::geom_point(...) +
       ggplot2::labs(
         x = compnames(object, comps = comps[1], explvar = TRUE),
         y = compnames(object, comps = comps[2], explvar = TRUE)
       )
 
-    point_labels <- .resolve_gg_point_labels(labels, vars)
     if (!is.null(point_labels)) {
-      load_df$label <- point_labels
-      p <- ggplot2::ggplot(load_df, ggplot2::aes(x = .data$x, y = .data$y)) +
-        ggplot2::geom_point(...) +
-        ggplot2::geom_text(ggplot2::aes(label = .data$label), vjust = -0.6) +
-        ggplot2::labs(
-          x = compnames(object, comps = comps[1], explvar = TRUE),
-          y = compnames(object, comps = comps[2], explvar = TRUE)
-        )
+      p <- p + ggplot2::geom_text(ggplot2::aes(label = .data$label), vjust = -0.6)
+    } else {
+      p <- p + ggplot2::geom_point(...)
     }
   } else {
     axis_labels <- .resolve_gg_axis_labels(labels, vars,
@@ -915,6 +911,144 @@ gg_valplot.mvrVal <- function(object, xlab = "number of components", ylab,
   p
 }
 
+#' Raw Data Plot Panel for mvr Models
+#'
+#' @param object An mvr model object, matrix, or data.frame.
+#' @param type Character. One of "boxplot", "line", or "violin".
+#' @param jitter_width Numeric width for point jitter in boxplot/violin modes.
+#' @param alpha Numeric transparency for observations.
+#' @param angle Numeric. Angle (0 to 90) to rotate x-axis labels. Default is 0.
+#' @param check_overlap Logical. If TRUE, automatically suppresses overlapping x-axis labels.
+#' @param max_ticks Integer. Maximum number of tick labels to show when `plotly = TRUE`.#' @param plotly Logical. If TRUE, returns a Plotly widget.
+#' @examples
+#' data(yarn)
+#' mod <- plsr(density ~ NIR, ncomp = 6, data = yarn, validation = "CV")
+#' if (requireNamespace("ggplot2", quietly = TRUE)) {
+#'   gg_rawdataplot(mod, type = "line")
+#' }
+#' @export
+gg_rawdataplot <- function(object,
+                           type = c("boxplot", "line", "violin"),
+                           jitter_width = 0.2,
+                           alpha = 0.5,
+                           angle = 0,
+                           check_overlap = TRUE,
+                           max_ticks = 12L,
+                           plotly = FALSE) {
+  type <- match.arg(type)
+
+  # Extract predictor matrix X
+  X <- if (is.matrix(object) || is.data.frame(object)) {
+    if (!all(vapply(as.data.frame(object), is.numeric, logical(1))))
+      stop("`object` must be a numeric matrix or a numeric data.frame.")
+    as.matrix(object)
+  } else if (!is.null(object$X)) {
+    object$X
+  } else if (!is.null(object$model)) {
+    stats::model.matrix(object)[, -1, drop = FALSE] # drop intercept if present
+  } else {
+    stop("Raw data X matrix could not be extracted from the model object.")
+  }
+
+  if(is.null(colnames(X))) {
+    colnames(X) <- seq_len(ncol(X))
+  }
+  df_X <- as.data.frame(X)
+  var_names <- colnames(df_X)
+
+  n_obs <- nrow(df_X)
+  df_X$.obs_id <- paste0("Obs_", seq_len(n_obs))
+
+  # Check if variable names are convertible to continuous numeric values (e.g. wavelengths)
+  num_vars <- suppressWarnings(as.numeric(var_names))
+  is_numeric_axis <- !any(is.na(num_vars)) && length(num_vars) > 0
+
+  # Pivot to long format for ggplot
+  df_long <- tidyr::pivot_longer(
+    df_X,
+    cols = -.obs_id,
+    names_to = "Variable",
+    values_to = "Value"
+  )
+
+  if (is_numeric_axis) {
+    # Continuous numeric axis (e.g., wavelength 400nm .. 2500nm)
+    df_long$Variable <- num_vars[match(df_long$Variable, var_names)]
+    p <- ggplot2::ggplot(df_long, ggplot2::aes(x = Variable, y = Value))
+  } else {
+    # Categorical discrete axis
+    df_long$Variable <- factor(df_long$Variable, levels = var_names)
+    p <- ggplot2::ggplot(df_long, ggplot2::aes(x = Variable, y = Value)) +
+      ggplot2::scale_x_discrete(guide = ggplot2::guide_axis(check.overlap = check_overlap))
+  }
+
+  # Aesthetic mapping for interactive Plotly tooltips
+  jitter_aes <- if (isTRUE(plotly)) {
+    ggplot2::aes(text = paste("Obs:", .obs_id), key = .obs_id)
+  } else {
+    ggplot2::aes()
+  }
+
+  withCallingHandlers({
+    if (type == "line") {
+      line_aes <- if (isTRUE(plotly)) {
+        ggplot2::aes(group = .obs_id, key = .obs_id)
+      } else {
+        ggplot2::aes(group = .obs_id)
+      }
+      p <- p +
+        ggplot2::geom_line(line_aes, alpha = alpha, color = "#2b5c8f") +
+        ggplot2::labs(x = if (is_numeric_axis) "Wavelength" else "Variable", y = "Value")
+
+    } else if (type == "boxplot") {
+      p <- p +
+        ggplot2::geom_boxplot(outlier.shape = NA, fill = "gray95", color = "darkgray") +
+        ggplot2::geom_jitter(jitter_aes, width = jitter_width, alpha = alpha, color = "#2b5c8f") +
+        ggplot2::labs(x = "Variable", y = "Value")
+
+    } else if (type == "violin") {
+      p <- p +
+        ggplot2::geom_violin(trim = FALSE, fill = "gray95", color = "darkgray") +
+        ggplot2::geom_jitter(jitter_aes, width = jitter_width, alpha = alpha, color = "#2b5c8f") +
+        ggplot2::labs(x = "Variable", y = "Value")
+    }
+  }, warning = function(w) {
+    if (isTRUE(plotly) && grepl("unknown aesthetics", conditionMessage(w), fixed = TRUE))
+      invokeRestart("muffleWarning")
+  })
+
+  # Handle label angle rotation if specified
+  if (angle != 0) {
+    p <- p + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = angle, hjust = 1))
+  }
+
+  # Plotly conversion and axis overrides
+  if (isTRUE(plotly)) {
+    if (!requireNamespace("plotly", quietly = TRUE))
+      stop("Package 'plotly' is required when plotly = TRUE.")
+    
+    p <- plotly::ggplotly(p)
+    
+    # Configure Plotly.js layout options to prevent x-tick label collision
+    plotly_xaxis <- list(
+      automargin = TRUE,
+      nticks = max_ticks
+    )
+    
+    if (is_numeric_axis) {
+      plotly_xaxis$type <- "linear"
+      if (angle != 0) plotly_xaxis$tickangle <- angle
+    } else {
+      plotly_xaxis$tickmode <- "auto"
+      plotly_xaxis$tickangle <- if (angle != 0) angle else -45
+    }
+    
+    p <- plotly::layout(p, xaxis = plotly_xaxis)
+  }
+
+  p
+}
+
 
 #' @title Autoplot for mvr Models
 #'
@@ -955,7 +1089,7 @@ autoplot <- function(object, ...) {
 #' @param object an \code{mvr} object.
 #' @param type plot type. One of \code{"scores"}, \code{"loadings"},
 #'   \code{"biplot"}, \code{"prediction"}, \code{"correlation"} or
-#'   \code{"coefficients"}, \code{"validation"}.
+#'   \code{"coefficients"}, \code{"validation"}, \code{"rawdata"}.
 #' @param ... further arguments passed to the selected plotting function.
 #' @return A \code{ggplot} object.
 #' @exportS3Method ggplot2::autoplot
@@ -971,6 +1105,7 @@ autoplot <- function(object, ...) {
 #'   autoplot(mod, type = "correlation")
 #'   autoplot(mod, type = "coefficients")
 #'   autoplot(mod, type = "validation", val.type = "RMSEP", estimate = "CV")
+#'   autoplot(mod, type = "rawdata", type = "line")
 #' }
 autoplot.mvr <- function(object, type = c("scores", "loadings", "biplot",
                                           "prediction", "correlation",
@@ -983,7 +1118,8 @@ autoplot.mvr <- function(object, type = c("scores", "loadings", "biplot",
          prediction = gg_predplot(object, ...),
          correlation = gg_corrplot(object, ...),
     coefficients = gg_coefplot(object, ...),
-    validation = gg_valplot(object, ...))
+    validation = gg_valplot(object, ...),
+    rawdata = gg_rawdataplot(object, ...))
 }
 
 #' @title ggplot-based Score Plot for mvr Models
@@ -1017,8 +1153,8 @@ autoplot.mvr <- function(object, type = c("scores", "loadings", "biplot",
 #' @param object an \code{mvr} object.
 #' @param panels character vector of panel names. Supported panels are
 #'   \code{"score"}, \code{"loading"}, \code{"validation"},
-#'   \code{"prediction"}, \code{"biplot"}, \code{"corr"} and
-#'   \code{"coef"}.
+#'   \code{"prediction"}, \code{"biplot"}, \code{"corr"},
+#'   \code{"coef"} and \code{"rawdata"}.
 #' @param plotly logical. If \code{TRUE}, return an HTML dashboard containing
 #'   independent Plotly widgets. If \code{FALSE}, return a static dashboard
 #'   composed with gridExtra.
@@ -1065,7 +1201,7 @@ gg_dashboard <- function(object,
     stop("`panels` must not contain duplicates.")
 
   supported_panels <- c("scores", "loadings", "validation", "prediction",
-                        "biplot", "corr", "coef")
+                        "biplot", "corr", "coef", "rawdata")
   unknown_panels <- setdiff(panels, supported_panels)
   if (length(unknown_panels))
     stop("Unknown dashboard panel(s): ", paste(unknown_panels, collapse = ", "))
@@ -1115,6 +1251,7 @@ gg_dashboard <- function(object,
       biplot = list(comps = 1:2),
       corr = list(comps = 1:2),
       coef = list(response = coef_response),
+      rawdata = list(type = "line"),
       stop("Unknown dashboard panel: ", panel)
     )
 
@@ -1136,6 +1273,7 @@ gg_dashboard <- function(object,
       prediction = gg_predplot,
       biplot = gg_biplot,
       corr = gg_corrplot,
+      rawdata = gg_rawdataplot,
       coef = gg_coefplot
     )
 

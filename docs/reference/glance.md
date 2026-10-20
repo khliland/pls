@@ -39,5 +39,5 @@ glance(mod)
 #>      method ncomp nobs nresp has_validation r2_train_mean rmsep_train_mean
 #> 1 kernelpls     2   20     1           TRUE     0.9829654          3.85935
 #>   r2_cv_mean rmsep_cv_mean
-#> 1  0.9747301      4.700571
+#> 1  0.9744879      4.723041
 ```

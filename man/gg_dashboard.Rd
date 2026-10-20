@@ -17,8 +17,8 @@ gg_dashboard(
 
 \item{panels}{character vector of panel names. Supported panels are
 \code{"score"}, \code{"loading"}, \code{"validation"},
-\code{"prediction"}, \code{"biplot"}, \code{"corr"} and
-\code{"coef"}.}
+\code{"prediction"}, \code{"biplot"}, \code{"corr"},
+\code{"coef"} and \code{"rawdata"}.}
 
 \item{plotly}{logical. If \code{TRUE}, return an HTML dashboard containing
 independent Plotly widgets. If \code{FALSE}, return a static dashboard

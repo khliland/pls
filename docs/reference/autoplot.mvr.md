@@ -24,7 +24,8 @@ autoplot(
 - type:
 
   plot type. One of `"scores"`, `"loadings"`, `"biplot"`,
-  `"prediction"`, `"correlation"` or `"coefficients"`, `"validation"`.
+  `"prediction"`, `"correlation"` or `"coefficients"`, `"validation"`,
+  `"rawdata"`.
 
 - ...:
 
@@ -47,5 +48,7 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
   autoplot(mod, type = "correlation")
   autoplot(mod, type = "coefficients")
   autoplot(mod, type = "validation", val.type = "RMSEP", estimate = "CV")
+  autoplot(mod, type = "rawdata", type = "line")
 }
+#> Error in autoplot.mvr(object, ...): formal argument "type" matched by multiple actual arguments
 ```

@@ -60,12 +60,13 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
     gg_predplot(mod, ncomp = 1:2)
     gg_corrplot(mod)
     gg_coefplot(mod, ncomp = 1:2)
+    gg_rawdataplot(mod, "line")
 }
 ```
 
 ## New features
 
-- 3.0-0: Added tidyverse extensions: `tidy.mvr()`, `glance.mvr()`, `augment.mvr()`, `tidy.mvrVal()`, ggplot2 graphics: `gg_scoreplot()`, `gg_loadingplot()`, `gg_biplot()`, `gg_predplot()`, `gg_corrplot()`, `gg_coefplot()`, `gg_valplot()`, `autoplot.mvr()`, `gg_dashboard()`, and interactive data selection with `refit.mvr()`.
+- 3.0-0: Added tidyverse extensions: `tidy.mvr()`, `glance.mvr()`, `augment.mvr()`, `tidy.mvrVal()`, ggplot2 graphics: `gg_scoreplot()`, `gg_loadingplot()`, `gg_biplot()`, `gg_predplot()`, `gg_corrplot()`, `gg_coefplot()`, `gg_valplot()`, `gg_rawdataplot()`, `autoplot.mvr()`, `gg_dashboard()`, and interactive data selection with `refit.mvr()`.
 - 2.9-0: Added `nipals()` (NIPALS PLS) and `nipalspcr()` (NIPALS PCR) with robustness against missing data. Added cross-validation and test set abilities for `scores()` and `scoreplot()`. Added `pkgdown` site with documentation and vignette.
 - 2.8-4: Added fac2seg() to create cross-validation segments from a factor.
 - 2.8-1: Added vcov() for computing variance-covariance matrices for PCR.

@@ -41,8 +41,8 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/pls-manual.html">Introduction to the pls Package</a></li>
-    <li><a class="dropdown-item" href="articles/pls-tidyverse.html">pls-tidyverse: Tidy workflows for pls</a></li>
+<li><a class="dropdown-item" href="articles/ggplot2-tidyverse.html">ggplot2-tidyverse</a></li>
+    <li><a class="dropdown-item" href="articles/pls-manual.html">Introduction to the pls Package</a></li>
   </ul>
 </li>
       </ul>
@@ -78,7 +78,7 @@
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
-<p>See the help pages in the package for instructions, or (if you installed from CRAN): <code><a href="articles/pls-manual.html">vignette("pls-manual")</a></code> and <code><a href="articles/pls-tidyverse.html">vignette("pls-tidyverse")</a></code>. Documentation is also avaiable as a GitHub page at <a href="https://khliland.github.io/pls/">https://khliland.github.io/pls/</a>.</p>
+<p>See the help pages in the package for instructions, or (if you installed from CRAN): <code><a href="articles/pls-manual.html">vignette("pls-manual")</a></code> and <code>vignette("pls-tidyverse")</code>. Documentation is also avaiable as a GitHub page at <a href="https://khliland.github.io/pls/">https://khliland.github.io/pls/</a>.</p>
 <div class="section level3">
 <h3 id="tidy-examples">tidy examples<a class="anchor" aria-label="anchor" href="#tidy-examples"></a>
 </h3>
@@ -121,6 +121,7 @@
 <span>    <span class="fu"><a href="reference/gg_predplot.html">gg_predplot</a></span><span class="op">(</span><span class="va">mod</span>, ncomp <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="reference/gg_corrplot.html">gg_corrplot</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="reference/gg_coefplot.html">gg_coefplot</a></span><span class="op">(</span><span class="va">mod</span>, ncomp <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="reference/gg_rawdataplot.html">gg_rawdataplot</a></span><span class="op">(</span><span class="va">mod</span>, <span class="st">"line"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
 </div>
@@ -128,7 +129,7 @@
 <h2 id="new-features">New features<a class="anchor" aria-label="anchor" href="#new-features"></a>
 </h2>
 <ul>
-<li>3.0-0: Added tidyverse extensions: <code><a href="reference/tidy.html">tidy.mvr()</a></code>, <code><a href="reference/glance.html">glance.mvr()</a></code>, <code><a href="reference/augment.html">augment.mvr()</a></code>, <code><a href="reference/tidy.html">tidy.mvrVal()</a></code>, ggplot2 graphics: <code><a href="reference/gg_scoreplot.html">gg_scoreplot()</a></code>, <code><a href="reference/gg_loadingplot.html">gg_loadingplot()</a></code>, <code><a href="reference/gg_biplot.html">gg_biplot()</a></code>, <code><a href="reference/gg_predplot.html">gg_predplot()</a></code>, <code><a href="reference/gg_corrplot.html">gg_corrplot()</a></code>, <code><a href="reference/gg_coefplot.html">gg_coefplot()</a></code>, <code><a href="reference/gg_valplot.html">gg_valplot()</a></code>, <code><a href="reference/autoplot.mvr.html">autoplot.mvr()</a></code>, <code><a href="reference/gg_dashboard.html">gg_dashboard()</a></code>, and interactive data selection with <code><a href="reference/refit.html">refit.mvr()</a></code>.</li>
+<li>3.0-0: Added tidyverse extensions: <code><a href="reference/tidy.html">tidy.mvr()</a></code>, <code><a href="reference/glance.html">glance.mvr()</a></code>, <code><a href="reference/augment.html">augment.mvr()</a></code>, <code><a href="reference/tidy.html">tidy.mvrVal()</a></code>, ggplot2 graphics: <code><a href="reference/gg_scoreplot.html">gg_scoreplot()</a></code>, <code><a href="reference/gg_loadingplot.html">gg_loadingplot()</a></code>, <code><a href="reference/gg_biplot.html">gg_biplot()</a></code>, <code><a href="reference/gg_predplot.html">gg_predplot()</a></code>, <code><a href="reference/gg_corrplot.html">gg_corrplot()</a></code>, <code><a href="reference/gg_coefplot.html">gg_coefplot()</a></code>, <code><a href="reference/gg_valplot.html">gg_valplot()</a></code>, <code><a href="reference/gg_rawdataplot.html">gg_rawdataplot()</a></code>, <code><a href="reference/autoplot.mvr.html">autoplot.mvr()</a></code>, <code><a href="reference/gg_dashboard.html">gg_dashboard()</a></code>, and interactive data selection with <code><a href="reference/refit.html">refit.mvr()</a></code>.</li>
 <li>2.9-0: Added <code><a href="reference/mvr.html">nipals()</a></code> (NIPALS PLS) and <code><a href="reference/mvr.html">nipalspcr()</a></code> (NIPALS PCR) with robustness against missing data. Added cross-validation and test set abilities for <code><a href="reference/scores.html">scores()</a></code> and <code><a href="reference/scoreplot.html">scoreplot()</a></code>. Added <code>pkgdown</code> site with documentation and vignette.</li>
 <li>2.8-4: Added fac2seg() to create cross-validation segments from a factor.</li>
 <li>2.8-1: Added vcov() for computing variance-covariance matrices for PCR.</li>

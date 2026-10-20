@@ -1,5 +1,6 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://khliland.github.io/pls/404.html</loc></url>
+<url><loc>https://khliland.github.io/pls/articles/ggplot2-tidyverse.html</loc></url>
 <url><loc>https://khliland.github.io/pls/articles/index.html</loc></url>
 <url><loc>https://khliland.github.io/pls/articles/pls-manual.html</loc></url>
 <url><loc>https://khliland.github.io/pls/articles/pls-tidyverse.html</loc></url>
@@ -23,6 +24,7 @@
 <url><loc>https://khliland.github.io/pls/reference/gg_dashboard.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/gg_loadingplot.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/gg_predplot.html</loc></url>
+<url><loc>https://khliland.github.io/pls/reference/gg_rawdataplot.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/gg_scoreplot.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/gg_valplot.html</loc></url>
 <url><loc>https://khliland.github.io/pls/reference/glance.html</loc></url>

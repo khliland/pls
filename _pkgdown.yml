@@ -38,6 +38,7 @@ reference:
       - gg_predplot
       - gg_coefplot
       - gg_valplot
+      - gg_rawdataplot
       - autoplot
       - autoplot.mvr
       - gg_dashboard

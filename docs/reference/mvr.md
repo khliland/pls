@@ -121,11 +121,11 @@ nipalspcr(..., method = "nipalspc")
 
   tol:
 
-  :   numeric. Tolerance used for determining convergence.
+  : numeric. Tolerance used for determining convergence.
 
   maxit:
 
-  :   positive integer. The maximal number of iterations used.
+  : positive integer. The maximal number of iterations used.
 
   and
   [`cppls.fit`](https://khliland.github.io/pls/reference/cppls.fit.md)
@@ -133,16 +133,15 @@ nipalspcr(..., method = "nipalspc")
 
   lower:
 
-  :   a vector of lower limits for power optimisation.
+  : a vector of lower limits for power optimisation.
 
   upper:
 
-  :   a vector of upper limits for power optimisation.
+  : a vector of upper limits for power optimisation.
 
   trunc.pow:
 
-  :   logical. Whether to use an experimental alternative power
-      algorithm.
+  : logical. Whether to use an experimental alternative power algorithm.
 
   [`mvrCv`](https://khliland.github.io/pls/reference/mvrCv.md)
   implements several arguments; the following are probably the most
@@ -150,20 +149,19 @@ nipalspcr(..., method = "nipalspc")
 
   segments:
 
-  :   the number of segments to use, or a list with segments.
+  : the number of segments to use, or a list with segments.
 
   segment.type:
 
-  :   the type of segments to use.
+  : the type of segments to use.
 
   length.seg:
 
-  :   Positive integer. The length of the segments to use.
+  : Positive integer. The length of the segments to use.
 
   jackknife:
 
-  :   logical. Whether to perform jackknifing of regression
-      coefficients.
+  : logical. Whether to perform jackknifing of regression coefficients.
 
   See the functions' documentation for details.
 

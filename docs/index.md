@@ -24,10 +24,8 @@ install_github("khliland/pls")
 See the help pages in the package for instructions, or (if you installed
 from CRAN):
 [`vignette("pls-manual")`](https://khliland.github.io/pls/articles/pls-manual.md)
-and
-[`vignette("pls-tidyverse")`](https://khliland.github.io/pls/articles/pls-tidyverse.md).
-Documentation is also avaiable as a GitHub page at
-<https://khliland.github.io/pls/>.
+and `vignette("pls-tidyverse")`. Documentation is also avaiable as a
+GitHub page at <https://khliland.github.io/pls/>.
 
 ### tidy examples
 
@@ -72,6 +70,7 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
     gg_predplot(mod, ncomp = 1:2)
     gg_corrplot(mod)
     gg_coefplot(mod, ncomp = 1:2)
+    gg_rawdataplot(mod, "line")
 }
 ```
 
@@ -90,6 +89,7 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
   [`gg_corrplot()`](https://khliland.github.io/pls/reference/gg_corrplot.md),
   [`gg_coefplot()`](https://khliland.github.io/pls/reference/gg_coefplot.md),
   [`gg_valplot()`](https://khliland.github.io/pls/reference/gg_valplot.md),
+  [`gg_rawdataplot()`](https://khliland.github.io/pls/reference/gg_rawdataplot.md),
   [`autoplot.mvr()`](https://khliland.github.io/pls/reference/autoplot.mvr.md),
   [`gg_dashboard()`](https://khliland.github.io/pls/reference/gg_dashboard.md),
   and interactive data selection with

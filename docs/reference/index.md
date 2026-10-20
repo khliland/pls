@@ -71,6 +71,8 @@ Functions for plotting fitted models using ggplot2 graphics.
   : ggplot-based Coefficient Plot for mvr Models
 - [`gg_valplot()`](https://khliland.github.io/pls/reference/gg_valplot.md)
   : ggplot-based Validation Plot for mvr Models
+- [`gg_rawdataplot()`](https://khliland.github.io/pls/reference/gg_rawdataplot.md)
+  : Raw Data Plot Panel for mvr Models
 - [`autoplot()`](https://khliland.github.io/pls/reference/autoplot.md) :
   Autoplot for mvr Models
 - [`autoplot(`*`<mvr>`*`)`](https://khliland.github.io/pls/reference/autoplot.mvr.md)

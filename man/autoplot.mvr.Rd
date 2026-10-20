@@ -16,7 +16,7 @@
 
 \item{type}{plot type. One of \code{"scores"}, \code{"loadings"},
 \code{"biplot"}, \code{"prediction"}, \code{"correlation"} or
-\code{"coefficients"}, \code{"validation"}.}
+\code{"coefficients"}, \code{"validation"}, \code{"rawdata"}.}
 
 \item{...}{further arguments passed to the selected plotting function.}
 }
@@ -38,5 +38,6 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
   autoplot(mod, type = "correlation")
   autoplot(mod, type = "coefficients")
   autoplot(mod, type = "validation", val.type = "RMSEP", estimate = "CV")
+  autoplot(mod, type = "rawdata", type = "line")
 }
 }
