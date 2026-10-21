@@ -14,6 +14,7 @@ gg_biplot(object, ...)
   arrows = FALSE,
   loading.scale = 0.8,
   plotly = FALSE,
+  main = NULL,
   ...
 )
 }
@@ -32,6 +33,8 @@ gg_biplot(object, ...)
 \item{loading.scale}{numeric scaling factor for loadings.}
 
 \item{plotly}{logical. If \code{TRUE}, use \pkg{plotly} output.}
+
+\item{main}{optional plot title.}
 }
 \value{
 A \code{ggplot} object.
@@ -45,6 +48,6 @@ arrows.
 data(yarn)
 mod <- plsr(density ~ NIR, ncomp = 6, data = yarn)
 if (requireNamespace("ggplot2", quietly = TRUE)) {
-  gg_biplot(mod)
+  gg_biplot(mod, main = "Biplot")
 }
 }

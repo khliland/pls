@@ -93,7 +93,7 @@ gg_valplot(mod, val.type = "R2", estimate = c("train", "CV"))
 Finally, raw data can be visualised through raw data plots.
 
 ```{r ggplot-raw, eval=TRUE}
-gg_rawdataplot(mod, type = "line")
+gg_rawdataplot(mod, plottype = "line")
 ```
 
 ## autplot()
@@ -109,7 +109,7 @@ autoplot(mod, type = "correlation")
 autoplot(mod, type = "prediction")
 autoplot(mod, type = "coefficients")
 autoplot(mod, type = "validation", val.type = "R2", estimate = c("train", "CV"))
-autoplot(mod, type = "rawdata", type = "line")
+autoplot(mod, type = "rawdata", plottype = "line")
 ```
 
 ## Dashboards
@@ -182,4 +182,3 @@ aug_train[1:5, -2]
 aug_new <- augment(mod, data = d[1:5, , drop = FALSE])
 aug_new[, -1]
 ```
-

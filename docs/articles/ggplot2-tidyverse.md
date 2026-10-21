@@ -117,7 +117,7 @@ Finally, raw data can be visualised through raw data plots.
 
 ``` r
 
-gg_rawdataplot(mod, type = "line")
+gg_rawdataplot(mod, plottype = "line")
 ```
 
 ![](ggplot2-tidyverse_files/figure-html/ggplot-raw-1.png)
@@ -136,7 +136,7 @@ autoplot(mod, type = "correlation")
 autoplot(mod, type = "prediction")
 autoplot(mod, type = "coefficients")
 autoplot(mod, type = "validation", val.type = "R2", estimate = c("train", "CV"))
-autoplot(mod, type = "rawdata", type = "line")
+autoplot(mod, type = "rawdata", plottype = "line")
 ```
 
 ### Dashboards

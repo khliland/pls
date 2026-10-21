@@ -1,28 +1,31 @@
 ### gg_plots.R: ggplot-based score plots, loading plots, biplots and autoplot for mvr models
 
-#' ggplot-based Score Plot for mvr Models
+#' ggplot-based Score Plot for mvr Models or Extracted Scores
 #'
-#' @description Create a score plot from an \code{mvr} model using \code{ggplot2}.
-#' @param object model object.
+#' @description Create a score plot from an \code{mvr} model or extracted scores
+#' using \code{ggplot2}.
+#' @param object an \code{mvr} model or a matrix of extracted scores.
 #' @param ... further arguments passed to methods.
-#' @return For \code{select = FALSE}, a \code{ggplot} object (or a
-#'   \code{plotly} object when \code{plotly = TRUE}). For
+#' @return A \code{ggplot} object (or a \code{plotly} object when
+#'   \code{plotly = TRUE}). For \code{mvr} models with
 #'   \code{select = TRUE}, a character vector with selected sample IDs.
 #' @export
 gg_scoreplot <- function(object, ...) UseMethod("gg_scoreplot")
 
 
 #' @rdname gg_scoreplot
-#' @param comps integer vector of length two, giving the score components to
-#' plot.
+#' @param comps integer vector of length one or two, giving the score
+#' components to plot. A single component is plotted against sample index.
 #' @param estimate optional character vector passed to \code{scores()}.
 #' @param newdata optional data frame passed to \code{scores()} when
 #' \code{estimate = "test"}.
-#' @param select logical. If \code{TRUE}, launch an interactive selection app
-#' and return selected IDs.
-#' @param plotly logical. If \code{TRUE}, use \pkg{plotly} output. With
-#'   \code{select = TRUE}, a Shiny app is launched and selected IDs are
-#'   returned from Plotly lasso/box selection.
+#' @param select logical. For \code{mvr} models, if \code{TRUE}, launch an
+#' interactive selection app and return selected IDs. Not available for
+#' extracted scores.
+#' @param main optional plot title.
+#' @param plotly logical. If \code{TRUE}, use \pkg{plotly} output. For
+#' \code{mvr} models with \code{select = TRUE}, a Shiny app is launched and
+#' selected IDs are returned from Plotly lasso/box selection.
 #' @examples
 #' data(yarn)
 #' mod <- plsr(density ~ NIR, ncomp = 6, data = yarn)
@@ -30,6 +33,8 @@ gg_scoreplot <- function(object, ...) UseMethod("gg_scoreplot")
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
 #'   p <- gg_scoreplot(mod)
 #'   print(p)
+#'   gg_scoreplot(mod, main = "Score plot")
+#'   gg_scoreplot(scores(mod))
 #' }
 #'
 #' \dontrun{ # Requires an interactive session
@@ -41,10 +46,7 @@ gg_scoreplot <- function(object, ...) UseMethod("gg_scoreplot")
 #' }}
 #' @export
 gg_scoreplot.mvr <- function(object, comps = 1:2, estimate, newdata,
-                             select = FALSE, plotly = FALSE, ...) {
-  if (length(comps) != 2)
-    stop("`comps` must contain exactly two components.")
-
+                             select = FALSE, plotly = FALSE, main = NULL, ...) {
   if (!is.logical(plotly) || length(plotly) != 1 || is.na(plotly))
     stop("`plotly` must be a single non-missing logical value.")
 
@@ -53,17 +55,32 @@ gg_scoreplot.mvr <- function(object, comps = 1:2, estimate, newdata,
   if (!missing(newdata)) score_args$newdata <- newdata
   score_mat <- do.call(scores, score_args)
 
+  if (!is.numeric(comps) || length(comps) < 1L || length(comps) > 2L ||
+      anyNA(comps) || any(!is.finite(comps)) || any(comps != as.integer(comps)) ||
+      any(comps < 1L))
+    stop("`comps` must contain one or two positive component indices.")
+  comps <- as.integer(comps)
+  if (ncol(score_mat) == 1L && identical(comps, 1:2))
+    comps <- 1L
+  if (any(comps > ncol(score_mat)))
+    stop("`comps` selects a component not available in the scores.")
+
+  single_component <- length(comps) == 1L
+  sample_id <- rownames(score_mat)
+  if (is.null(sample_id))
+    sample_id <- as.character(seq_len(nrow(score_mat)))
   score_df <- data.frame(
-    sample_id = rownames(score_mat),
-    x = score_mat[, comps[1]],
-    y = score_mat[, comps[2]],
+    sample_id = sample_id,
+    x = if (single_component) seq_len(nrow(score_mat)) else score_mat[, comps[1]],
+    y = score_mat[, comps[if (single_component) 1L else 2L]],
     stringsAsFactors = FALSE
   )
-  if (is.null(score_df$sample_id))
-    score_df$sample_id <- as.character(seq_len(nrow(score_df)))
 
-  xlab <- compnames(score_mat, comps = comps[1], explvar = TRUE)
-  ylab <- compnames(score_mat, comps = comps[2], explvar = TRUE)
+  xlab <- if (single_component) "Sample" else
+    compnames(score_mat, comps = comps[1], explvar = TRUE)
+  ylab <- compnames(score_mat,
+                    comps = comps[if (single_component) 1L else 2L],
+                    explvar = TRUE)
 
   if (!requireNamespace("ggplot2", quietly = TRUE))
     stop("Package 'ggplot2' is required for gg_scoreplot().")
@@ -73,7 +90,7 @@ gg_scoreplot.mvr <- function(object, comps = 1:2, estimate, newdata,
   base_plot <-
     ggplot2::ggplot(score_df, ggplot2::aes(x = .data$x, y = .data$y)) +
     ggplot2::geom_point(...) +
-    ggplot2::labs(x = xlab, y = ylab)
+    ggplot2::labs(x = xlab, y = ylab, title = main)
 
   if (isTRUE(plotly)) {
     if (!requireNamespace("plotly", quietly = TRUE))
@@ -143,7 +160,7 @@ gg_scoreplot.mvr <- function(object, comps = 1:2, estimate, newdata,
       ggplot2::aes(x = .data$x, y = .data$y, data_id = .data$sample_id, tooltip = .data$sample_id)
     ) +
     ggiraph::geom_point_interactive(...) +
-    ggplot2::labs(x = xlab, y = ylab)
+    ggplot2::labs(x = xlab, y = ylab, title = main)
 
   app <- shiny::shinyApp(
     ui = shiny::fluidPage(
@@ -187,15 +204,72 @@ gg_scoreplot.mvr <- function(object, comps = 1:2, estimate, newdata,
   shiny::runApp(app)
 }
 
+#' @rdname gg_scoreplot
+#' @param comps integer vector of length one or two, giving the score
+#' components to plot. A single component is plotted against sample index.
+#' @export
+gg_scoreplot.scores <- function(object, comps = 1:2, plotly = FALSE,
+                                main = NULL, ...) {
+  if (!is.logical(plotly) || length(plotly) != 1 || is.na(plotly))
+    stop("`plotly` must be a single non-missing logical value.")
 
-#' @title ggplot-based Loading Plot for mvr Models
+  if (!is.numeric(comps) || length(comps) < 1L || length(comps) > 2L ||
+      anyNA(comps) || any(!is.finite(comps)) || any(comps != as.integer(comps)) ||
+      any(comps < 1L))
+    stop("`comps` must contain one or two positive component indices.")
+  comps <- as.integer(comps)
+  if (ncol(object) == 1L && identical(comps, 1:2))
+    comps <- 1L
+  if (any(comps > ncol(object)))
+    stop("`comps` selects a component not available in the scores.")
+  single_component <- length(comps) == 1L
+
+  sample_id <- rownames(object)
+  if (is.null(sample_id))
+    sample_id <- as.character(seq_len(nrow(object)))
+
+  score_df <- data.frame(
+    sample_id = sample_id,
+    x = if (single_component) seq_len(nrow(object)) else object[, comps[1]],
+    y = object[, comps[if (single_component) 1L else 2L]],
+    stringsAsFactors = FALSE
+  )
+
+  if (!requireNamespace("ggplot2", quietly = TRUE))
+    stop("Package 'ggplot2' is required for gg_scoreplot().")
+  if (!requireNamespace("rlang", quietly = TRUE))
+    stop("Package 'rlang' is required for gg_scoreplot().")
+
+  p <-
+    ggplot2::ggplot(score_df, ggplot2::aes(x = .data$x, y = .data$y)) +
+    ggplot2::geom_point(...) +
+    ggplot2::labs(
+      x = if (single_component) "Sample" else
+        compnames(object, comps = comps[1], explvar = TRUE),
+      y = compnames(object, comps = comps[if (single_component) 1L else 2L],
+                    explvar = TRUE),
+      title = main
+    )
+
+  if (isTRUE(plotly)) {
+    if (!requireNamespace("plotly", quietly = TRUE))
+      stop("Package 'plotly' is required when plotly = TRUE.")
+    p <- plotly::ggplotly(p)
+  }
+  p
+}
+
+
+#' @title ggplot-based Loading Plot for mvr Models or Extracted Loadings
 #'
 #' @description
-#' Create a loading plot from an \code{mvr} model using \pkg{ggplot2}.
+#' Create a loading plot from an \code{mvr} model or extracted loadings using
+#' \pkg{ggplot2}.
 #'
-#' @param object model object.
+#' @param object an \code{mvr} model or a matrix of extracted loadings.
 #' @param ... further arguments passed to methods.
-#' @return A \code{ggplot} object.
+#' @return A \code{ggplot} object or a \code{plotly} object when
+#'   \code{plotly = TRUE}.
 #' @export
 #'
 #' @examples
@@ -203,14 +277,15 @@ gg_scoreplot.mvr <- function(object, comps = 1:2, estimate, newdata,
 #' mod <- plsr(density ~ NIR, ncomp = 6, data = yarn)
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
 #'   gg_loadingplot(mod, scatter = TRUE)
-#'   gg_loadingplot(mod)
+#'   gg_loadingplot(mod, main = "Loading plot")
+#'   gg_loadingplot(loadings(mod))
 #' }
 gg_loadingplot <- function(object, ...) UseMethod("gg_loadingplot")
 
 
 #' @rdname gg_loadingplot
-#' @param comps integer vector of length two, giving the loading components to
-#' plot.
+#' @param comps integer vector of length one or two, giving the loading
+#' components to plot. A single component is plotted against variable index.
 #' @param scatter logical. If \code{TRUE}, make a scatter plot of the selected
 #'   loading components. If \code{FALSE}, draw loading profiles across
 #'   variables.
@@ -218,69 +293,259 @@ gg_loadingplot <- function(object, ...) UseMethod("gg_loadingplot")
 #'   labels. In line mode, labels are used as x-axis labels.
 #' @param pretty.xlabels logical. If \code{TRUE}, line-plot x-axis labels are
 #'   thinned when possible.
+#' @param main optional plot title.
 #' @param plotly logical. If \code{TRUE}, use \pkg{plotly} output.
 #' @export
 gg_loadingplot.mvr <- function(object, comps = 1:2, scatter = FALSE,
                                labels = FALSE, pretty.xlabels = TRUE,
-                               plotly = FALSE, ...) {
-  if (length(comps) != 2)
-    stop("`comps` must contain exactly two components.")
-
+                               plotly = FALSE, main = NULL, ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE))
     stop("Package 'ggplot2' is required for gg_loadingplot().")
   if (!requireNamespace("rlang", quietly = TRUE))
     stop("Package 'rlang' is required for gg_loadingplot().")
 
-  L <- loadings(object)[, comps, drop = FALSE]
+  L <- loadings(object)
+  if (!is.numeric(comps) || length(comps) < 1L || length(comps) > 2L ||
+      anyNA(comps) || any(!is.finite(comps)) || any(comps != as.integer(comps)) ||
+      any(comps < 1L))
+    stop("`comps` must contain one or two positive component indices.")
+  comps <- as.integer(comps)
+  if (ncol(L) == 1L && identical(comps, 1:2))
+    comps <- 1L
+  if (any(comps > ncol(L)))
+    stop("`comps` selects a component not available in the loadings.")
+  single_component <- length(comps) == 1L
+  L <- L[, comps, drop = FALSE]
   vars <- rownames(L)
   if (is.null(vars)) vars <- as.character(seq_len(nrow(L)))
 
-  load_df <- data.frame(
-    variable = vars,
-    x = L[, 1],
-    y = L[, 2],
-    stringsAsFactors = FALSE
-  )
+  if (single_component) {
+    if (isTRUE(scatter)) {
+      load_df <- data.frame(
+        x = seq_along(vars),
+        y = L[, 1],
+        stringsAsFactors = FALSE
+      )
+      point_labels <- .resolve_gg_point_labels(labels, vars)
+      if (!is.null(point_labels)) load_df$label <- point_labels
 
-  if (isTRUE(scatter)) {
-    point_labels <- .resolve_gg_point_labels(labels, vars)
-    if (!is.null(point_labels)) load_df$label <- point_labels
+      p <- ggplot2::ggplot(load_df, ggplot2::aes(x = .data$x, y = .data$y)) +
+        ggplot2::labs(
+          x = "Variable index",
+          y = compnames(object, comps = comps[1], explvar = TRUE),
+          title = main
+        )
 
-    p <- ggplot2::ggplot(load_df, ggplot2::aes(x = .data$x, y = .data$y)) +
-      ggplot2::labs(
-        x = compnames(object, comps = comps[1], explvar = TRUE),
-        y = compnames(object, comps = comps[2], explvar = TRUE)
+      if (!is.null(point_labels)) {
+        p <- p + ggplot2::geom_text(ggplot2::aes(label = .data$label), vjust = -0.6)
+      } else {
+        p <- p + ggplot2::geom_point(...)
+      }
+    } else {
+      axis_labels <- .resolve_gg_axis_labels(labels, vars,
+                                             pretty.xlabels = pretty.xlabels)
+      line_df <- data.frame(
+        variable = vars,
+        x = axis_labels$xnum,
+        component = colnames(L)[1],
+        value = L[, 1],
+        stringsAsFactors = FALSE
       )
 
-    if (!is.null(point_labels)) {
-      p <- p + ggplot2::geom_text(ggplot2::aes(label = .data$label), vjust = -0.6)
-    } else {
-      p <- p + ggplot2::geom_point(...)
+      p <- ggplot2::ggplot(line_df, ggplot2::aes(x = .data$x, y = .data$value,
+                                                 group = 1)) +
+        ggplot2::geom_line(...) +
+        ggplot2::labs(
+          x = "Variable index",
+          y = compnames(object, comps = comps[1], explvar = TRUE),
+          title = main
+        ) +
+        axis_labels$scale_spec
     }
   } else {
-    axis_labels <- .resolve_gg_axis_labels(labels, vars,
-                                           pretty.xlabels = pretty.xlabels)
-    line_df <- data.frame(
-      variable = rep(vars, 2L),
-      x = rep(axis_labels$xnum, 2L),
-      component = factor(rep(colnames(L), each = nrow(L)), levels = colnames(L)),
-      value = c(L),
+    load_df <- data.frame(
+      variable = vars,
+      x = L[, 1],
+      y = L[, 2],
       stringsAsFactors = FALSE
     )
 
-    p <- ggplot2::ggplot(line_df, ggplot2::aes(x = .data$x, y = .data$value,
-                                               colour = .data$component,
-                                               group = .data$component)) +
-      ggplot2::geom_line(...) +
-      ggplot2::labs(
-        x = compnames(object, comps = comps[1], explvar = TRUE),
-        y = compnames(object, comps = comps[2], explvar = TRUE),
-        colour = "Component"
-      ) +
-      axis_labels$scale_spec
+    if (isTRUE(scatter)) {
+      point_labels <- .resolve_gg_point_labels(labels, vars)
+      if (!is.null(point_labels)) load_df$label <- point_labels
+
+      p <- ggplot2::ggplot(load_df, ggplot2::aes(x = .data$x, y = .data$y)) +
+        ggplot2::labs(
+          x = compnames(object, comps = comps[1], explvar = TRUE),
+          y = compnames(object, comps = comps[2], explvar = TRUE),
+          title = main
+        )
+
+      if (!is.null(point_labels)) {
+        p <- p + ggplot2::geom_text(ggplot2::aes(label = .data$label), vjust = -0.6)
+      } else {
+        p <- p + ggplot2::geom_point(...)
+      }
+    } else {
+      axis_labels <- .resolve_gg_axis_labels(labels, vars,
+                                             pretty.xlabels = pretty.xlabels)
+      line_df <- data.frame(
+        variable = rep(vars, 2L),
+        x = rep(axis_labels$xnum, 2L),
+        component = factor(rep(colnames(L), each = nrow(L)), levels = colnames(L)),
+        value = c(L),
+        stringsAsFactors = FALSE
+      )
+
+      p <- ggplot2::ggplot(line_df, ggplot2::aes(x = .data$x, y = .data$value,
+                                                 colour = .data$component,
+                                                 group = .data$component)) +
+        ggplot2::geom_line(...) +
+        ggplot2::labs(
+          x = compnames(object, comps = comps[1], explvar = TRUE),
+          y = compnames(object, comps = comps[2], explvar = TRUE),
+          colour = "Component",
+          title = main
+        ) +
+        axis_labels$scale_spec
+    }
   }
 
   if(isTRUE(plotly)) {
+    if (!requireNamespace("plotly", quietly = TRUE))
+      stop("Package 'plotly' is required when plotly = TRUE.")
+    p <- plotly::ggplotly(p)
+  }
+  p
+}
+
+#' @rdname gg_loadingplot
+#' @param comps integer vector of length one or two, giving the loading
+#' components to plot. A single component is plotted against variable index.
+#' @param scatter logical. If \code{TRUE}, make a scatter plot of the selected
+#' loading components. If \code{FALSE}, draw loading profiles across
+#' variables.
+#' @param labels optional labels. In scatter mode, labels are used as point
+#' labels. In line mode, labels are used as x-axis labels.
+#' @param pretty.xlabels logical. If \code{TRUE}, line-plot x-axis labels are
+#' thinned when possible.
+#' @export
+gg_loadingplot.loadings <- function(object, comps = 1:2, scatter = FALSE,
+                                    labels = FALSE, pretty.xlabels = TRUE,
+                                    plotly = FALSE, main = NULL, ...) {
+  if (!requireNamespace("ggplot2", quietly = TRUE))
+    stop("Package 'ggplot2' is required for gg_loadingplot().")
+  if (!requireNamespace("rlang", quietly = TRUE))
+    stop("Package 'rlang' is required for gg_loadingplot().")
+
+  if (!is.numeric(comps) || length(comps) < 1L || length(comps) > 2L ||
+      anyNA(comps) || any(!is.finite(comps)) || any(comps != as.integer(comps)) ||
+      any(comps < 1L))
+    stop("`comps` must contain one or two positive component indices.")
+  comps <- as.integer(comps)
+  if (ncol(object) == 1L && identical(comps, 1:2))
+    comps <- 1L
+  if (any(comps > ncol(object)))
+    stop("`comps` selects a component not available in the loadings.")
+  single_component <- length(comps) == 1L
+  L <- object[, comps, drop = FALSE]
+  vars <- rownames(L)
+  if (is.null(vars)) vars <- as.character(seq_len(nrow(L)))
+
+  if (single_component) {
+    if (isTRUE(scatter)) {
+      load_df <- data.frame(
+        x = seq_along(vars),
+        y = L[, 1],
+        stringsAsFactors = FALSE
+      )
+      point_labels <- .resolve_gg_point_labels(labels, vars)
+      if (!is.null(point_labels)) load_df$label <- point_labels
+
+      p <- ggplot2::ggplot(load_df, ggplot2::aes(x = .data$x, y = .data$y)) +
+        ggplot2::labs(
+          x = "Variable index",
+          y = compnames(object, comps = comps[1], explvar = TRUE),
+          title = main
+        )
+
+      if (!is.null(point_labels)) {
+        p <- p + ggplot2::geom_text(ggplot2::aes(label = .data$label), vjust = -0.6)
+      } else {
+        p <- p + ggplot2::geom_point(...)
+      }
+    }
+    else {
+      axis_labels <- .resolve_gg_axis_labels(labels, vars,
+                                             pretty.xlabels = pretty.xlabels)
+      line_df <- data.frame(
+        variable = vars,
+        x = axis_labels$xnum,
+        component = colnames(L)[1],
+        value = L[, 1],
+        stringsAsFactors = FALSE
+      )
+
+      p <- ggplot2::ggplot(line_df, ggplot2::aes(x = .data$x, y = .data$value,
+                                                 group = 1)) +
+        ggplot2::geom_line(...) +
+        ggplot2::labs(
+          x = "Variable index",
+          y = compnames(object, comps = comps[1], explvar = TRUE),
+          title = main
+        ) +
+        axis_labels$scale_spec
+    }
+  } else {
+    load_df <- data.frame(
+      variable = vars,
+      x = L[, 1],
+      y = L[, 2],
+      stringsAsFactors = FALSE
+    )
+
+    if (isTRUE(scatter)) {
+      point_labels <- .resolve_gg_point_labels(labels, vars)
+      if (!is.null(point_labels)) load_df$label <- point_labels
+
+      p <- ggplot2::ggplot(load_df, ggplot2::aes(x = .data$x, y = .data$y)) +
+        ggplot2::labs(
+          x = compnames(object, comps = comps[1], explvar = TRUE),
+          y = compnames(object, comps = comps[2], explvar = TRUE),
+          title = main
+        )
+
+      if (!is.null(point_labels)) {
+        p <- p + ggplot2::geom_text(ggplot2::aes(label = .data$label), vjust = -0.6)
+      } else {
+        p <- p + ggplot2::geom_point(...)
+      }
+    } else {
+      axis_labels <- .resolve_gg_axis_labels(labels, vars,
+                                             pretty.xlabels = pretty.xlabels)
+      line_df <- data.frame(
+        variable = rep(vars, 2L),
+        x = rep(axis_labels$xnum, 2L),
+        component = factor(rep(colnames(L), each = nrow(L)), levels = colnames(L)),
+        value = c(L),
+        stringsAsFactors = FALSE
+      )
+
+      p <- ggplot2::ggplot(line_df, ggplot2::aes(x = .data$x, y = .data$value,
+                                                 colour = .data$component,
+                                                 group = .data$component)) +
+        ggplot2::geom_line(...) +
+        ggplot2::labs(
+          x = compnames(object, comps = comps[1], explvar = TRUE),
+          y = compnames(object, comps = comps[2], explvar = TRUE),
+          colour = "Component",
+          title = main
+        ) +
+        axis_labels$scale_spec
+    }
+  }
+
+  if (isTRUE(plotly)) {
     if (!requireNamespace("plotly", quietly = TRUE))
       stop("Package 'plotly' is required when plotly = TRUE.")
     p <- plotly::ggplotly(p)
@@ -305,7 +570,7 @@ gg_loadingplot.mvr <- function(object, comps = 1:2, scatter = FALSE,
 #' data(yarn)
 #' mod <- plsr(density ~ NIR, ncomp = 6, data = yarn)
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
-#'   gg_biplot(mod)
+#'   gg_biplot(mod, main = "Biplot")
 #' }
 gg_biplot <- function(object, ...) UseMethod("gg_biplot")
 
@@ -316,11 +581,12 @@ gg_biplot <- function(object, ...) UseMethod("gg_biplot")
 #' @param arrows logical. If \code{TRUE}, draw loadings as arrows. Defaults to
 #' \code{FALSE}.
 #' @param loading.scale numeric scaling factor for loadings.
+#' @param main optional plot title.
 #' @param plotly logical. If \code{TRUE}, use \pkg{plotly} output.
 #' @export
 gg_biplot.mvr <- function(object, comps = 1:2, labels = FALSE,
                           arrows = FALSE, loading.scale = 0.8,
-                          plotly = FALSE, ...) {
+                          plotly = FALSE, main = NULL, ...) {
   if (length(comps) != 2)
     stop("`comps` must contain exactly two components.")
 
@@ -361,7 +627,8 @@ gg_biplot.mvr <- function(object, comps = 1:2, labels = FALSE,
     ggplot2::geom_point(data = obs_df, ggplot2::aes(x = .data$x, y = .data$y), ...) +
     ggplot2::labs(
       x = compnames(object, comps = comps[1], explvar = TRUE),
-      y = compnames(object, comps = comps[2], explvar = TRUE)
+      y = compnames(object, comps = comps[2], explvar = TRUE),
+      title = main
     )
 
   if (isTRUE(arrows)) {
@@ -914,28 +1181,32 @@ gg_valplot.mvrVal <- function(object, xlab = "number of components", ylab,
 #' Raw Data Plot Panel for mvr Models
 #'
 #' @param object An mvr model object, matrix, or data.frame.
-#' @param type Character. One of "boxplot", "line", or "violin".
+#' @param plottype Character. One of "boxplot", "line", or "violin".
 #' @param jitter_width Numeric width for point jitter in boxplot/violin modes.
 #' @param alpha Numeric transparency for observations.
 #' @param angle Numeric. Angle (0 to 90) to rotate x-axis labels. Default is 0.
 #' @param check_overlap Logical. If TRUE, automatically suppresses overlapping x-axis labels.
-#' @param max_ticks Integer. Maximum number of tick labels to show when `plotly = TRUE`.#' @param plotly Logical. If TRUE, returns a Plotly widget.
+#' @param max_ticks Integer. Maximum number of tick labels to show when
+#'   \code{plotly = TRUE}.
+#' @param main optional plot title.
+#' @param plotly Logical. If TRUE, returns a Plotly widget.
 #' @examples
 #' data(yarn)
 #' mod <- plsr(density ~ NIR, ncomp = 6, data = yarn, validation = "CV")
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
-#'   gg_rawdataplot(mod, type = "line")
+#'   gg_rawdataplot(mod, plottype = "line", main = "Raw data")
 #' }
 #' @export
 gg_rawdataplot <- function(object,
-                           type = c("boxplot", "line", "violin"),
+                           plottype = c("boxplot", "line", "violin"),
                            jitter_width = 0.2,
                            alpha = 0.5,
                            angle = 0,
                            check_overlap = TRUE,
                            max_ticks = 12L,
-                           plotly = FALSE) {
-  type <- match.arg(type)
+                           plotly = FALSE,
+                           main = NULL) {
+  plottype <- match.arg(plottype)
 
   # Extract predictor matrix X
   X <- if (is.matrix(object) || is.data.frame(object)) {
@@ -990,7 +1261,7 @@ gg_rawdataplot <- function(object,
   }
 
   withCallingHandlers({
-    if (type == "line") {
+    if (plottype == "line") {
       line_aes <- if (isTRUE(plotly)) {
         ggplot2::aes(group = .obs_id, key = .obs_id)
       } else {
@@ -1000,13 +1271,13 @@ gg_rawdataplot <- function(object,
         ggplot2::geom_line(line_aes, alpha = alpha, color = "#2b5c8f") +
         ggplot2::labs(x = if (is_numeric_axis) "Wavelength" else "Variable", y = "Value")
 
-    } else if (type == "boxplot") {
+    } else if (plottype == "boxplot") {
       p <- p +
         ggplot2::geom_boxplot(outlier.shape = NA, fill = "gray95", color = "darkgray") +
         ggplot2::geom_jitter(jitter_aes, width = jitter_width, alpha = alpha, color = "#2b5c8f") +
         ggplot2::labs(x = "Variable", y = "Value")
 
-    } else if (type == "violin") {
+    } else if (plottype == "violin") {
       p <- p +
         ggplot2::geom_violin(trim = FALSE, fill = "gray95", color = "darkgray") +
         ggplot2::geom_jitter(jitter_aes, width = jitter_width, alpha = alpha, color = "#2b5c8f") +
@@ -1016,6 +1287,8 @@ gg_rawdataplot <- function(object,
     if (isTRUE(plotly) && grepl("unknown aesthetics", conditionMessage(w), fixed = TRUE))
       invokeRestart("muffleWarning")
   })
+
+  p <- p + ggplot2::labs(title = main)
 
   # Handle label angle rotation if specified
   if (angle != 0) {
@@ -1105,11 +1378,11 @@ autoplot <- function(object, ...) {
 #'   autoplot(mod, type = "correlation")
 #'   autoplot(mod, type = "coefficients")
 #'   autoplot(mod, type = "validation", val.type = "RMSEP", estimate = "CV")
-#'   autoplot(mod, type = "rawdata", type = "line")
+#'   autoplot(mod, type = "rawdata", plottype = "line")
 #' }
 autoplot.mvr <- function(object, type = c("scores", "loadings", "biplot",
                                           "prediction", "correlation",
-            "coefficients", "validation"), ...) {
+            "coefficients", "validation", "rawdata"), ...) {
   type <- match.arg(type)
   switch(type,
          scores = gg_scoreplot(object, ...),
@@ -1251,7 +1524,7 @@ gg_dashboard <- function(object,
       biplot = list(comps = 1:2),
       corr = list(comps = 1:2),
       coef = list(response = coef_response),
-      rawdata = list(type = "line"),
+      rawdata = list(plottype = "line"),
       stop("Unknown dashboard panel: ", panel)
     )
 

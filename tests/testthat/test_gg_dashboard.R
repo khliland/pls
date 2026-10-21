@@ -42,8 +42,9 @@ test_that("gg_dashboard supports alternative panels", {
   mod <- plsr(chemical ~ sensory, ncomp = 4, data = oliveoil, validation = "CV")
   dash <- gg_dashboard(
     mod,
-    panels = c("biplot", "corr", "coef"),
-    panel_args = list(coef = list(response = 1))
+    panels = c("biplot", "corr", "coef", "rawdata"),
+    panel_args = list(coef = list(response = 1),
+                      rawdata = list(plottype = "line"))
   )
 
   expect_s3_class(dash, "gtable")

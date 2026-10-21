@@ -3,7 +3,8 @@
 \name{gg_loadingplot}
 \alias{gg_loadingplot}
 \alias{gg_loadingplot.mvr}
-\title{ggplot-based Loading Plot for mvr Models}
+\alias{gg_loadingplot.loadings}
+\title{ggplot-based Loading Plot for mvr Models or Extracted Loadings}
 \usage{
 gg_loadingplot(object, ...)
 
@@ -14,16 +15,28 @@ gg_loadingplot(object, ...)
   labels = FALSE,
   pretty.xlabels = TRUE,
   plotly = FALSE,
+  main = NULL,
+  ...
+)
+
+\method{gg_loadingplot}{loadings}(
+  object,
+  comps = 1:2,
+  scatter = FALSE,
+  labels = FALSE,
+  pretty.xlabels = TRUE,
+  plotly = FALSE,
+  main = NULL,
   ...
 )
 }
 \arguments{
-\item{object}{model object.}
+\item{object}{an \code{mvr} model or a matrix of extracted loadings.}
 
 \item{...}{further arguments passed to methods.}
 
-\item{comps}{integer vector of length two, giving the loading components to
-plot.}
+\item{comps}{integer vector of length one or two, giving the loading
+components to plot. A single component is plotted against variable index.}
 
 \item{scatter}{logical. If \code{TRUE}, make a scatter plot of the selected
 loading components. If \code{FALSE}, draw loading profiles across
@@ -36,18 +49,23 @@ labels. In line mode, labels are used as x-axis labels.}
 thinned when possible.}
 
 \item{plotly}{logical. If \code{TRUE}, use \pkg{plotly} output.}
+
+\item{main}{optional plot title.}
 }
 \value{
-A \code{ggplot} object.
+A \code{ggplot} object or a \code{plotly} object when
+  \code{plotly = TRUE}.
 }
 \description{
-Create a loading plot from an \code{mvr} model using \pkg{ggplot2}.
+Create a loading plot from an \code{mvr} model or extracted loadings using
+\pkg{ggplot2}.
 }
 \examples{
 data(yarn)
 mod <- plsr(density ~ NIR, ncomp = 6, data = yarn)
 if (requireNamespace("ggplot2", quietly = TRUE)) {
   gg_loadingplot(mod, scatter = TRUE)
-  gg_loadingplot(mod)
+  gg_loadingplot(mod, main = "Loading plot")
+  gg_loadingplot(loadings(mod))
 }
 }

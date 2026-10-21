@@ -5,11 +5,13 @@ test_that("gg_valplot.mvr returns a ggplot object", {
   data(yarn)
 
   mod <- plsr(density ~ NIR, ncomp = 4, data = yarn, validation = "CV")
-  p <- gg_valplot(mod, val.type = "RMSEP", estimate = c("train", "CV"))
+  p <- gg_valplot(mod, val.type = "RMSEP", estimate = c("train", "CV"),
+                  main = "Validation title")
 
   expect_s3_class(p, "ggplot")
   expect_identical(p$labels$x, "number of components")
   expect_identical(p$labels$y, "RMSEP")
+  expect_identical(p$labels$title, "Validation title")
 })
 
 test_that("gg_valplot.mvrVal supports multiple responses", {

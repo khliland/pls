@@ -7,7 +7,7 @@
 \method{autoplot}{mvr}(
   object,
   type = c("scores", "loadings", "biplot", "prediction", "correlation", "coefficients",
-    "validation"),
+    "validation", "rawdata"),
   ...
 )
 }
@@ -38,6 +38,6 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
   autoplot(mod, type = "correlation")
   autoplot(mod, type = "coefficients")
   autoplot(mod, type = "validation", val.type = "RMSEP", estimate = "CV")
-  autoplot(mod, type = "rawdata", type = "line")
+  autoplot(mod, type = "rawdata", plottype = "line")
 }
 }

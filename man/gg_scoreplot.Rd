@@ -3,7 +3,8 @@
 \name{gg_scoreplot}
 \alias{gg_scoreplot}
 \alias{gg_scoreplot.mvr}
-\title{ggplot-based Score Plot for mvr Models}
+\alias{gg_scoreplot.scores}
+\title{ggplot-based Score Plot for mvr Models or Extracted Scores}
 \usage{
 gg_scoreplot(object, ...)
 
@@ -14,36 +15,43 @@ gg_scoreplot(object, ...)
   newdata,
   select = FALSE,
   plotly = FALSE,
+  main = NULL,
   ...
 )
+
+\method{gg_scoreplot}{scores}(object, comps = 1:2, plotly = FALSE, main = NULL, ...)
 }
 \arguments{
-\item{object}{model object.}
+\item{object}{an \code{mvr} model or a matrix of extracted scores.}
 
 \item{...}{further arguments passed to methods.}
 
-\item{comps}{integer vector of length two, giving the score components to
-plot.}
+\item{comps}{integer vector of length one or two, giving the score
+components to plot. A single component is plotted against sample index.}
 
 \item{estimate}{optional character vector passed to \code{scores()}.}
 
 \item{newdata}{optional data frame passed to \code{scores()} when
 \code{estimate = "test"}.}
 
-\item{select}{logical. If \code{TRUE}, launch an interactive selection app
-and return selected IDs.}
+\item{select}{logical. For \code{mvr} models, if \code{TRUE}, launch an
+interactive selection app and return selected IDs. Not available for
+extracted scores.}
 
-\item{plotly}{logical. If \code{TRUE}, use \pkg{plotly} output. With
-\code{select = TRUE}, a Shiny app is launched and selected IDs are
-returned from Plotly lasso/box selection.}
+\item{plotly}{logical. If \code{TRUE}, use \pkg{plotly} output. For
+\code{mvr} models with \code{select = TRUE}, a Shiny app is launched and
+selected IDs are returned from Plotly lasso/box selection.}
+
+\item{main}{optional plot title.}
 }
 \value{
-For \code{select = FALSE}, a \code{ggplot} object (or a
-  \code{plotly} object when \code{plotly = TRUE}). For
+A \code{ggplot} object (or a \code{plotly} object when
+  \code{plotly = TRUE}). For \code{mvr} models with
   \code{select = TRUE}, a character vector with selected sample IDs.
 }
 \description{
-Create a score plot from an \code{mvr} model using \code{ggplot2}.
+Create a score plot from an \code{mvr} model or extracted scores
+using \code{ggplot2}.
 }
 \examples{
 data(yarn)
@@ -52,6 +60,8 @@ mod <- plsr(density ~ NIR, ncomp = 6, data = yarn)
 if (requireNamespace("ggplot2", quietly = TRUE)) {
   p <- gg_scoreplot(mod)
   print(p)
+  gg_scoreplot(mod, main = "Score plot")
+  gg_scoreplot(scores(mod))
 }
 
 \dontrun{ # Requires an interactive session
