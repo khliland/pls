@@ -19,7 +19,8 @@ Description: Multivariate regression methods
 Depends: R (>= 3.5.0)
 Imports: grDevices, graphics, methods, stats
 Suggests: MASS, parallel, Rmpi, testthat, RUnit, knitr, ggplot2, ggiraph,
-	shiny, broom, generics, rlang, plotly, htmltools, gridExtra
+	shiny, broom, generics, rlang, plotly, htmltools, htmlwidgets, gridExtra,
+	crosstalk
 License: GPL-2
 URL: https://github.com/khliland/pls, https://khliland.github.io/pls/
 BugReports: https://github.com/khliland/pls/issues

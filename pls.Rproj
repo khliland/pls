@@ -22,4 +22,4 @@ PackageInstallArgs: --no-multiarch --with-keep.source --compact-vignettes=both
 PackageBuildArgs: --compact-vignettes=both
 PackageBuildBinaryArgs: --compact-vignettes=both
 PackageCheckArgs: --as-cran --compact-vignettes=both
-PackageRoxygenize: rd,collate,namespace
+PackageRoxygenize: rd,collate,namespace,vignette

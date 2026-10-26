@@ -411,7 +411,8 @@ The `print` method for an object of class `"mvr"` shows the regression type used
 
 ## 7.4 Tidy outputs
 
-For workflows that use long-format data frames, **pls** provides `tidy`, `glance` and `augment` methods for `mvr` objects, and a `tidy` method for validation objects such as `RMSEP`. A full suite of ggplot2 methods is also available in the `pls` package. See `vignette("pls-ggplot2")` for details.
+For workflows that use long-format data frames, **pls** provides `tidy`, `glance` and `augment` methods for `mvr` objects, and a `tidy` method for validation objects such as `RMSEP`. A full suite of ggplot2 methods is also available in the `pls` package. With `plotly=TRUE`, these methods enable
+interactive graphics. See `vignette("ggplot2-plotly-tidyverse")` for details.
 
 # 8 Predicting new observations
 
@@ -485,7 +486,7 @@ One of the alternative PLS algorithm is called Canonical (Powered) Partial Least
 
 ### 9.1.2 Missing data handling
 
-When data are missing completely at random (MCAR), algorithms `nipals`and `nipalspc` can be used in place of the standard algorithms. These omit the missing values without dropping observations or variables, calculating loading weights, scores and loadings through an iterative process called NIPALS.
+When data are missing completely at random (MCAR), algorithms `nipals` and `nipalspc` can be used in place of the standard algorithms. These omit the missing values without dropping observations or variables, calculating loading weights, scores and loadings through the iterative NIPALS algorithm.
 
 ## 9.2 Parallel cross-validation
 

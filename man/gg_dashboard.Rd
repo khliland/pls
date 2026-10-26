@@ -9,7 +9,8 @@ gg_dashboard(
   panels = c("scores", "loadings", "prediction", "validation"),
   plotly = FALSE,
   panel_args = list(),
-  height = 300
+  height = 300,
+  link = TRUE
 )
 }
 \arguments{
@@ -28,6 +29,17 @@ composed with gridExtra.}
 arguments passed to the corresponding panel function.}
 
 \item{height}{positive numeric height in pixels for each Plotly panel.}
+
+\item{link}{logical. If \code{TRUE} and \code{plotly = TRUE}, the Plotly
+panels are linked with \pkg{crosstalk}: selecting samples in the scores,
+prediction or rawdata panels highlights the same samples in the other
+panels, and selecting variables in the loadings, coefficient or
+correlation panels highlights the same variables. The biplot has no
+selection of its own and shows both the selected samples and variables.
+Spectral line panels select a single item by clicking a line; other
+panels use box selection. Double-clicking a panel clears the selection in
+all panels.
+Ignored when \code{plotly = FALSE}. Requires the \pkg{crosstalk} package.}
 }
 \value{
 A composed dashboard object. In static mode, a \code{gtable}

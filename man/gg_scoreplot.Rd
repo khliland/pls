@@ -4,7 +4,7 @@
 \alias{gg_scoreplot}
 \alias{gg_scoreplot.mvr}
 \alias{gg_scoreplot.scores}
-\title{ggplot-based Score Plot for mvr Models or Extracted Scores}
+\title{ggplot- and Plotly-based Score Plot for mvr Models or Extracted Scores}
 \usage{
 gg_scoreplot(object, ...)
 
@@ -51,7 +51,14 @@ A \code{ggplot} object (or a \code{plotly} object when
 }
 \description{
 Create a score plot from an \code{mvr} model or extracted scores
-using \code{ggplot2}.
+using \code{ggplot2}. For general information on scores and plotting,
+see \code{\link{scores}} and \code{\link{scoreplot}}. \code{gg_scoreplot}
+is also available as part of \code{\link{gg_dashboard}}.
+}
+\details{
+\code{gg_scoreplot} supports interactive sample selection that can be
+used in conjunction with the \code{refit} method to update models with
+or without selected samples.
 }
 \examples{
 data(yarn)

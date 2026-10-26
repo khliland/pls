@@ -11,10 +11,19 @@ vignette: >
 
 ```{r setup, include=FALSE}
 library(pls)
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width=5)
 ```
 
+# Introduction
+
+This vignette contains examples of the functionality that was introduced with version 3.0.0 of the **pls** package. A compact PLSR model will be the basis for all examples. Three groups of functions will be showcased:
+- ggplot and Plotly graphics
+- tidyverse functions
+- wrappers for piping of the base PLSR and PCR function
+
 # Fit a compact model
+
+To demonstrate the ggplot-/Plotly-based plotting capabilities and the tidyverse functions, we start by fitting a simple PLSR model.
 
 ```{r fit-model-gg}
 data(yarn)
@@ -22,10 +31,13 @@ d <- yarn[1:20, , drop = FALSE]
 mod <- plsr(density ~ NIR, ncomp = 2, data = d, validation = "CV")
 ```
 
-# Optional ggplot workflow
+# ggplot workflow
 
 If **ggplot2** is installed, the model can be plotted through
-`autoplot()` or the dedicated ggplot helpers.
+`autoplot()` or the dedicated ggplot helpers. If **plotly** is also installed,
+interactive plots can be enabled by setting `plotly=TRUE`. Below, we start with the
+individual plots, then indicate what the corresponding autoplot() code
+would look like, before we end with dashboard plots; static and interactive.
 
 ## Score and loading plots
 
@@ -40,7 +52,7 @@ gg_loadingplot(mod, scatter = TRUE)
 gg_loadingplot(mod)
 ```
 
-## Optional interactive selection and refit
+## Interactive selection and refit
 
 If **ggiraph** and **shiny** are installed, selected sample IDs can be returned
 from `gg_scoreplot(select = TRUE)` and used with `refit()`. This makes for an
@@ -90,7 +102,9 @@ gg_valplot(mod, val.type = "R2", estimate = c("train", "CV"))
 
 ## Raw data plot
 
-Finally, raw data can be visualised through raw data plots.
+Finally, raw data can be visualised through raw data plots. For spectral
+data, line plots are most useful, while boxplots and violin plots are
+useful for tabular data.
 
 ```{r ggplot-raw, eval=TRUE}
 gg_rawdataplot(mod, plottype = "line")
@@ -116,7 +130,9 @@ autoplot(mod, type = "rawdata", plottype = "line")
 
 The dashboard plots combine a set of plots to give an overview of the main
 aspects of the model. The default is to show scores, loadings, prediction 
-and validation metrics as a ggplot2 or plotly panel.
+and validation metrics as a ggplot2 or Plotly panel. When Plotly is used,
+the plot samples and variables are linked such that selection in one panel
+affects the selection in all relevant panels.
 
 ```{r ggplot-dashboard, eval=TRUE}
 # Static dashboard (draws in interactive sessions, returns a gtable invisibly)
@@ -126,7 +142,7 @@ gg_dashboard(
 )
 
 # HTML dashboard with Plotly panels
-# The rendered object is an htmltools HTML container, not a raw plotly object.
+# Object selection is turned on by default.
 gg_dashboard(
   mod,
   plotly = TRUE,
@@ -137,21 +153,16 @@ gg_dashboard(
 # Tidyverse workflow
 
 A compact, tidy-style workflow for `mvr` models is also supported by
-the **pls** package, using the new methods:
+the **pls** package, using the methods:
 
 - `tidy()` for long-format model components and validation outputs.
 - `glance()` for one-row model summaries.
 - `augment()` for sample-wise fitted values and residuals.
 
-## Fit a compact model
-
-```{r fit-model}
-data(yarn)
-d <- yarn[1:20, , drop = FALSE]
-mod <- plsr(density ~ NIR, ncomp = 2, data = d, validation = "CV")
-```
-
 ## Tidy model components
+
+A long-format table can be generated, containing weights, loadings and
+coefficients, or a subset of these.
 
 ```{r tidy-components}
 comp_tbl <- tidy(mod, what = c("weights", "loadings", "coefficients"))
@@ -160,6 +171,8 @@ head(comp_tbl)
 
 ## Tidy validation metrics
 
+The same type of long-format table can also be used on validation metrics.
+
 ```{r tidy-validation}
 rmsep_tbl <- tidy(RMSEP(mod, estimate = c("train", "CV")))
 head(rmsep_tbl)
@@ -167,18 +180,25 @@ head(rmsep_tbl)
 
 ## One-row summary with glance
 
+Important parameters and metrics can be shown as a one-liner using glance().
+
 ```{r glance-summary}
 glance(mod)
 ```
 
 ## Sample-wise outputs with augment
 
+Fitted values and residuals (not for new data) can be added to the data
+object using the augment() method.
+
 ```{r augment-train}
+# Add fitted values and residuals for the training data.
 aug_train <- augment(mod)
 aug_train[1:5, -2]
 ```
 
 ```{r augment-newdata}
+# Add fitted values for new data.
 aug_new <- augment(mod, data = d[1:5, , drop = FALSE])
 aug_new[, -1]
 ```

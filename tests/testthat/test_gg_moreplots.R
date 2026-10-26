@@ -111,3 +111,29 @@ test_that("gg_coefplot supports jackknife whiskers", {
     "se.whiskers"
   )
 })
+
+test_that("gg_corrplot plotly anchors the y-axis to x for round circles", {
+  skip_if_not_installed("plotly")
+  data(yarn)
+
+  d <- yarn[1:20, , drop = FALSE]
+  mod <- plsr(density ~ NIR, ncomp = 3, data = d, validation = "none")
+  built <- plotly::plotly_build(gg_corrplot(mod, comps = 1:3, plotly = TRUE))
+  yaxes <- grep("^yaxis", names(built$x$layout), value = TRUE)
+  expect_true(length(yaxes) >= 1)
+  for (yaxis in yaxes) {
+    expect_identical(built$x$layout[[yaxis]]$scaleanchor, "x")
+    expect_identical(built$x$layout[[yaxis]]$scaleratio, 1)
+  }
+})
+
+test_that("gg_corrplot static circles keep a 1:1 aspect and hide the single-type legend", {
+  skip_if_not_installed("ggplot2")
+  data(yarn)
+
+  d <- yarn[1:20, , drop = FALSE]
+  mod <- plsr(density ~ NIR, ncomp = 3, data = d, validation = "none")
+  corr <- gg_corrplot(mod, comps = 1:2)
+  expect_identical(corr$coordinates$ratio, 1)
+  expect_identical(corr$guides$guides$colour, "none")
+})

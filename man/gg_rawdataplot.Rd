@@ -27,10 +27,11 @@ gg_rawdataplot(
 
 \item{angle}{Numeric. Angle (0 to 90) to rotate x-axis labels. Default is 0.}
 
-\item{check_overlap}{Logical. If TRUE, automatically suppresses overlapping x-axis labels.}
+\item{check_overlap}{Logical. If TRUE, automatically suppresses overlapping x-axis labels
+for categorical axes (boxplot and violin).}
 
 \item{max_ticks}{Integer. Maximum number of tick labels to show when
-\code{plotly = TRUE}.}
+\code{plotly = TRUE}. Applies to numeric and line axes; categorical axes thin their labels to fit.}
 
 \item{plotly}{Logical. If TRUE, returns a Plotly widget.}
 

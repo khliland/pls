@@ -1,9 +1,12 @@
-### gg_plots.R: ggplot-based score plots, loading plots, biplots and autoplot for mvr models
+### gg_plots.R: ggplot-/plotly-based score plots, loading plots, biplots and autoplot for mvr models
 
-#' ggplot-based Score Plot for mvr Models or Extracted Scores
+#' ggplot- and Plotly-based Score Plot for mvr Models or Extracted Scores
 #'
 #' @description Create a score plot from an \code{mvr} model or extracted scores
-#' using \code{ggplot2}.
+#' using \code{ggplot2}. For general information on scores and plotting,
+#' see \code{\link{scores}} and \code{\link{scoreplot}}. \code{gg_scoreplot}
+#' is also available as part of \code{\link{gg_dashboard}}.
+#'
 #' @param object an \code{mvr} model or a matrix of extracted scores.
 #' @param ... further arguments passed to methods.
 #' @return A \code{ggplot} object (or a \code{plotly} object when
@@ -26,6 +29,11 @@ gg_scoreplot <- function(object, ...) UseMethod("gg_scoreplot")
 #' @param plotly logical. If \code{TRUE}, use \pkg{plotly} output. For
 #' \code{mvr} models with \code{select = TRUE}, a Shiny app is launched and
 #' selected IDs are returned from Plotly lasso/box selection.
+#' @details
+#' \code{gg_scoreplot} supports interactive sample selection that can be
+#' used in conjunction with the \code{refit} method to update models with
+#' or without selected samples.
+#'
 #' @examples
 #' data(yarn)
 #' mod <- plsr(density ~ NIR, ncomp = 6, data = yarn)
@@ -605,7 +613,10 @@ gg_biplot.mvr <- function(object, comps = 1:2, labels = FALSE,
   S <- scores(object)[, comps, drop = FALSE]
   L <- loadings(object)[, comps, drop = FALSE]
 
-  obs_df <- data.frame(x = S[, 1], y = S[, 2])
+  sample_id <- rownames(S)
+  if (is.null(sample_id)) sample_id <- as.character(seq_len(nrow(S)))
+  obs_df <- data.frame(sample_id = sample_id, x = S[, 1], y = S[, 2],
+                       stringsAsFactors = FALSE)
   load_df <- data.frame(
     variable = if (is.null(rownames(L))) as.character(seq_len(nrow(L))) else rownames(L),
     x = L[, 1],
@@ -742,6 +753,7 @@ gg_predplot.mvr <- function(object, ncomp = 1:object$ncomp, which, newdata,
         measured = train_measured[, resp],
         predicted = train_pred[, resp, size],
         label = train_labels,
+        sample_id = train_labels,
         stringsAsFactors = FALSE
       )
     }
@@ -758,6 +770,7 @@ gg_predplot.mvr <- function(object, ncomp = 1:object$ncomp, which, newdata,
         measured = train_measured[, resp],
         predicted = val_pred[, resp, size],
         label = train_labels,
+        sample_id = train_labels,
         stringsAsFactors = FALSE
       )
     }
@@ -778,6 +791,7 @@ gg_predplot.mvr <- function(object, ncomp = 1:object$ncomp, which, newdata,
         measured = test_measured[, resp],
         predicted = test_pred[, resp, size],
         label = test_labels,
+        sample_id = test_labels,
         stringsAsFactors = FALSE
       )
     }
@@ -929,13 +943,10 @@ gg_corrplot.mvr <- function(object, comps = 1:2, labels = FALSE,
     ggplot2::geom_vline(xintercept = 0, colour = "grey70") +
     ggplot2::geom_point(...) +
     ggplot2::facet_wrap(~ panel) +
-    ggplot2::coord_cartesian(xlim = c(-1, 1), ylim = c(-1, 1)) +
+    ggplot2::coord_fixed(ratio = 1, xlim = c(-1, 1), ylim = c(-1, 1)) +
     ggplot2::labs(x = xlab, y = ylab, title = main, colour = NULL)
-  # ggplotly-friendly aspect ratio
-  custom_coord <- ggplot2::coord_cartesian(xlim = c(-1, 1), ylim = c(-1, 1))
-  custom_coord$aspect <- function(details) { 1 }
-  p$coordinates <- custom_coord
-
+  if (length(unique(plot_df$type)) < 2)
+    p <- p + ggplot2::guides(colour = "none")
   if (!is.null(plot_df$label))
     p <- p + ggplot2::geom_text(ggplot2::aes(label = .data$label), vjust = -0.6,
                                 show.legend = FALSE)
@@ -953,6 +964,14 @@ gg_corrplot.mvr <- function(object, comps = 1:2, labels = FALSE,
     if (!requireNamespace("plotly", quietly = TRUE))
       stop("Package 'plotly' is required when plotly = TRUE.")
     p <- plotly::ggplotly(p)
+    # Facets scale x and y to their pixel sizes independently, so pin each y-axis
+    # to its x-axis to keep the unit circles round.
+    p_built <- plotly::plotly_build(p)
+    for (y_id in grep("^yaxis", names(p_built$x$layout), value = TRUE)) {
+      p_built$x$layout[[y_id]]$scaleanchor <- sub("^yaxis", "x", y_id)
+      p_built$x$layout[[y_id]]$scaleratio <- 1
+    }
+    p <- p_built
   }
   p
 }
@@ -1185,9 +1204,10 @@ gg_valplot.mvrVal <- function(object, xlab = "number of components", ylab,
 #' @param jitter_width Numeric width for point jitter in boxplot/violin modes.
 #' @param alpha Numeric transparency for observations.
 #' @param angle Numeric. Angle (0 to 90) to rotate x-axis labels. Default is 0.
-#' @param check_overlap Logical. If TRUE, automatically suppresses overlapping x-axis labels.
+#' @param check_overlap Logical. If TRUE, automatically suppresses overlapping x-axis labels
+#'   for categorical axes (boxplot and violin).
 #' @param max_ticks Integer. Maximum number of tick labels to show when
-#'   \code{plotly = TRUE}.
+#'   \code{plotly = TRUE}. Applies to numeric and line axes; categorical axes thin their labels to fit.
 #' @param main optional plot title.
 #' @param plotly Logical. If TRUE, returns a Plotly widget.
 #' @examples
@@ -1246,11 +1266,21 @@ gg_rawdataplot <- function(object,
     # Continuous numeric axis (e.g., wavelength 400nm .. 2500nm)
     df_long$Variable <- num_vars[match(df_long$Variable, var_names)]
     p <- ggplot2::ggplot(df_long, ggplot2::aes(x = Variable, y = Value))
-  } else {
-    # Categorical discrete axis
-    df_long$Variable <- factor(df_long$Variable, levels = var_names)
+  } else if (plottype == "line") {
+    # Continuous index axis with thinned variable names as tick labels
+    df_long$Variable <- match(df_long$Variable, var_names)
+    axis_labels <- .resolve_gg_axis_labels("names", var_names)
     p <- ggplot2::ggplot(df_long, ggplot2::aes(x = Variable, y = Value)) +
-      ggplot2::scale_x_discrete(guide = ggplot2::guide_axis(check.overlap = check_overlap))
+      axis_labels$scale_spec
+  } else {
+    # Categorical discrete axis, keeping about `max_ticks` labels
+    df_long$Variable <- factor(df_long$Variable, levels = var_names)
+    step <- max(1L, ceiling(length(var_names) / max_ticks))
+    p <- ggplot2::ggplot(df_long, ggplot2::aes(x = Variable, y = Value)) +
+      ggplot2::scale_x_discrete(
+        breaks = var_names[seq(1L, length(var_names), by = step)],
+        guide = ggplot2::guide_axis(check.overlap = check_overlap)
+      )
   }
 
   # Aesthetic mapping for interactive Plotly tooltips
@@ -1299,23 +1329,22 @@ gg_rawdataplot <- function(object,
   if (isTRUE(plotly)) {
     if (!requireNamespace("plotly", quietly = TRUE))
       stop("Package 'plotly' is required when plotly = TRUE.")
-    
+
     p <- plotly::ggplotly(p)
-    
+
     # Configure Plotly.js layout options to prevent x-tick label collision
-    plotly_xaxis <- list(
-      automargin = TRUE,
-      nticks = max_ticks
-    )
-    
-    if (is_numeric_axis) {
+    is_continuous <- is_numeric_axis || plottype == "line"
+    plotly_xaxis <- list(automargin = TRUE)
+
+    if (is_continuous) {
       plotly_xaxis$type <- "linear"
+      plotly_xaxis$nticks <- max_ticks
       if (angle != 0) plotly_xaxis$tickangle <- angle
     } else {
       plotly_xaxis$tickmode <- "auto"
       plotly_xaxis$tickangle <- if (angle != 0) angle else -45
     }
-    
+
     p <- plotly::layout(p, xaxis = plotly_xaxis)
   }
 
@@ -1395,27 +1424,6 @@ autoplot.mvr <- function(object, type = c("scores", "loadings", "biplot",
     rawdata = gg_rawdataplot(object, ...))
 }
 
-#' @title ggplot-based Score Plot for mvr Models
-#'
-#' @description
-#' Create a score plot from an \code{mvr} model using \pkg{ggplot2}. When
-#' \code{select = TRUE}, a local Shiny app is launched with a selectable
-
-#' @noRd
-.resolve_gg_point_labels <- function(labels, default_names) {
-  if (isTRUE(labels))
-    labels <- "names"
-  if (identical(labels, FALSE) || is.null(labels))
-    return(NULL)
-  if (length(labels) == 1) {
-    labels <- switch(match.arg(labels, c("names", "numbers")),
-                     names = default_names,
-                     numbers = as.character(seq_along(default_names)))
-  }
-  as.character(labels)
-}
-.data = NULL
-
 #' @title ggplot-based Dashboard for mvr Models
 #'
 #' @description
@@ -1434,6 +1442,16 @@ autoplot.mvr <- function(object, type = c("scores", "loadings", "biplot",
 #' @param panel_args named list of named lists. Each element provides
 #'   arguments passed to the corresponding panel function.
 #' @param height positive numeric height in pixels for each Plotly panel.
+#' @param link logical. If \code{TRUE} and \code{plotly = TRUE}, the Plotly
+#'   panels are linked with \pkg{crosstalk}: selecting samples in the scores,
+#'   prediction or rawdata panels highlights the same samples in the other
+#'   panels, and selecting variables in the loadings, coefficient or
+#'   correlation panels highlights the same variables. The biplot has no
+#'   selection of its own and shows both the selected samples and variables.
+#'   Spectral line panels select a single item by clicking a line; other
+#'   panels use box selection. Double-clicking a panel clears the selection in
+#'   all panels.
+#'   Ignored when \code{plotly = FALSE}. Requires the \pkg{crosstalk} package.
 #' @importFrom utils modifyList
 #' @return A composed dashboard object. In static mode, a \code{gtable}
 #'   (drawn automatically in interactive sessions, returned invisibly); in
@@ -1456,7 +1474,8 @@ gg_dashboard <- function(object,
                          panels = c("scores", "loadings", "prediction", "validation"),
                          plotly = FALSE,
                          panel_args = list(),
-                         height = 300) {
+                         height = 300,
+                         link = TRUE) {
   if (!inherits(object, "mvr"))
     stop("`object` must be an mvr model.")
 
@@ -1466,6 +1485,9 @@ gg_dashboard <- function(object,
   if (!is.numeric(height) || length(height) != 1L ||
       !is.finite(height) || height <= 0)
     stop("`height` must be a single positive finite number.")
+
+  if (!is.logical(link) || length(link) != 1L || is.na(link))
+    stop("`link` must be a single non-missing logical value.")
 
   panels <- as.character(panels)
   if (!length(panels))
@@ -1487,6 +1509,11 @@ gg_dashboard <- function(object,
   unknown_args <- setdiff(names(panel_args), supported_panels)
   if (length(unknown_args))
     stop("Unknown panel_args entry(ies): ", paste(unknown_args, collapse = ", "))
+
+  scores_args <- panel_args[["scores"]]
+  if (is.list(scores_args) && isTRUE(scores_args$select))
+    stop("`select = TRUE` is not supported for the scores panel in gg_dashboard(); ",
+         "use `plotly = TRUE` with `link = TRUE` for linked selection.")
 
   prediction_ncomp <- if (is.null(object$validation)) {
     warning("No validation data available; using 1 component for the prediction panel.")
@@ -1560,8 +1587,201 @@ gg_dashboard <- function(object,
     if (!requireNamespace("htmltools", quietly = TRUE))
       stop("Package 'htmltools' is required when plotly = TRUE.")
 
-    widgets <- lapply(panel_plots, function(panel_plot) {
-      plotly::ggplotly(panel_plot, height = height)
+    if (isTRUE(link) && !requireNamespace("crosstalk", quietly = TRUE))
+      stop("Package 'crosstalk' is required when link = TRUE.")
+
+    sample_ids <- NULL
+    if (isTRUE(link)) {
+      score_mat <- scores(object)
+      sample_ids <- rownames(score_mat)
+      if (is.null(sample_ids))
+        sample_ids <- as.character(seq_len(nrow(score_mat)))
+    }
+
+    # plotly's highlight() only clears the last group when a widget has several,
+    # so clear every linked group explicitly. plotly keeps the box selection on
+    # the traces (selectedpoints), so clear that too or unselected points stay grey.
+    reset_js <- "function(el, x, data) {
+      ['plotly_doubleclick', 'plotly_deselect'].forEach(function(evt) {
+        el.on(evt, function() {
+          data.groups.forEach(function(g) {
+            crosstalk.group(g).var('selection').set(null);
+          });
+          // plotly re-applies the box selection after this event, so clear on the next tick.
+          setTimeout(function() {
+            Plotly.restyle(el, 'selectedpoints', el.data.map(function() { return null; }));
+          }, 0);
+        });
+      });
+    }"
+
+    # The biplot has no selection of its own and follows both groups. plotly's
+    # highlight() routes every group of a widget to the last one, so the biplot
+    # applies each trace's selection itself. The group and keys move to the trace's
+    # meta, since plotly's own crosstalk handling would otherwise dim the traces
+    # and add subset traces on top.
+    biplot_js <- "function(el, x, data) {
+      var apply = function() {
+        var sel = {};
+        data.groups.forEach(function(g) {
+          sel[g] = crosstalk.group(g).var('selection').get();
+        });
+        var selectedpoints = el.data.map(function(t) {
+          if (!t.meta) return null;
+          var s = sel[t.meta.set];
+          if (!s) return null;
+          var idx = [];
+          t.meta.key.forEach(function(k, i) { if (s.indexOf(k) !== -1) idx.push(i); });
+          return idx.length === t.meta.key.length ? null : idx;
+        });
+        Plotly.restyle(el, 'selectedpoints', selectedpoints);
+      };
+      data.groups.forEach(function(g) {
+        crosstalk.group(g).var('selection').on('change', apply);
+      });
+    }"
+
+    # Spectra are selected by clicking a line. highlight() would draw the selected
+    # part as a polyline through the selected points, which bridges the gaps. Instead,
+    # selected traces get a copy with null y values at unselected positions, so
+    # plotly draws gaps there, and the original traces are dimmed.
+    line_js <- "function(el, x, data) {
+      var base = [];
+      el.data.forEach(function(t, i) {
+        if (t.key && t.set) base.push({ index: i, opacity: t.opacity === undefined ? null : t.opacity });
+      });
+      var pending = Promise.resolve();
+      var apply = function() {
+        pending = pending.then(function() {
+          var sel = {};
+          data.groups.forEach(function(g) {
+            sel[g] = crosstalk.group(g).var('selection').get() || [];
+          });
+          var dimIdx = [];
+          var dimOpacity = [];
+          var masks = [];
+          base.forEach(function(b) {
+            var t = el.data[b.index];
+            var s = sel[t.set] || [];
+            dimIdx.push(b.index);
+            dimOpacity.push(s.length ? 0.2 : b.opacity);
+            if (!s.length) return;
+            var n = t.y.length;
+            var runs = [];
+            var start = -1;
+            t.key.forEach(function(k, j) {
+              var kept = s.indexOf(k) !== -1;
+              if (kept && start < 0) start = j;
+              if (!kept && start >= 0) { runs.push([start, j]); start = -1; }
+            });
+            if (start >= 0) runs.push([start, n]);
+            runs.forEach(function(r) {
+              var mask = JSON.parse(JSON.stringify(t));
+              Object.keys(mask).forEach(function(p) {
+                if (Array.isArray(mask[p]) && mask[p].length === n) mask[p] = mask[p].slice(r[0], r[1]);
+              });
+              if (b.opacity === null) delete mask.opacity; else mask.opacity = b.opacity;
+              mask._plsMask = true;
+              mask.showlegend = false;
+              mask.hoverinfo = 'skip';
+              masks.push(mask);
+            });
+          });
+          var stale = [];
+          // plotly's crosstalk adds subset traces that would join separate selected runs
+          el.data.forEach(function(t, i) { if (t._plsMask || t._isCrosstalkTrace) stale.push(i); });
+          return Plotly.restyle(el, { opacity: dimOpacity }, dimIdx)
+            .then(function() {
+              return stale.length ? Plotly.deleteTraces(el, stale.reverse()) : null;
+            })
+            .then(function() {
+              return masks.length ? Plotly.addTraces(el, masks) : null;
+            });
+        });
+      };
+      data.groups.forEach(function(g) {
+        crosstalk.group(g).var('selection').on('change', apply);
+      });
+      el.on('plotly_click', function(ev) {
+        var keys = {};
+        ev.points.forEach(function(p) {
+          var t = p.data;
+          if (!t.set || !t.key) return;
+          keys[t.set] = keys[t.set] || [];
+          var k = t.key[p.pointNumber];
+          if (keys[t.set].indexOf(k) === -1) keys[t.set].push(k);
+        });
+        Object.keys(keys).forEach(function(g) {
+          crosstalk.group(g).var('selection').set(keys[g]);
+        });
+      });
+    }"
+
+    panel_groups <- lapply(panels, function(panel) if (isTRUE(link)) switch(
+      panel,
+      scores = list(samples = "sample_id"),
+      prediction = list(samples = "sample_id"),
+      rawdata = list(samples = ".obs_id"),
+      biplot = list(samples = "sample_id", variables = "variable"),
+      loadings = list(variables = "variable"),
+      coef = list(variables = "predictor"),
+      corr = list(variables = "variable"),
+      list()
+    ) else list())
+    all_groups <- unique(unlist(lapply(panel_groups, names)))
+
+    widgets <- lapply(seq_along(panel_plots), function(i) {
+      panel_plot <- panel_plots[[i]]
+      groups <- panel_groups[[i]]
+      if (!length(groups))
+        return(plotly::ggplotly(panel_plot, height = height))
+
+      key_map <- if (identical(panels[[i]], "rawdata"))
+        stats::setNames(sample_ids, paste0("Obs_", seq_along(sample_ids)))
+      to_linked <- function(df, column, group) {
+        keys <- df[[column]]
+        if (!is.null(key_map))
+          keys <- unname(key_map[as.character(keys)])
+        ggplot2::fortify(crosstalk::SharedData$new(df, key = keys, group = group))
+      }
+      for (group in names(groups)) {
+        column <- groups[[group]]
+        if (is.data.frame(panel_plot$data) && column %in% names(panel_plot$data))
+          panel_plot$data <- to_linked(panel_plot$data, column, group)
+        panel_plot$layers <- lapply(panel_plot$layers, function(layer) {
+          if (is.data.frame(layer$data) && column %in% names(layer$data))
+            layer$data <- to_linked(layer$data, column, group)
+          layer
+        })
+      }
+      # Spectra are drawn as lines with no selectable points, so use click there.
+      is_line <- any(vapply(panel_plot$layers, function(layer)
+        inherits(layer$geom, "GeomLine"), logical(1)))
+      reset_data <- list(groups = I(unname(all_groups)))
+      if (identical(panels[[i]], "biplot")) {
+        linked <- plotly::ggplotly(panel_plot, height = height)
+        linked$x$data <- lapply(linked$x$data, function(trace) {
+          if (!is.null(trace$set)) {
+            trace$meta <- list(set = trace$set, key = trace$key)
+            trace$set <- NULL
+            trace$key <- NULL
+          }
+          trace
+        })
+        linked <- htmlwidgets::onRender(linked, reset_js, data = reset_data)
+        return(htmlwidgets::onRender(linked, biplot_js,
+                                     data = list(groups = I(unname(names(groups))))))
+      }
+      if (is_line) {
+        linked <- plotly::ggplotly(panel_plot, height = height)
+        linked <- htmlwidgets::onRender(linked, line_js,
+                                        data = list(groups = I(unname(names(groups)))))
+        return(htmlwidgets::onRender(linked, reset_js, data = reset_data))
+      }
+      linked <- plotly::highlight(plotly::ggplotly(panel_plot, height = height),
+                                  on = "plotly_selected",
+                                  off = "plotly_doubleclick")
+      htmlwidgets::onRender(linked, reset_js, data = reset_data)
     })
     cells <- lapply(widgets, function(widget) {
       htmltools::tags$div(class = "pls-dashboard-panel", widget)
@@ -1595,7 +1815,7 @@ gg_dashboard <- function(object,
   invisible(dashboard)
 }
 
-
+# Axis label resolution helper function for ggplot-based plots.
 #' @noRd
 .resolve_gg_axis_labels <- function(labels, default_names, pretty.xlabels = TRUE) {
   # Define the default numerical axis (1, 2, 3...)
@@ -1650,3 +1870,19 @@ gg_dashboard <- function(object,
 
   list(xnum = xnum, scale_spec = scale_spec)
 }
+
+# Helper function to resolve point labels across several plot functions.
+#' @noRd
+.resolve_gg_point_labels <- function(labels, default_names) {
+  if (isTRUE(labels))
+    labels <- "names"
+  if (identical(labels, FALSE) || is.null(labels))
+    return(NULL)
+  if (length(labels) == 1) {
+    labels <- switch(match.arg(labels, c("names", "numbers")),
+                     names = default_names,
+                     numbers = as.character(seq_along(default_names)))
+  }
+  as.character(labels)
+}
+.data = NULL

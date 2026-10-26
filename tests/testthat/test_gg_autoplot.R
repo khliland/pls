@@ -61,6 +61,24 @@ test_that("biplot and raw data titles survive Plotly conversion", {
                    "Plotly raw data")
 })
 
+test_that("gg_rawdataplot thins categorical plotly labels to max_ticks", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("plotly")
+
+  X <- matrix(stats::rnorm(20 * 60), 20, 60)
+  colnames(X) <- paste0("V", 1:60)
+
+  box <- plotly::plotly_build(gg_rawdataplot(X, plottype = "boxplot",
+                                             plotly = TRUE, max_ticks = 12L))
+  expect_lte(length(box$x$layout$xaxis$ticktext), 12L)
+  expect_gt(length(box$x$layout$xaxis$ticktext), 1L)
+
+  line <- plotly::plotly_build(gg_rawdataplot(X, plottype = "line",
+                                              plotly = TRUE, max_ticks = 12L))
+  expect_lte(length(line$x$layout$xaxis$ticktext), 12L)
+  expect_identical(line$x$layout$xaxis$type, "linear")
+})
+
 test_that("component and scaling validation works", {
   skip_if_not_installed("ggplot2")
   data(yarn)

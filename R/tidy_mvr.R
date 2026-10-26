@@ -216,3 +216,32 @@ augment.mvr <- function(x, data = NULL, ncomp = x$ncomp, ...) {
 
   out
 }
+
+
+#' @name plsr_fit
+#' @aliases plsr_fit pcr_fit
+#' @title Wrappers for Piping Partial Least Squares and Principal Component Regression
+#'
+#' @param data an optional data frame with the data to fit the model from.
+#' @param formula a model formula.  Most of the \code{\link{lm}} formula
+#' constructs are supported.  See below.
+#' @param ... additional arguments to \code{mvr}.
+#'
+#' @returns
+#' An object of class \code{mvr} is returned. See \code{\link{mvr}} for details.
+#' @export
+#'
+#' @examples
+#' data(yarn)
+#' yarn |> plsr_fit(density ~ NIR) |> scoreplot()
+#'
+#' yarn |> pcr_fit(density ~ NIR) |> scoreplot()
+plsr_fit <- function(data, formula, ...){
+  plsr(formula = formula, data = data, ...)
+}
+
+#' @export
+#' @rdname plsr_fit
+pcr_fit <- function(data, formula, ...){
+  pcr(formula = formula, data = data, ...)
+}
